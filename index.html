@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>人民币债基再平衡助手 V4.6</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f2f2f7;--card:#fff;--elevated:#fff;--text:#1c1c1e;--muted:#6c6c70;
+  --line:rgba(60,60,67,.16);--fill:rgba(120,120,128,.12);
+  --blue:#007aff;--bluebg:rgba(0,122,255,.10);--green:#248a3d;--greenbg:rgba(52,199,89,.12);
+  --red:#d70015;--redbg:rgba(255,59,48,.11);--amber:#a05a00;--amberbg:rgba(255,159,10,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.03),0 8px 28px rgba(0,0,0,.055);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1180px;margin:auto;padding:26px 18px 42px}
+.header{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:18px}
+h1{font-size:25px;letter-spacing:-.02em;margin:0 0 5px}.sub{color:var(--muted)}
+.badge{background:var(--bluebg);color:var(--blue);font-weight:700;padding:7px 11px;border-radius:999px;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+.card h2{font-size:17px;margin:0 0 13px}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rule{background:var(--fill);border:1px solid var(--line);border-radius:11px;padding:13px 14px}
+.rule b{display:block;margin-bottom:3px}.rule small{color:var(--muted)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}
+table{width:100%;border-collapse:collapse;min-width:1040px}
+th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:12px;color:var(--muted);background:var(--fill)}
+th:first-child,td:first-child{text-align:left}
+tr:last-child td{border-bottom:0}
+.fund{font-weight:650}.code{font-size:12px;color:var(--muted)}
+input,select,button{border:1px solid var(--line);background:var(--elevated);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;min-height:42px}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:1px;border-color:var(--blue)}
+input.amount,input.pending{width:112px;text-align:right}
+select{max-width:138px}
+details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-size:17px;padding:18px;list-style-position:inside}details.card>.details-inner{padding:0 18px 18px}
+.setting-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.setting-grid .field{min-width:0}.setting-grid input{width:100%}
+.empty{text-align:center!important;color:var(--muted);padding:24px!important}.section-note{font-size:12px;color:var(--muted);margin:0 0 12px}.role{font-size:12px;color:var(--blue);margin-top:2px}.role-summary{font-size:13px;color:var(--muted);margin-top:9px}
+.guide-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.guide-step{display:flex;gap:11px;align-items:flex-start;background:var(--fill);border-radius:13px;padding:13px}.step-num{display:grid;place-items:center;flex:0 0 26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-weight:750}.guide-step b{display:block;margin-bottom:2px}.guide-step small{color:var(--muted)}
+.plain-tip{margin-top:11px;padding:11px 13px;border-radius:12px;background:var(--bluebg);color:var(--blue);font-size:13px}
+.inline-help{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.inline-help summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:38px;display:flex;align-items:center}.help-list{display:grid;grid-template-columns:max-content 1fr;gap:7px 14px;margin:5px 0 2px}.help-list dt{font-weight:650}.help-list dd{margin:0;color:var(--muted)}
+.field-help{font-size:11px;color:var(--muted);line-height:1.35;min-height:30px}
+button{cursor:pointer;font-weight:650;touch-action:manipulation;transition:transform .12s ease,opacity .12s ease}
+button:active{transform:scale(.975);opacity:.78}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button.danger{color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:12px}
+.k{font-size:12px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:3px;overflow-wrap:anywhere}
+.statusbox{border-radius:12px;padding:14px 15px;margin-top:12px}
+.statusbox.ok{background:var(--greenbg);color:var(--green)}
+.statusbox.bad{background:var(--redbg);color:var(--red)}
+.statusbox.warn{background:var(--amberbg);color:var(--amber)}
+.buy{color:var(--green);font-weight:700}.sell{color:var(--red);font-weight:700}.hold{color:var(--muted)}
+.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:650}
+.tag.ok{background:var(--greenbg);color:var(--green)}
+.tag.bad{background:var(--redbg);color:var(--red)}
+.tag.neutral{background:#f3f4f6;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);margin-top:9px}
+.flowline{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:5px;min-width:210px}
+label{font-size:12px;color:var(--muted)}
+.exec-note{margin-top:10px;font-size:12px;color:var(--muted)}
+.mobile-label{display:none}
+@media(max-width:900px){
+  .header{flex-direction:column;align-items:flex-start}
+  .rules,.guide-steps{grid-template-columns:1fr}
+  .summary{grid-template-columns:repeat(2,1fr)}
+  .setting-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  body{font-size:15px;overscroll-behavior-y:none}
+  .wrap{width:100%;padding:calc(10px + env(safe-area-inset-top)) 12px calc(132px + env(safe-area-inset-bottom))}
+  .header{position:sticky;z-index:20;top:0;margin:calc(-10px - env(safe-area-inset-top)) -12px 12px;padding:calc(11px + env(safe-area-inset-top)) 16px 11px;background:rgba(242,242,247,.86);border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);gap:5px}
+  h1{font-size:20px;line-height:1.2;margin:0}.sub{font-size:12px;line-height:1.35;padding-right:4px}.badge{display:none}
+  .card{border:0;border-radius:20px;margin:12px 0;padding:16px;box-shadow:none}
+  .card h2{font-size:20px;letter-spacing:-.015em;margin-bottom:11px}
+  .guide-step{padding:12px}.help-list{grid-template-columns:1fr;gap:2px}.help-list dd{margin:0 0 8px}.field-help{min-height:0;margin-bottom:3px}
+  .rule{border:0;border-radius:13px;padding:12px 13px}.rule small{display:block;line-height:1.45}
+  .note,.section-note,.exec-note{font-size:13px;line-height:1.48}
+  input,select,button{min-height:46px;font-size:16px;border-radius:12px}
+  input.amount,input.pending,select{width:100%;max-width:none;text-align:left}
+  .field{min-width:100%;width:100%}.flowline{display:block}.flowline .note{margin-top:9px}
+  .setting-grid{grid-template-columns:1fr}.setting-grid .field{min-width:0}
+  details.card>summary{min-height:56px;padding:16px;font-size:18px;display:flex;align-items:center;cursor:pointer}
+  details.card>summary::marker{color:var(--muted)}details.card>.details-inner{padding:0 16px 16px}
+  .summary{grid-template-columns:1fr 1fr;gap:8px}.stat{border:0;background:var(--fill);border-radius:14px;padding:12px}.k{font-size:11px;line-height:1.35}.v{font-size:17px}
+  .statusbox{padding:13px 14px;border-radius:14px}.role-summary{font-size:13px}
+
+  .table-wrap:has(.holdings-table),.table-wrap:has(.result-table){overflow:visible;border:0;border-radius:0}
+  .holdings-table,.holdings-table tbody,.result-table,.result-table tbody{display:block;width:100%;min-width:0}
+  .holdings-table thead,.result-table thead{display:none}
+  .holdings-table tr,.result-table tr{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;width:100%;margin:0 0 12px;padding:14px;background:var(--fill);border-radius:16px}
+  .holdings-table tr:last-child,.result-table tr:last-child{margin-bottom:0}
+  .holdings-table td,.result-table td{display:block;min-width:0;padding:9px 0;border:0;text-align:left!important;white-space:normal}
+  .holdings-table td::before,.result-table td::before{content:attr(data-label);display:block;margin-bottom:5px;color:var(--muted);font-size:11px;font-weight:500;line-height:1.3}
+  .holdings-table .fund-cell,.result-table .fund-cell{grid-column:1/-1;padding:0 0 9px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+  .holdings-table .fund-cell::before,.result-table .fund-cell::before{display:none}
+  .holdings-table .policy-cell,.holdings-table .state{grid-column:1/-1}
+  .holdings-table .state{padding-top:5px}
+  .holdings-table .state::before{display:inline;margin-right:8px}
+  .holdings-table .target-amount,.holdings-table .outer-range,.holdings-table .curw,.holdings-table .distance{font-size:14px}
+  .result-table .trade-cell{grid-column:1/-1;font-size:19px;padding:12px 0 9px}
+  .result-table .policy-result{grid-column:1/-1;padding-bottom:0}
+  .empty{grid-column:1/-1!important;margin:0!important;background:transparent!important;padding:22px 6px!important}
+
+  .action-dock{position:fixed;z-index:30;left:0;right:0;bottom:0;margin:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;background:rgba(249,249,249,.9);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(0,0,0,.08);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);transition:transform .2s ease,opacity .2s ease}
+  .action-dock .actions{display:grid;grid-template-columns:1.5fr 1.5fr 1fr 1fr 1fr;gap:7px}
+  .action-dock button{min-width:0;padding:7px 4px;font-size:11px;line-height:1.15;border-radius:11px}
+  .action-dock button.primary{font-size:13px}
+  body:has(input:focus,select:focus) .action-dock{transform:translateY(calc(100% + env(safe-area-inset-bottom)));opacity:0;pointer-events:none}
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#000;--card:#1c1c1e;--elevated:#2c2c2e;--text:#f2f2f7;--muted:#98989d;--line:rgba(84,84,88,.65);--fill:rgba(118,118,128,.20);--blue:#0a84ff;--bluebg:rgba(10,132,255,.17);--green:#30d158;--greenbg:rgba(48,209,88,.14);--red:#ff453a;--redbg:rgba(255,69,58,.15);--amber:#ffd60a;--amberbg:rgba(255,214,10,.13);--shadow:none}
+  @media(max-width:640px){.header{background:rgba(0,0,0,.78)}.action-dock{background:rgba(28,28,30,.88)}}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>人民币债基再平衡助手 V4.6</h1>
+      <div class="sub">目标比例：50% / 33.33% / 12.50% / 4.17%。</div>
+    </div>
+    <div class="badge">最小换手再平衡</div>
+  </div>
+
+  <div class="card">
+    <h2>平时只需要三步</h2>
+    <div class="guide-steps">
+      <div class="guide-step"><span class="step-num">1</span><div><b>填写当前持仓</b><small>填四只基金已经确认的最新市值，单位都是万元。</small></div></div>
+      <div class="guide-step"><span class="step-num">2</span><div><b>填写本次资金变动</b><small>没有新增或取出资金就保持 0；有在途订单再单独录入。</small></div></div>
+      <div class="guide-step"><span class="step-num">3</span><div><b>生成并执行建议</b><small>点击“生成调整建议”，最后只看“最终执行清单”。</small></div></div>
+    </div>
+    <div class="plain-tip">日常不需要改高级设置，也不需要使用“强制恢复目标比例”。按季度检查一次即可。</div>
+  </div>
+
+  <div class="card">
+    <h2>什么时候才需要调整</h2>
+    <div class="rules">
+      <div class="rule">
+        <b id="outerRule">免调整范围：5/25 规则</b>
+        <small>比例在允许范围内就不交易。大仓位最多偏离 5 个百分点，小仓位最多偏离目标比例的 25%，两者取更严格的一项。</small>
+      </div>
+      <div class="rule">
+        <b id="innerRule">调整后位置：拉回偏差的 50%</b>
+        <small>越界后只拉回安全区域，不强求精确恢复目标比例，从而减少换手和重复触发。</small>
+      </div>
+      <div class="rule">
+        <b>实际执行：尽量少交易</b>
+        <small>先用新增或取出资金纠偏，再考虑基金之间转换；同时遵守赎回限制并合并零碎操作。</small>
+      </div>
+    </div>
+    <details class="inline-help"><summary>按目标比例举例</summary><dl class="help-list"><dt>002065</dt><dd>目标 50%，在 45%～55% 内不调整。</dd><dt>110017</dt><dd>目标 33.33%，在 28.33%～38.33% 内不调整。</dd><dt>270048</dt><dd>目标 12.50%，在 9.38%～15.63% 内不调整。</dd><dt>007194</dt><dd>目标 4.17%，在 3.13%～5.21% 内不调整。</dd></dl></details>
+    <div class="note">建议按季度检查，或在发生较大申购、赎回后额外检查。在途交易请先录入，避免重复下单。取出资金时，在不造成比例越界且不违反赎回限制的前提下，优先使用短债流动性仓，其次使用纯债稳定仓。</div>
+    <div class="note">本工具按基金市值控制比例，无法自动识别 002065 和 110017 内部股票、转债等风险仓位的变化，仍需结合定期报告复核。</div>
+  </div>
+
+  <div class="card">
+    <h2>第1步：填写当前持仓</h2>
+    <div class="section-note">金额均按万元填写。没有在途交易就保持 0，赎回限制通常保持“可以正常卖出”。</div>
+    <div class="table-wrap">
+      <table class="holdings-table">
+        <thead><tr><th>基金</th><th>当前已确认金额</th><th>尚未确认的交易</th><th>能否卖出</th><th>按目标比例应有金额</th><th>无需调整的金额范围</th><th>当前预计占比</th><th>离边界还有</th><th>系统判断</th></tr></thead>
+        <tbody id="fundBody"></tbody>
+      </table>
+    </div>
+    <details class="inline-help"><summary>每一项应该怎么填</summary><dl class="help-list"><dt>当前已确认金额</dt><dd>基金账户已经显示并确认的最新市值。</dd><dt>尚未确认的交易</dt><dd>已下单但还没确认；买入填正数，卖出填负数。</dd><dt>能否卖出</dt><dd>“尽量不卖”会降低卖出优先级，“禁止卖出”则完全不卖。</dd><dt>无需调整的范围</dt><dd>当前金额处于这个范围内时，系统不会为了小偏离而交易。</dd><dt>离边界还有</dt><dd>距离最近的上限或下限还差多少金额。</dd></dl></details>
+  </div>
+
+  <div class="card">
+    <h2>第2步：填写本次资金变动</h2>
+    <div class="flowline">
+      <div class="field"><label for="cashFlow">新增 / 取出资金（万元）</label><input id="cashFlow" type="number" inputmode="decimal" autocomplete="off" step="0.000001" value="0"></div>
+      <div class="note">没有资金变动就保持 0。正数表示新增，负数表示取出。</div>
+    </div>
+    <details class="inline-help"><summary>系统会怎样分配资金</summary><div class="note">新增资金优先补偏低的基金，尽量不卖现有基金；取出资金优先从长城短债、广发纯债中安排，再考虑两只固收增强基金。赎回限制的优先级高于这个顺序。</div></details>
+  </div>
+
+  <details class="card">
+    <summary>高级设置</summary>
+    <div class="details-inner">
+      <div class="setting-grid">
+        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number" inputmode="decimal" min="0.01" max="20" step="0.01" value="5"></div>
+        <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number" inputmode="decimal" min="0.01" max="100" step="0.01" value="25"></div>
+        <div class="field"><label for="landingPct">越界后拉回偏差（%）</label><div class="field-help">50% 表示拉回目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number" inputmode="decimal" min="10" max="90" step="1" value="50"></div>
+        <div class="field"><label for="roundYuan">交易金额取整到（元）</label><div class="field-help">让最终建议更方便下单。</div><input class="setting" id="roundYuan" type="number" inputmode="numeric" min="1" max="10000" step="1" value="100"></div>
+        <div class="field"><label for="minTradeYuan">尽量忽略低于（元）</label><div class="field-help">用于合并没有必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number" inputmode="numeric" min="0" max="100000" step="100" value="5000"></div>
+      </div>
+      <div class="actions" style="margin-top:12px"><button id="restoreDefaults">恢复推荐值</button></div>
+      <div class="note">推荐值已经按你的低频、低换手需求设置，平时不需要修改。为了金额配平或防止越界，必要的小额交易仍会保留。</div>
+    </div>
+  </details>
+
+  <div class="card action-dock"><div class="actions">
+    <button class="primary" id="check">生成调整建议</button><button id="force">强制恢复目标比例</button><button id="save">保存数据</button><button id="load">读取数据</button><button class="danger" id="clear">清空输入</button>
+  </div></div>
+
+  <div class="card">
+    <h2>第3步：查看检查结果</h2>
+    <div class="summary">
+      <div class="stat"><div class="k">当前组合总额（含在途）</div><div class="v" id="sCurrent">—</div></div>
+      <div class="stat"><div class="k">新增或取出后的总额</div><div class="v" id="sAfter">—</div></div>
+      <div class="stat"><div class="k">资金流处理后仍越界的基金数</div><div class="v" id="sBreach">—</div></div>
+      <div class="stat"><div class="k">需要在基金之间转换的金额</div><div class="v" id="sTurnover">—</div></div>
+      <div class="stat"><div class="k">计划买入</div><div class="v" id="sBuy">—</div></div>
+      <div class="stat"><div class="k">计划卖出</div><div class="v" id="sSell">—</div></div>
+    </div>
+    <div id="status" role="status" aria-live="polite"></div><div id="roleSummary" class="role-summary"></div>
+    <details class="inline-help"><summary>这些汇总数字分别代表什么</summary><dl class="help-list"><dt>仍越界的基金数</dt><dd>先处理新增或取出资金后，还有几只基金超出免调整范围；显示 0 通常不需要内部转换。</dd><dt>基金之间转换的金额</dt><dd>卖出一只再买入另一只的单边金额，不把买入和卖出重复相加。</dd><dt>计划买入／卖出</dt><dd>包含资金变动和基金之间转换后的最终合计。</dd></dl></details>
+  </div>
+
+  <div class="card">
+    <h2>最终执行清单</h2>
+    <div class="section-note">这是日常真正需要看的部分。只按照“最终操作”一列下单，显示“不操作”就不用动。</div>
+    <div class="table-wrap"><table class="result-table" style="min-width:760px">
+      <thead><tr><th>基金</th><th>最终操作</th><th>预计交易后金额</th><th>预计占比</th><th>赎回限制</th></tr></thead>
+      <tbody id="resultBody"><tr><td colspan="5" class="empty">填写 4 项当前持仓后点击“生成调整建议”</td></tr></tbody>
+    </table></div>
+    <div class="exec-note" id="execNote"></div>
+  </div>
+
+  <details class="card">
+    <summary>为什么会得到这个结果</summary>
+    <div class="details-inner">
+      <div class="table-wrap"><table class="detail-table">
+        <thead><tr><th>基金</th><th>已确认金额</th><th>尚未确认的交易</th><th>新增／取出资金分配</th><th>基金之间转换</th><th>取整与小额合并</th><th>最终操作</th></tr></thead>
+        <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成调整建议”</td></tr></tbody>
+      </table></div>
+    </div>
+  </details>
+</div>
+
+<script>
+// All holdings and trades use integer cents. Inputs are in ten-thousand yuan.
+const DEN=960,CENTS_PER_WAN=1000000;
+const DEFAULTS={absoluteBandPP:5,relativeBandPct:25,landingPct:50,roundYuan:100,minTradeYuan:5000};
+let CONFIG={...DEFAULTS};
+const FUNDS=[
+  {name:"景顺长城景盛双息收益债券A类",code:"002065",targetW:1/2,role:"固收增强主仓",withdrawRank:2},
+  {name:"易方达增强回报债券A",code:"110017",targetW:1/3,role:"固收增强副仓",withdrawRank:2},
+  {name:"广发纯债债券A",code:"270048",targetW:1/8,role:"纯债稳定仓",withdrawRank:1},
+  {name:"长城短债A",code:"007194",targetW:1/24,role:"短债流动性仓",withdrawRank:0}
+];
+const sum=a=>a.reduce((s,x)=>s+x,0);
+const indices=()=>FUNDS.map((_,i)=>i);
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>Number(x).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money=x=>fmt((x||0)/100,2)+" 元";
+const wanMoney=x=>fmt((x||0)/CENTS_PER_WAN,2)+" 万";
+
+function updateBands(){
+  FUNDS.forEach(f=>{
+    f.units=Math.round(f.targetW*DEN);
+    f.outerBand=Math.min(CONFIG.absoluteBandPP/100,f.targetW*CONFIG.relativeBandPct/100);
+    f.innerBand=f.outerBand*CONFIG.landingPct/100;
+    f.outerLow=f.targetW-f.outerBand;f.outerHigh=f.targetW+f.outerBand;
+    f.innerLow=f.targetW-f.innerBand;f.innerHigh=f.targetW+f.innerBand;
+  });
+}
+updateBands();
+
+function toCents(value){
+  const n=Number(value),scaled=n*CENTS_PER_WAN;
+  if(!Number.isFinite(n)||!Number.isSafeInteger(Math.round(scaled))||Math.abs(scaled-Math.round(scaled))>0.0001)
+    throw new Error("金额须为有效数字，最多保留 6 位小数（万元），即精确到分。");
+  return Math.round(scaled);
+}
+function targetCents(total){
+  const numer=FUNDS.map(f=>total*f.units),t=numer.map(x=>Math.floor(x/DEN));
+  const order=indices().sort((a,b)=>(numer[b]%DEN)-(numer[a]%DEN)||a-b);
+  for(let n=total-sum(t),j=0;j<n;j++)t[order[j]]++;
+  return t;
+}
+function bounds(total){
+  return FUNDS.map(f=>({
+    low:Math.floor(total*f.outerLow+1e-7)+1,
+    high:Math.ceil(total*f.outerHigh-1e-7)-1,
+    innerLow:Math.ceil(total*f.innerLow-1e-7),
+    innerHigh:Math.floor(total*f.innerHigh+1e-7)
+  }));
+}
+function outerBreaches(a){const b=bounds(sum(a));return a.map((x,i)=>x<b[i].low||x>b[i].high)}
+function normalizePolicies(policies){
+  const allowed=new Set(['normal','avoid','forbid']);
+  if(!Array.isArray(policies)||policies.length!==FUNDS.length)return FUNDS.map(()=>"normal");
+  return policies.map(x=>allowed.has(x)?x:"normal");
+}
+
+function allocateCents(capacity,budget){
+  const total=sum(capacity);
+  if(budget<0||budget>total)throw new Error("资金分配容量校验失败。");
+  if(!budget)return capacity.map(()=>0);
+  const ideals=capacity.map(x=>budget*(x/total));
+  const out=ideals.map((x,i)=>Math.min(capacity[i],Math.floor(x)));
+  let left=budget-sum(out);
+  const order=indices().sort((a,b)=>(ideals[b]-out[b])-(ideals[a]-out[a])||a-b);
+  for(const i of order){if(left&&out[i]<capacity[i]){out[i]++;left--;}}
+  if(left)throw new Error("金额尾差分配失败。");
+  return out;
+}
+function allocateByPolicy(capacity,budget,direction,policies){
+  if(direction>0)return allocateCents(capacity,budget);
+  const out=capacity.map(()=>0);let left=budget;
+  for(const policy of ['normal','avoid']){
+    const caps=capacity.map((x,i)=>policies[i]===policy?x:0);
+    const take=Math.min(left,sum(caps)),part=allocateCents(caps,take);
+    part.forEach((x,i)=>out[i]+=x);left-=take;
+  }
+  if(left)throw new Error("可卖出金额不足，请调整赎回限制或减少取出资金。");
+  return out;
+}
+
+function minimalInternalRebalance(post,policies){
+  policies=normalizePolicies(policies);
+  const total=sum(post),t=targetCents(total),b=bounds(total),breach=outerBreaches(post),final=[...post];
+  for(let i=0;i<post.length;i++){
+    if(post[i]<b[i].low)final[i]=b[i].innerLow;
+    else if(post[i]>b[i].high){
+      if(policies[i]==='forbid')throw new Error(`${FUNDS[i].code} 已高配越界，但被设为禁止卖出。请等待新增资金稀释或解除限制。`);
+      final[i]=b[i].innerHigh;
+    }
+  }
+  let gap=total-sum(final),direction=Math.sign(gap);
+  const policyRank=i=>policies[i]==='normal'?0:policies[i]==='avoid'?1:2;
+  const order=indices().filter(i=>direction>0||policies[i]!=='forbid').sort((a,c)=>{
+    if(direction<0&&policyRank(a)!==policyRank(c))return policyRank(a)-policyRank(c);
+    if(Number(breach[c])!==Number(breach[a]))return Number(breach[c])-Number(breach[a]);
+    return direction*(t[c]-final[c])-direction*(t[a]-final[a])||a-c;
+  });
+  for(const i of order){
+    const take=Math.min(Math.abs(gap),Math.max(0,direction*(t[i]-final[i])));
+    final[i]+=direction*take;gap-=direction*take;
+  }
+  if(gap)throw new Error(gap<0?"赎回限制导致内部卖出资金不足。":"内部再平衡资金未配平。");
+  for(let i=0;i<final.length;i++){
+    const lo=breach[i]?b[i].innerLow:b[i].low,hi=breach[i]?b[i].innerHigh:b[i].high;
+    if(final[i]<lo||final[i]>hi)throw new Error("交易后金额未满足调整区间。");
+  }
+  return {final,breach,z:final.map((x,i)=>x-post[i])};
+}
+
+function lexLess(a,b){for(let i=0;i<a.length;i++){if(a[i]<b[i]-1e-10)return true;if(a[i]>b[i]+1e-10)return false}return false}
+function flowCorrection(amounts,flow,policies){
+  policies=normalizePolicies(policies);
+  const afterTotal=sum(amounts)+flow,targets=targetCents(afterTotal),b=bounds(afterTotal);
+  const direction=Math.sign(flow),budget=Math.abs(flow);
+  if(!direction){const r=minimalInternalRebalance(amounts,policies);return {afterTotal,targets,trades:amounts.map(()=>0),post:[...amounts],r}}
+  const preferred=amounts.map((x,i)=>Math.max(0,direction*(targets[i]-x)));
+  const caps=amounts.map((x,i)=>{
+    if(direction>0)return preferred[i];
+    // A withdrawal may take a sellable holding below target when another
+    // holding is protected, but never below its outer safe boundary.
+    return policies[i]==='forbid'?0:Math.max(0,x-b[i].low);
+  });
+  if(sum(caps)<budget)throw new Error("可用资金容量不足，请调整赎回限制或资金变动金额。");
+  const correctable=indices().filter(i=>caps[i]>0&&(direction>0?amounts[i]<b[i].low:amounts[i]>b[i].high));
+  let best=null,lastError=null;
+  for(let mask=0;mask<(1<<correctable.length);mask++){
+    try{
+      const healed=new Set(correctable.filter((_,j)=>mask&(1<<j))),unhealed=new Set(correctable.filter(i=>!healed.has(i)));
+      const allocation=amounts.map(()=>0),limits=[...caps];
+      for(const i of correctable){
+        const escape=direction>0?b[i].low-amounts[i]:amounts[i]-b[i].high;
+        if(healed.has(i))allocation[i]=escape;else limits[i]=Math.min(limits[i],escape-1);
+      }
+      if(allocation.some((x,i)=>x>limits[i])||sum(allocation)>budget||sum(limits)<budget)continue;
+      let left=budget-sum(allocation);
+      function fill(capacity){
+        const take=Math.min(left,sum(capacity));let extra;
+        if(direction>0)extra=allocateCents(capacity,take);
+        else{
+          extra=capacity.map(()=>0);let remaining=take;
+          // Exhaust normal holdings before touching an "avoid" holding. Within
+          // each policy, sell toward target before using the wider safe band.
+          for(const policy of ['normal','avoid']){
+            const towardTarget=capacity.map((x,i)=>policies[i]===policy?Math.min(x,Math.max(0,preferred[i]-allocation[i])):0);
+            let part=allocateCents(towardTarget,Math.min(remaining,sum(towardTarget)));
+            part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
+            const widerBand=capacity.map((x,i)=>policies[i]===policy?x-extra[i]:0);
+            part=allocateCents(widerBand,Math.min(remaining,sum(widerBand)));
+            part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
+          }
+          if(remaining)throw new Error("可卖出金额不足，请调整赎回限制或减少取出资金。");
+        }
+        extra.forEach((x,i)=>allocation[i]+=x);left-=take;
+      }
+      fill(limits.map((x,i)=>unhealed.has(i)?x-allocation[i]:0));
+      fill(limits.map((x,i)=>{
+        const inner=direction>0?b[i].innerLow-amounts[i]:amounts[i]-b[i].innerHigh;
+        return healed.has(i)?Math.max(0,Math.min(x,inner)-allocation[i]):0;
+      }));
+      fill(limits.map((x,i)=>x-allocation[i]));
+      if(left)throw new Error("外部资金未分配完整。");
+      const trades=allocation.map(x=>direction*x),post=amounts.map((x,i)=>x+trades[i]);
+      const r=minimalInternalRebalance(post,policies),turnover=sum(r.z.filter(x=>x>0));
+      const avoidSell=sum(trades.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0))+sum(r.z.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0));
+      const deviation=sum(r.final.map((x,i)=>Math.pow((x-targets[i])/Math.max(1,targets[i]),2))),count=r.final.filter((x,i)=>x!==amounts[i]).length;
+      const score=[turnover,avoidSell,deviation,count];if(!best||lexLess(score,best.score))best={afterTotal,targets,trades,post,r,score};
+    }catch(e){lastError=e}
+  }
+  if(!best)throw lastError||new Error("找不到满足区间、资金及赎回限制的方案。");
+  return best;
+}
+
+function candidateValues(raw,amount,lo,hi,quantum,policy,target){
+  const vals=new Set([0]);
+  const addNear=x=>{vals.add(Math.floor(x/quantum)*quantum);vals.add(Math.ceil(x/quantum)*quantum);vals.add(Math.round(x/quantum)*quantum)};
+  addNear(raw);addNear(lo-amount);addNear(hi-amount);addNear(target-amount);
+  return [...vals].filter(x=>Number.isSafeInteger(x)&&amount+x>=0&&!(policy==='forbid'&&x<0));
+}
+function practicalizePlan(p,policies,quantum,minTrade){
+  policies=normalizePolicies(policies);quantum=Math.max(1,quantum);minTrade=Math.max(0,minTrade);
+  const b=bounds(p.afterTotal),target=targetCents(p.afterTotal);
+  const required=p.amounts.map((_,i)=>p.force
+    ?{lo:Math.max(0,target[i]-quantum),hi:target[i]+quantum}
+    :{lo:p.postFlowBreaches[i]?b[i].innerLow:b[i].low,hi:p.postFlowBreaches[i]?b[i].innerHigh:b[i].high});
+  const sets=p.amounts.map((amount,i)=>candidateValues(p.totalTrades[i],amount,required[i].lo,required[i].hi,quantum,policies[i],target[i]));
+  let best=null;
+  for(const residual of indices()){
+    const others=indices().filter(i=>i!==residual);
+    for(const a of sets[others[0]])for(const c of sets[others[1]])for(const d of sets[others[2]]){
+      const trades=p.amounts.map(()=>0);trades[others[0]]=a;trades[others[1]]=c;trades[others[2]]=d;trades[residual]=p.flow-a-c-d;
+      if(!Number.isSafeInteger(trades[residual])||p.amounts[residual]+trades[residual]<0)continue;
+      if(policies[residual]==='forbid'&&trades[residual]<0)continue;
+      const final=p.amounts.map((x,i)=>x+trades[i]);if(final.some((x,i)=>x<required[i].lo||x>required[i].hi))continue;
+      const internal=(sum(trades.map(Math.abs))-Math.abs(p.flow))/2;
+      const avoidSell=sum(trades.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0));
+      const optionalSmall=trades.filter((x,i)=>x&&Math.abs(x)<minTrade&&p.amounts[i]>=b[i].low&&p.amounts[i]<=b[i].high&&Math.abs(p.flow)>=minTrade).length;
+      // For withdrawals that are otherwise equally efficient, use the short
+      // bond liquidity sleeve first, then pure bonds, then enhanced bonds.
+      const withdrawalPenalty=p.flow<0?sum(trades.map((x,i)=>Math.max(0,-x)*FUNDS[i].withdrawRank)):0;
+      const tradeCount=trades.filter(Boolean).length;
+      const deviation=sum(trades.map((x,i)=>Math.pow((x-p.totalTrades[i])/Math.max(quantum,Math.abs(p.totalTrades[i]),1),2)));
+      const score=[internal,avoidSell,optionalSmall,withdrawalPenalty,deviation,tradeCount];
+      if(!best||lexLess(score,best.score))best={trades,final,score,optionalSmall};
+    }
+  }
+  if(!best)throw new Error("当前取整单位无法生成满足区间的执行方案，请调小取整单位。");
+  best.rounding=best.trades.map((x,i)=>x-p.totalTrades[i]);
+  best.smallRequired=best.trades.map((x,i)=>x&&Math.abs(x)<minTrade?i:-1).filter(i=>i>=0);
+  return best;
+}
+
+function computePlan(input,flowInput,force=false,options={}){
+  if(input.length!==FUNDS.length)throw new Error("请填写全部 4 只基金。");
+  const amounts=input.map(toCents),flow=toCents(flowInput),policies=normalizePolicies(options.sellPolicies);
+  const currentTotal=sum(amounts),afterTotal=currentTotal+flow;
+  if(amounts.some(x=>x<0)||currentTotal<=0)throw new Error("持仓须非负，预计当前总资产须大于 0。");
+  if(afterTotal<=0)throw new Error("资金变动后的组合总资产必须大于 0。");
+  if(!Number.isSafeInteger(Math.max(currentTotal,afterTotal)*DEN))throw new Error("金额超出精确计算范围。");
+  const t=targetCents(afterTotal),b=bounds(afterTotal);
+  if(b.some((x,i)=>x.low>x.high||t[i]<x.innerLow||t[i]>x.innerHigh))throw new Error("金额过小，无法在分精度内满足现有比例区间。");
+  let fc;
+  if(force){
+    const direction=Math.sign(flow),caps=amounts.map((x,i)=>{
+      const cap=Math.max(0,direction*(t[i]-x));
+      return direction<0&&policies[i]==='forbid'?0:cap;
+    });
+    const allocation=direction?allocateByPolicy(caps,Math.abs(flow),direction,policies):amounts.map(()=>0);
+    const trades=allocation.map(x=>direction*x),post=amounts.map((x,i)=>x+trades[i]);
+    fc={trades,post,r:{final:t,z:t.map((x,i)=>x-post[i])}};
+  }
+  else fc=flowCorrection(amounts,flow,policies);
+  const exactFinal=force?t:fc.r.final,internal=exactFinal.map((x,i)=>x-fc.post[i]),totalTrades=exactFinal.map((x,i)=>x-amounts[i]);
+  if(totalTrades.some((x,i)=>x<0&&policies[i]==='forbid'))throw new Error("强制目标需要卖出已设为禁止卖出的基金，请先解除限制。");
+  if(sum(totalTrades)!==flow||sum(exactFinal)!==afterTotal||sum(internal)!==0||exactFinal.some(x=>x<0))throw new Error("金额配平校验失败。");
+  const exact={force,amounts,currentTotal,afterTotal,flow,flowTrades:fc.trades,postFlow:fc.post,postFlowBreaches:outerBreaches(fc.post),internal,totalTrades,final:exactFinal,internalTurnover:sum(internal.filter(x=>x>0))};
+  const quantum=Math.round((options.roundYuan??CONFIG.roundYuan)*100),minTrade=Math.round((options.minTradeYuan??CONFIG.minTradeYuan)*100);
+  const practical=practicalizePlan(exact,policies,quantum,minTrade);
+  return {...exact,rawFinal:exactFinal,rawTotalTrades:totalTrades,totalTrades:practical.trades,final:practical.final,rounding:practical.rounding,smallRequired:practical.smallRequired,internalTurnover:(sum(practical.trades.map(Math.abs))-Math.abs(flow))/2};
+}
+
+function rawAmounts(){return [...document.querySelectorAll(".amount")].map(x=>String(x.value).trim())}
+function rawPending(){return [...document.querySelectorAll(".pending")].map(x=>String(x.value).trim())}
+function rawPolicies(){return [...document.querySelectorAll(".sell-policy")].map(x=>x.value)}
+function readSettings(){
+  const values={absoluteBandPP:Number($("absoluteBandPP").value),relativeBandPct:Number($("relativeBandPct").value),landingPct:Number($("landingPct").value),roundYuan:Number($("roundYuan").value),minTradeYuan:Number($("minTradeYuan").value)};
+  if(!(values.absoluteBandPP>0&&values.absoluteBandPP<=20))throw new Error("绝对触发阈值须大于 0 且不超过 20 个百分点。");
+  if(!(values.relativeBandPct>0&&values.relativeBandPct<=100))throw new Error("相对触发阈值须大于 0% 且不超过 100%。");
+  if(!(values.landingPct>=10&&values.landingPct<=90))throw new Error("越界后拉回比例须为允许偏差的 10%～90%。");
+  if(!(values.roundYuan>=1&&values.roundYuan<=10000))throw new Error("取整单位须为 1～10,000 元。");
+  if(!(values.minTradeYuan>=0&&values.minTradeYuan<=100000))throw new Error("最低交易额须为 0～100,000 元。");
+  return values;
+}
+function applySettings(values){CONFIG={...values};updateBands();updateBandLabels();refreshLive()}
+
+function renderFunds(){
+  const body=$("fundBody");body.innerHTML="";
+  FUNDS.forEach((f,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="fund-cell"><div class="fund">${f.name}</div><div class="code">${f.code}</div><div class="role">${f.role}</div></td>
+      <td data-label="已确认金额（万元）"><input aria-label="${f.name}当前金额（万元）" class="amount" data-i="${i}" type="number" inputmode="decimal" autocomplete="off" min="0" step="0.000001" placeholder="填写金额"></td>
+      <td data-label="在途交易（万元）"><input aria-label="${f.name}在途交易（万元）" class="pending" data-i="${i}" type="number" inputmode="decimal" autocomplete="off" step="0.000001" value="0"></td>
+      <td class="policy-cell" data-label="赎回限制"><select aria-label="${f.name}赎回限制" class="sell-policy" data-i="${i}"><option value="normal">可以正常卖出</option><option value="avoid">尽量不卖</option><option value="forbid">禁止卖出</option></select></td>
+      <td class="target-amount" data-label="按目标比例应有金额"></td><td class="outer-range" data-label="无需调整的金额范围"></td><td class="curw" data-label="当前预计占比">—</td><td class="distance" data-label="离边界还有">—</td><td class="state" data-label="系统判断"><span class="tag neutral">待填写</span></td>`;
+    body.appendChild(tr);
+  });
+  document.querySelectorAll(".amount,.pending").forEach(x=>x.addEventListener("input",()=>{invalidateResults();refreshLive()}));
+  document.querySelectorAll(".sell-policy").forEach(x=>x.addEventListener("change",invalidateResults));updateBandLabels();
+}
+function updateBandLabels(){
+  [...$("fundBody").querySelectorAll("tr")].forEach((tr,i)=>{
+    const target=tr.querySelector(".target-amount"),outer=tr.querySelector(".outer-range");
+    if(target)target.textContent=`${fmt(FUNDS[i].targetW*100)}%`;
+    if(outer)outer.textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
+  });
+  $("outerRule").textContent=`免调整范围：${fmt(CONFIG.absoluteBandPP,CONFIG.absoluteBandPP%1?2:0)}/${fmt(CONFIG.relativeBandPct,CONFIG.relativeBandPct%1?2:0)} 规则`;
+  $("innerRule").textContent=`调整后位置：拉回偏差的 ${fmt(CONFIG.landingPct,CONFIG.landingPct%1?2:0)}%`;
+}
+function validatedHoldings(){
+  const raw=rawAmounts(),pendingRaw=rawPending();if(raw.some(v=>v===""))return {ok:false,msg:"请把 4 只基金的当前金额全部填写完整。"};
+  try{
+    const confirmed=raw.map(toCents),pending=pendingRaw.map(v=>toCents(v||0)),effective=confirmed.map((x,i)=>x+pending[i]);
+    if(confirmed.some(x=>x<0))throw new Error("当前持仓不能为负数。");
+    if(effective.some(x=>x<0))throw new Error("在途卖出不能超过对应基金的当前持仓。");
+    if(sum(effective)<=0)throw new Error("预计当前总资产必须大于 0。");
+    if(!Number.isSafeInteger(sum(effective)*DEN))throw new Error("金额超出精确计算范围。");
+    return {ok:true,confirmed,pending,effective,vals:effective.map(x=>x/CENTS_PER_WAN)};
+  }catch(e){return {ok:false,msg:e.message}}
+}
+function refreshLive(){
+  const v=validatedHoldings(),rows=[...$("fundBody").querySelectorAll("tr")];
+  if(!v.ok){updateBandLabels();rows.forEach(tr=>{tr.querySelector(".curw").textContent="—";tr.querySelector(".distance").textContent="—";tr.querySelector(".state").innerHTML='<span class="tag neutral">待有效输入</span>'});return}
+  const total=sum(v.effective),breach=outerBreaches(v.effective),target=targetCents(total),b=bounds(total);
+  rows.forEach((tr,i)=>{
+    const lowTrigger=b[i].low-1,highTrigger=b[i].high+1,x=v.effective[i];
+    tr.querySelector(".target-amount").innerHTML=`${wanMoney(target[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
+    tr.querySelector(".outer-range").innerHTML=`${wanMoney(lowTrigger)} ～ ${wanMoney(highTrigger)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
+    tr.querySelector(".curw").textContent=fmt(x/total*100)+"%";
+    if(x<=lowTrigger)tr.querySelector(".distance").textContent="低于下限 "+wanMoney(lowTrigger-x);
+    else if(x>=highTrigger)tr.querySelector(".distance").textContent="高于上限 "+wanMoney(x-highTrigger);
+    else{
+      const dl=x-lowTrigger,du=highTrigger-x;
+      tr.querySelector(".distance").textContent=dl<=du?"距下限 "+wanMoney(dl):"距上限 "+wanMoney(du);
+    }
+    tr.querySelector(".state").innerHTML=breach[i]?'<span class="tag bad">需要调整</span>':'<span class="tag ok">无需调整</span>';
+  });
+}
+function emptyRow(bodyId,colspan,message){
+  const body=$(bodyId);body.innerHTML="";const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=colspan;td.className="empty";td.textContent=message;tr.appendChild(td);body.appendChild(tr);
+}
+function invalidateResults(message="数据已变化，请重新点击“生成调整建议”。"){
+  emptyRow("resultBody",5,message);emptyRow("detailBody",7,message);["sCurrent","sAfter","sBreach","sTurnover","sBuy","sSell"].forEach(id=>$(id).textContent="—");$("status").innerHTML="";$("roleSummary").textContent="";$("execNote").textContent="";
+}
+function tradeClass(x){return x>0?"buy":x<0?"sell":"hold"}
+function tradeText(x){return x>0?"买入 "+money(x):x<0?"卖出 "+money(-x):"不操作"}
+function policyText(x){return x==='forbid'?"禁止卖出":x==='avoid'?"尽量不卖":"正常"}
+function showStatus(type,text){const box=document.createElement("div");box.className="statusbox "+type;box.textContent=text;$("status").appendChild(box)}
+
+function evaluate(force=false){
+  invalidateResults("尚未生成有效建议，请检查输入后重新计算。");const v=validatedHoldings();if(!v.ok){showStatus("warn",v.msg);return}
+  try{applySettings(readSettings())}catch(e){showStatus("warn",e.message);return}
+  const cash=$("cashFlow");if(cash.validity?.badInput){showStatus("warn","资金变动请输入有效数字。");return}
+  let p;const policies=rawPolicies();try{p=computePlan(v.vals,cash.value.trim()||0,force,{sellPolicies:policies})}catch(e){showStatus("bad","计算检查未通过："+e.message);return}
+  const breachCount=p.postFlowBreaches.filter(Boolean).length;
+  $("sCurrent").textContent=money(p.currentTotal);$("sAfter").textContent=money(p.afterTotal);$("sBreach").textContent=String(breachCount);$("sTurnover").textContent=money(p.internalTurnover);
+  $("sBuy").textContent=money(sum(p.totalTrades.filter(x=>x>0)));$("sSell").textContent=money(-sum(p.totalTrades.filter(x=>x<0)));
+  if(force)showStatus("warn","已强制恢复目标比例，并按执行单位取整配平。本次忽略触发阈值和最小换手规则。");
+  else if(!breachCount)showStatus("ok",p.flow?"外部资金已优先用于纠偏，处理后无需内部换仓。":"当前持仓在允许区间内，不建议再平衡。");
+  else showStatus("warn","处理资金变动后仍超出免调整范围："+FUNDS.filter((_,i)=>p.postFlowBreaches[i]).map(f=>f.code).join("、")+"。已按最小换手原则拉回安全位置。");
+  const enhanced=(p.final[0]+p.final[1])/p.afterTotal,defensive=1-enhanced;
+  $("roleSummary").textContent=`交易后：固收增强仓 ${fmt(enhanced*100)}%，纯债及短债防守仓 ${fmt(defensive*100)}%。`;
+  $("resultBody").innerHTML="";$("detailBody").innerHTML="";
+  FUNDS.forEach((f,i)=>{
+    const row=document.createElement("tr");row.innerHTML=`<td class="fund-cell"><div class="fund">${f.name}</div><div class="code">${f.code}</div></td><td data-label="最终操作" class="trade-cell ${tradeClass(p.totalTrades[i])}">${tradeText(p.totalTrades[i])}</td><td data-label="交易后金额">${money(p.final[i])}</td><td data-label="预计占比">${fmt(p.final[i]/p.afterTotal*100,4)}%</td><td class="policy-result" data-label="赎回限制"><span class="tag ${policies[i]==='forbid'?'bad':policies[i]==='avoid'?'neutral':'ok'}">${policyText(policies[i])}</span></td>`;$("resultBody").appendChild(row);
+    const detail=document.createElement("tr");detail.innerHTML=`<td><div class="fund">${f.name}</div><div class="code">${f.code}</div></td><td>${money(v.confirmed[i])}</td><td class="${tradeClass(v.pending[i])}">${tradeText(v.pending[i])}</td><td class="${tradeClass(p.flowTrades[i])}">${tradeText(p.flowTrades[i])}</td><td class="${tradeClass(p.internal[i])}">${tradeText(p.internal[i])}</td><td class="${tradeClass(p.rounding[i])}">${p.rounding[i]?((p.rounding[i]>0?"增加 ":"减少 ")+money(Math.abs(p.rounding[i]))):"无"}</td><td class="${tradeClass(p.totalTrades[i])}">${tradeText(p.totalTrades[i])}</td>`;$("detailBody").appendChild(detail);
+  });
+  const notes=[];if(p.totalTrades.some(x=>x<0))notes.push("执行卖出前请核对持有期和赎回费率。");if(p.smallRequired.length)notes.push("存在低于最低交易额的必要交易，用于处理资金尾差或确保持仓不越界。");notes.push(`建议金额通常按 ${fmt(CONFIG.roundYuan,CONFIG.roundYuan%1?2:0)} 元取整，不计申购费、赎回费、税费及确认期间的净值变化。`);$("execNote").textContent=notes.join("");
+}
+function save(){
+  const v=validatedHoldings();if(!v.ok){showStatus("warn",v.msg);return}
+  try{const settings=readSettings();toCents($("cashFlow").value||0);localStorage.setItem("rmbRebalanceV46",JSON.stringify({version:4.6,amounts:rawAmounts(),pending:rawPending(),policies:rawPolicies(),cashFlow:$("cashFlow").value,settings}));$("status").innerHTML="";showStatus("ok","已保存持仓、在途交易、赎回限制和高级设置。")}catch(e){showStatus("warn","未能保存："+e.message)}
+}
+function load(){
+  invalidateResults("读取数据后，请重新点击“生成调整建议”。");
+  try{
+    const keys=["rmbRebalanceV46","rmbRebalanceV45","rmbRebalanceV44","rmbRebalanceV43","rmbRebalanceV4","rmbRebalanceSmartV3","rmbRebalance525"];let raw=null,source=null;for(const k of keys){raw=localStorage.getItem(k);if(raw){source=k;break}}
+    if(!raw){showStatus("warn","当前浏览器没有已保存持仓。");return}
+    const x=JSON.parse(raw);if(!Array.isArray(x.amounts)||x.amounts.length!==FUNDS.length)throw new Error("保存的持仓格式无效。");
+    const amounts=x.amounts.map(value=>{if(value===""||value===null||value===undefined)return "";if(toCents(value)<0)throw new Error("保存的持仓包含负数。");return String(value)});
+    const pending=Array.isArray(x.pending)&&x.pending.length===FUNDS.length?x.pending.map(v=>String(v||0)):FUNDS.map(()=>"0");pending.forEach(toCents);
+    const policies=normalizePolicies(x.policies),flow=x.cashFlow??0;toCents(flow);
+    document.querySelectorAll(".amount").forEach((el,i)=>el.value=amounts[i]);document.querySelectorAll(".pending").forEach((el,i)=>el.value=pending[i]);document.querySelectorAll(".sell-policy").forEach((el,i)=>el.value=policies[i]);$("cashFlow").value=flow;
+    const settings=x.settings?{...DEFAULTS,...x.settings}:{...DEFAULTS};
+    if(source==="rmbRebalanceV43"&&settings.minTradeYuan===2000)settings.minTradeYuan=DEFAULTS.minTradeYuan;
+    for(const [key,value] of Object.entries(settings))$(key).value=value;applySettings(readSettings());
+    showStatus("ok",(source===keys[0]?"已读取保存的数据。":"已兼容读取旧版持仓，并应用当前推荐执行设置。")+"请重新检查生成建议。");
+  }catch(e){showStatus("warn","保存数据无法读取："+e.message)}
+}
+function clearAll(){
+  if(typeof confirm==="function"&&!confirm("确定清空当前持仓、在途交易和资金变动吗？已保存的数据不会被删除。"))return;
+  document.querySelectorAll(".amount").forEach(el=>el.value="");document.querySelectorAll(".pending").forEach(el=>el.value=0);document.querySelectorAll(".sell-policy").forEach(el=>el.value="normal");$("cashFlow").value=0;invalidateResults("填写 4 项当前持仓后点击“生成调整建议”。");refreshLive();
+}
+function restoreDefaults(){for(const [key,value] of Object.entries(DEFAULTS))$(key).value=value;applySettings(readSettings());invalidateResults("参数已恢复推荐值，请重新点击“生成调整建议”。")}
+$("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));$("save").addEventListener("click",save);$("load").addEventListener("click",load);$("clear").addEventListener("click",clearAll);
+$("cashFlow").addEventListener("input",invalidateResults);$("restoreDefaults").addEventListener("click",restoreDefaults);
+document.querySelectorAll(".setting").forEach(el=>el.addEventListener("input",()=>{invalidateResults();try{applySettings(readSettings())}catch(e){}}));
+renderFunds();refreshLive();
+
+</script>
+</body>
+</html>
