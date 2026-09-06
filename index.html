@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,10 +40,11 @@ th{font-size:12px;color:var(--muted);background:var(--fill)}
 th:first-child,td:first-child{text-align:left}
 tr:last-child td{border-bottom:0}
 .fund{font-weight:650}.fund-link{color:inherit;text-decoration:none}.fund-link:hover{color:var(--blue)}.fund-link:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:2px;border-radius:4px}.external{color:var(--blue);font-size:.85em;margin-left:3px}.code{font-size:12px;color:var(--muted)}
-input,select,button{min-width:0;max-width:100%;border:1px solid var(--line);background:var(--elevated);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;min-height:42px;-webkit-appearance:none;appearance:none}
+input,select,button{min-width:0;max-width:100%;border:1px solid var(--line);background:var(--elevated);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;min-height:42px}
+input,button{-webkit-appearance:none;appearance:none}
 input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:1px;border-color:var(--blue)}
 input.amount,input.pending{width:112px;text-align:right}
-select{max-width:138px}
+select{max-width:138px;padding-right:28px;-webkit-appearance:menulist;appearance:auto}
 details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-size:17px;padding:18px;list-style-position:inside}details.card>.details-inner{padding:0 18px 18px}
 .setting-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.setting-grid .field{min-width:0}.setting-grid input{width:100%}
 .empty{text-align:center!important;color:var(--muted);padding:24px!important}.section-note{font-size:12px;color:var(--muted);margin:0 0 12px}.role{font-size:12px;color:var(--blue);margin-top:2px}.role-summary{font-size:13px;color:var(--muted);margin-top:9px}
@@ -67,7 +68,7 @@ button.danger{color:var(--red)}
 .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:650}
 .tag.ok{background:var(--greenbg);color:var(--green)}
 .tag.bad{background:var(--redbg);color:var(--red)}
-.tag.neutral{background:#f3f4f6;color:var(--muted)}
+.tag.neutral{background:var(--fill);color:var(--muted)}
 .note{font-size:12px;color:var(--muted);margin-top:9px}
 .flowline{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:5px;min-width:210px}
@@ -122,7 +123,7 @@ label{font-size:12px;color:var(--muted)}
   .action-dock .actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.2fr) minmax(0,.8fr);gap:8px}
   .action-dock button{min-width:0;padding:7px 6px;font-size:13px;line-height:1.2;border-radius:12px;white-space:normal}
   .action-dock button.primary{font-size:15px}
-  body:has(input:focus,select:focus) .action-dock{transform:translateY(calc(100% + env(safe-area-inset-bottom)));opacity:0;pointer-events:none}
+  body.keyboard-open .action-dock{transform:translateY(calc(100% + env(safe-area-inset-bottom)));opacity:0;pointer-events:none}
 }
 @media(prefers-color-scheme:dark){
   :root{--bg:#000;--card:#1c1c1e;--elevated:#2c2c2e;--text:#f2f2f7;--muted:#98989d;--line:rgba(84,84,88,.65);--fill:rgba(118,118,128,.20);--blue:#0a84ff;--bluebg:rgba(10,132,255,.17);--green:#30d158;--greenbg:rgba(48,209,88,.14);--red:#ff453a;--redbg:rgba(255,69,58,.15);--amber:#ffd60a;--amberbg:rgba(255,214,10,.13);--shadow:none}
@@ -297,8 +298,8 @@ function targetCents(total){
 }
 function bounds(total){
   return FUNDS.map(f=>({
-    low:Math.floor(total*f.outerLow+1e-7)+1,
-    high:Math.ceil(total*f.outerHigh-1e-7)-1,
+    low:Math.ceil(total*f.outerLow-1e-7),
+    high:Math.floor(total*f.outerHigh+1e-7),
     innerLow:Math.ceil(total*f.innerLow-1e-7),
     innerHigh:Math.floor(total*f.innerHigh+1e-7)
   }));
@@ -498,12 +499,14 @@ function rawAmounts(){return [...document.querySelectorAll(".amount")].map(x=>St
 function rawPending(){return [...document.querySelectorAll(".pending")].map(x=>String(x.value).trim())}
 function rawPolicies(){return [...document.querySelectorAll(".sell-policy")].map(x=>x.value)}
 function readSettings(){
+  const settingIds=["absoluteBandPP","relativeBandPct","landingPct","roundYuan","minTradeYuan"];
+  if(settingIds.some(id=>String($(id).value).trim()===""))throw new Error("请填写全部高级设置。");
   const values={absoluteBandPP:Number($("absoluteBandPP").value),relativeBandPct:Number($("relativeBandPct").value),landingPct:Number($("landingPct").value),roundYuan:Number($("roundYuan").value),minTradeYuan:Number($("minTradeYuan").value)};
   if(!(values.absoluteBandPP>0&&values.absoluteBandPP<=20))throw new Error("绝对触发阈值须大于 0 且不超过 20 个百分点。");
   if(!(values.relativeBandPct>0&&values.relativeBandPct<=100))throw new Error("相对触发阈值须大于 0% 且不超过 100%。");
   if(!(values.landingPct>=10&&values.landingPct<=90))throw new Error("越界后拉回比例须为允许偏差的 10%～90%。");
-  if(!(values.roundYuan>=1&&values.roundYuan<=10000))throw new Error("取整单位须为 1～10,000 CNY。");
-  if(!(values.minTradeYuan>=0&&values.minTradeYuan<=100000))throw new Error("最低交易额须为 0～100,000 CNY。");
+  if(!(Number.isInteger(values.roundYuan)&&values.roundYuan>=1&&values.roundYuan<=10000))throw new Error("取整单位须为 1～10,000 CNY 的整数。");
+  if(!(Number.isInteger(values.minTradeYuan)&&values.minTradeYuan>=0&&values.minTradeYuan<=100000))throw new Error("最低交易额须为 0～100,000 CNY 的整数。");
   return values;
 }
 function applySettings(values){CONFIG={...values};updateBands();updateBandLabels();refreshLive()}
@@ -547,14 +550,14 @@ function refreshLive(){
   if(!v.ok){updateBandLabels();rows.forEach(tr=>{tr.querySelector(".curw").textContent="—";tr.querySelector(".distance").textContent="—";tr.querySelector(".state").innerHTML='<span class="tag neutral">待有效输入</span>'});return}
   const total=sum(v.effective),breach=outerBreaches(v.effective),target=targetCents(total),b=bounds(total);
   rows.forEach((tr,i)=>{
-    const lowTrigger=b[i].low-1,highTrigger=b[i].high+1,x=v.effective[i];
+    const lowLimit=b[i].low,highLimit=b[i].high,x=v.effective[i];
     tr.querySelector(".target-amount").innerHTML=`${wanMoney(target[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
-    tr.querySelector(".outer-range").innerHTML=`${wanMoney(lowTrigger)} ～ ${wanMoney(highTrigger)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
+    tr.querySelector(".outer-range").innerHTML=`${wanMoney(lowLimit)} ～ ${wanMoney(highLimit)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
     tr.querySelector(".curw").textContent=fmt(x/total*100)+"%";
-    if(x<=lowTrigger)tr.querySelector(".distance").textContent="低于下限 "+wanMoney(lowTrigger-x);
-    else if(x>=highTrigger)tr.querySelector(".distance").textContent="高于上限 "+wanMoney(x-highTrigger);
+    if(x<lowLimit)tr.querySelector(".distance").textContent="低于下限 "+wanMoney(lowLimit-x);
+    else if(x>highLimit)tr.querySelector(".distance").textContent="高于上限 "+wanMoney(x-highLimit);
     else{
-      const dl=x-lowTrigger,du=highTrigger-x;
+      const dl=x-lowLimit,du=highLimit-x;
       tr.querySelector(".distance").textContent=dl<=du?"距下限 "+wanMoney(dl):"距上限 "+wanMoney(du);
     }
     tr.querySelector(".state").innerHTML=breach[i]?'<span class="tag bad">需要调整</span>':'<span class="tag ok">无需调整</span>';
@@ -596,6 +599,20 @@ function clearAll(){
   document.querySelectorAll(".amount").forEach(el=>el.value="");document.querySelectorAll(".pending").forEach(el=>el.value=0);document.querySelectorAll(".sell-policy").forEach(el=>el.value="normal");$("cashFlow").value=0;invalidateResults("填写 4 项当前持仓后点击“生成调整建议”。");refreshLive();
 }
 function restoreDefaults(){for(const [key,value] of Object.entries(DEFAULTS))$(key).value=value;applySettings(readSettings());invalidateResults("参数已恢复推荐值，请重新点击“生成调整建议”。")}
+
+let viewportBaseline=typeof window!=="undefined"&&window.visualViewport?window.visualViewport.height:0;
+function syncKeyboardState(){
+  if(typeof window==="undefined"||!window.visualViewport||!document.body)return;
+  const focused=typeof document.activeElement?.matches==="function"&&document.activeElement.matches("input,select");
+  if(!focused)viewportBaseline=window.visualViewport.height;
+  document.body.classList.toggle("keyboard-open",focused&&window.visualViewport.height<viewportBaseline-120);
+}
+if(typeof window!=="undefined"&&window.visualViewport&&typeof document.addEventListener==="function"){
+  window.visualViewport.addEventListener("resize",syncKeyboardState);
+  window.visualViewport.addEventListener("scroll",syncKeyboardState);
+  document.addEventListener("focusin",syncKeyboardState);
+  document.addEventListener("focusout",()=>setTimeout(syncKeyboardState,0));
+}
 $("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));$("clear").addEventListener("click",clearAll);
 $("cashFlow").addEventListener("input",invalidateResults);$("restoreDefaults").addEventListener("click",restoreDefaults);
 document.querySelectorAll(".setting").forEach(el=>el.addEventListener("input",()=>{invalidateResults();try{applySettings(readSettings())}catch(e){}}));
