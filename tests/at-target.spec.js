@@ -36,7 +36,7 @@ test.describe("已处于目标状态", () => {
       await generate(page);
       const status = await readStatus(page);
       expect(status.type).toBe("ok");
-      expect(status.text).toContain("当前持仓在允许区间内，不建议再平衡。");
+      expect(status.text).toContain("当前持仓均在免调范围内，无需调整。");
       const result = await readResult(page);
       expect(result.trades).toEqual([0, 0, 0, 0]);
     }

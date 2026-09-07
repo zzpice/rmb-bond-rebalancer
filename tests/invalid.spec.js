@@ -105,12 +105,12 @@ test.describe("异常输入", () => {
     await expectRejection(page, "warn", "请填写全部高级设置");
   });
 
-  test("高级设置越界（拉回比例 95%）→ 拒绝执行", async ({ page }) => {
+  test("高级设置越界（回调比例 95%）→ 拒绝执行", async ({ page }) => {
     await page.goto("/");
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
     await page.locator("details.card > summary", { hasText: "高级设置" }).click();
     await page.locator("#landingPct").fill("95");
     await generate(page);
-    await expectRejection(page, "warn", "越界后拉回比例须为允许偏差的 10%～90%");
+    await expectRejection(page, "warn", "越界后回调比例须为允许偏差的 10%～90%");
   });
 });

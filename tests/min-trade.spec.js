@@ -26,7 +26,7 @@ test.describe("最低交易金额", () => {
     const result = await readResult(page);
     expect(result.trades.some(t => t !== 0 && Math.abs(t) < MIN_TRADE)).toBe(true);
     const note = await readExecNote(page);
-    expect(note).toContain("低于最低交易额的必要交易会保留");
+    expect(note).toContain("低于小额交易阈值的必要交易会保留");
     assertInvariants(result, { effectiveCents: AT_TARGET.map(wanToCents), flowCents: wanToCents(0.49) });
   });
 
@@ -48,7 +48,7 @@ test.describe("最低交易金额", () => {
     await generate(page);
     const result = await readResult(page);
     const note = await readExecNote(page);
-    expect(note).not.toContain("低于最低交易额的必要交易会保留");
+    expect(note).not.toContain("低于小额交易阈值的必要交易会保留");
     assertInvariants(result, { effectiveCents: AT_TARGET.map(wanToCents), flowCents: wanToCents(0.49) });
   });
 
@@ -61,7 +61,7 @@ test.describe("最低交易金额", () => {
       await generate(page);
       const status = await readStatus(page);
       expect(status.type).toBe("warn");
-      expect(status.text).toContain("最低交易额须为 0～100,000 CNY 的整数");
+      expect(status.text).toContain("小额交易阈值须为 0～100,000 CNY 的整数");
     }
   });
 });
