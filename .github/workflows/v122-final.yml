@@ -1,0 +1,31 @@
+name: Final v1.2.2 Terminology Consistency
+
+on:
+  push:
+    branches: [feature/v1.2.2]
+    paths: [v122-final-trigger.txt]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/v1.2.2
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('控制大仓位的免调整范围。','控制大仓位的免调范围。')
+          s=s.replace('最低交易额须为 0～100,000 CNY 的整数。','小额交易阈值须为 0～100,000 CNY 的整数。')
+          p.write_text(s,encoding='utf-8')
+          Path('v122-final-trigger.txt').unlink(missing_ok=True)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: align v1.2.2 terminology"
+          git push origin HEAD:feature/v1.2.2
