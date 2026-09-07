@@ -1,0 +1,275 @@
+{
+  "generatedFrom": "v1.0.1 (index.html, commit 23438d9)",
+  "cases": [
+    {
+      "name": "完全处于目标状态",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [0,0,0,0],
+        "finals": [48000000,32000000,12000000,4000000]
+      }
+    },
+    {
+      "name": "免调整区间内部",
+      "input": {
+        "holdings": [51.84,27.84,12,4.32],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [0,0,0,0],
+        "finals": [51840000,27840000,12000000,4320000]
+      }
+    },
+    {
+      "name": "恰好在免调整边界",
+      "input": {
+        "holdings": [48,32,11,5],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [0,0,0,0],
+        "finals": [48000000,32000000,11000000,5000000]
+      }
+    },
+    {
+      "name": "刚刚越界（1 元）",
+      "input": {
+        "holdings": [47.9999,32,11,5.0001],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [0,0,510000,-510000],
+        "finals": [47999900,32000000,11510000,4490100]
+      }
+    },
+    {
+      "name": "明显低配",
+      "input": {
+        "holdings": [30,38,18,10],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [15600000,-5600000,-4500000,-5500000],
+        "finals": [45600000,32400000,13500000,4500000]
+      }
+    },
+    {
+      "name": "明显超配",
+      "input": {
+        "holdings": [70,14,8,4],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [-19600000,17100000,2500000,0],
+        "finals": [50400000,31100000,10500000,4000000]
+      }
+    },
+    {
+      "name": "大额新增资金",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": 48,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [24000000,16000000,6000000,2000000],
+        "finals": [72000000,48000000,18000000,6000000]
+      }
+    },
+    {
+      "name": "小额新增资金（含取整配平）",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": 1,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [500000,500000,0,0],
+        "finals": [48500000,32500000,12000000,4000000]
+      }
+    },
+    {
+      "name": "中等取出资金",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": -24,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [-9000000,-8000000,-5250000,-1750000],
+        "finals": [39000000,24000000,6750000,2250000]
+      }
+    },
+    {
+      "name": "小额取出资金（短债优先）",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": -1,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [0,0,0,-1000000],
+        "finals": [48000000,32000000,12000000,3000000]
+      }
+    },
+    {
+      "name": "内部再平衡",
+      "input": {
+        "holdings": [40,44,8,4],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [7100000,-9600000,2500000,0],
+        "finals": [47100000,34400000,10500000,4000000]
+      }
+    },
+    {
+      "name": "强制回到目标",
+      "input": {
+        "holdings": [30,38,18,10],
+        "flow": 0,
+        "force": true,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [17990000,-6000000,-6000000,-5990000],
+        "finals": [47990000,32000000,12000000,4010000]
+      }
+    },
+    {
+      "name": "强制回到目标 + 取出",
+      "input": {
+        "holdings": [70,14,8,4],
+        "flow": -20,
+        "force": true,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [-31990000,11330000,1490000,-830000],
+        "finals": [38010000,25330000,9490000,3170000]
+      }
+    },
+    {
+      "name": "尽量不卖 + 取出",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": -24,
+        "force": false,
+        "pending": null,
+        "policies": ["normal","normal","normal","avoid"],
+        "settings": null
+      },
+      "expected": {
+        "trades": [-10500000,-8000000,-5250000,-250000],
+        "finals": [37500000,24000000,6750000,3750000]
+      }
+    },
+    {
+      "name": "在途买入部分修复低配",
+      "input": {
+        "holdings": [30,38,18,10],
+        "flow": 0,
+        "force": false,
+        "pending": [10,0,0,0],
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [10350000,-20000,-4750000,-5580000],
+        "finals": [50350000,37980000,13250000,4420000]
+      }
+    },
+    {
+      "name": "取整配平（非整倍资金流）",
+      "input": {
+        "holdings": [48,32,12,4],
+        "flow": 3.33,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [1670000,1110000,550000,0],
+        "finals": [49670000,33110000,12550000,4000000]
+      }
+    },
+    {
+      "name": "零持仓基金建仓",
+      "input": {
+        "holdings": [0,32,12,4],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": null,
+        "settings": null
+      },
+      "expected": {
+        "trades": [22800000,-15800000,-5250000,-1750000],
+        "finals": [22800000,16200000,6750000,2250000]
+      }
+    },
+    {
+      "name": "禁止卖出的低配基金仍买入",
+      "input": {
+        "holdings": [30,38,18,10],
+        "flow": 0,
+        "force": false,
+        "pending": null,
+        "policies": ["forbid","normal","normal","normal"],
+        "settings": null
+      },
+      "expected": {
+        "trades": [15600000,-5600000,-4500000,-5500000],
+        "finals": [45600000,32400000,13500000,4500000]
+      }
+    }
+  ]
+}
