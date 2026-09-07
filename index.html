@@ -226,7 +226,7 @@ label{font-size:12px;color:var(--muted)}
     <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与小额交易阈值，一般无需修改</small></span></summary>
     <div class="details-inner">
       <div class="setting-grid">
-        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
+        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
         <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number"></div>
         <div class="field"><label for="landingPct">越界后回调比例（%）</label><div class="field-help">50% 表示回调到目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number"></div>
         <div class="field"><label for="roundYuan">取整单位（CNY）</label><div class="field-help">让建议更方便下单。</div><input class="setting" id="roundYuan" type="number"></div>
@@ -309,7 +309,7 @@ const SETTING_DEFINITIONS=[
   {id:"relativeBandPct",defaultValue:25,min:0.01,max:100,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=100,error:"相对触发阈值须大于 0% 且不超过 100%。"},
   {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后回调比例须为允许偏差的 10%～90%。"},
   {id:"roundYuan",defaultValue:100,min:1,max:10000,step:1,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=1&&value<=10000,error:"取整单位须为 1～10,000 CNY 的整数。"},
-  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"最低交易额须为 0～100,000 CNY 的整数。"}
+  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"小额交易阈值须为 0～100,000 CNY 的整数。"}
 ];
 const DEFAULTS=Object.fromEntries(SETTING_DEFINITIONS.map(({id,defaultValue})=>[id,defaultValue]));
 let CONFIG={...DEFAULTS};
