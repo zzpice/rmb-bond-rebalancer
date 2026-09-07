@@ -11,6 +11,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="再平衡助手">
 <meta name="format-detection" content="telephone=no">
+<meta name="description" content="轻量级人民币债券基金再平衡工具，根据当前持仓、资金变动、目标比例和免调范围生成尽量减少换手的调整建议。">
+<meta property="og:title" content="债基再平衡助手 · CNY">
+<meta property="og:description" content="根据当前持仓、资金变动、目标比例和免调范围，生成尽量减少换手的债券基金调整建议。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zzpice.github.io/rmb-bond-rebalancer/">
+<link rel="canonical" href="https://zzpice.github.io/rmb-bond-rebalancer/">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
@@ -239,7 +245,7 @@ label{font-size:12px;color:var(--muted)}
 
   <div class="card action-dock"><div class="actions">
     <button class="primary" id="check">生成建议</button>
-    <div class="force-wrap"><button id="force">按目标比例调整</button><div class="force-hint">忽略免调范围，直接回到目标附近</div></div>
+    <div class="force-wrap"><button id="force" aria-describedby="forceHint">按目标比例调整</button><div class="force-hint" id="forceHint">忽略免调范围，直接回到目标附近</div></div>
   </div></div>
 
   <div class="card empty" id="resultsCard" tabindex="-1">
@@ -295,9 +301,9 @@ label{font-size:12px;color:var(--muted)}
     </div>
   </details>
   <footer class="footer">
-    <div>© 2026 Zhipeng Zhou · v1.2.2</div>
+    <div>© 2026 Zhipeng Zhou · v1.2.3</div>
     <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span><button class="footer-button" id="refreshVersion" type="button">刷新版本</button></div>
-    <div class="install-guide" id="installGuide" role="note" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
+    <div class="install-guide" id="installGuide" role="status" aria-live="polite" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
   </footer>
 </div>
 
@@ -333,7 +339,7 @@ const fmt=(x,d=2)=>Number(x).toLocaleString('zh-CN',{minimumFractionDigits:d,max
 const compactNumber=x=>fmt(x,2).replace(/\.00$/,'');
 const money=x=>"CNY "+fmt((x||0)/100,2);
 const wanMoney=x=>fmt((x||0)/CENTS_PER_WAN,2)+" 万 CNY";
-const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer" title="${f.name}">${f.displayName}<span class="external" aria-hidden="true">↗</span></a>`;
+const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer" title="${f.name}" aria-label="${f.displayName}（晨星详情，新窗口打开）">${f.displayName}<span class="external" aria-hidden="true">↗</span></a>`;
 
 function updateBands(){
   FUNDS.forEach(f=>{
