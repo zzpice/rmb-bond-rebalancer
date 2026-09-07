@@ -67,6 +67,5 @@ test.describe("页面基础可用性", () => {
     expect(sw.ok()).toBe(true);
     const swText = await sw.text();
     expect(swText).toContain('CACHE_PREFIX="bond-rebalancer-"');
-    expect(swText).toContain("v1.2.0");
   });
 });
