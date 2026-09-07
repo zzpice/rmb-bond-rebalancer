@@ -26,14 +26,8 @@ jobs:
 
           index = Path('index.html')
           text = index.read_text(encoding='utf-8')
-          old = '''  if(!trade){
-    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
-    if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
-'''
-          new = '''  if(!trade){
-    if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
-    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
-'''
+          old = '  if(!trade){\n    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";\n    if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";\n'
+          new = '  if(!trade){\n    if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";\n    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";\n'
           if text.count(old) != 1:
               raise SystemExit(f'expected one adjustmentReason block, found {text.count(old)}')
           index.write_text(text.replace(old, new, 1), encoding='utf-8')
@@ -42,19 +36,7 @@ jobs:
           test_text = spec.read_text(encoding='utf-8')
           marker = 'test("取整合并归零时说明真实原因而不是内部转换相抵"'
           if marker not in test_text:
-              test_text += r'''
-
-test("取整合并归零时说明真实原因而不是内部转换相抵", async ({ page }) => {
-  await page.goto("/");
-  await fillPortfolio(page, { holdings: AT_TARGET, flow: 3.33 });
-  await generate(page);
-
-  const row = page.locator("#resultBody tr").nth(3);
-  await expect(row.locator(".trade-cell")).toHaveText("不操作");
-  await expect(row.locator(".reason-cell")).toHaveText("建议金额经取整与小额合并后无需下单。");
-  await expect(row.locator(".reason-cell")).not.toContainText("内部转换相抵");
-});
-'''
+              test_text += '\n\ntest("取整合并归零时说明真实原因而不是内部转换相抵", async ({ page }) => {\n  await page.goto("/");\n  await fillPortfolio(page, { holdings: AT_TARGET, flow: 3.33 });\n  await generate(page);\n\n  const row = page.locator("#resultBody tr").nth(3);\n  await expect(row.locator(".trade-cell")).toHaveText("不操作");\n  await expect(row.locator(".reason-cell")).toHaveText("建议金额经取整与小额合并后无需下单。");\n  await expect(row.locator(".reason-cell")).not.toContainText("内部转换相抵");\n});\n'
               spec.write_text(test_text, encoding='utf-8')
           PY
       - name: Commit scoped fix
