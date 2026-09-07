@@ -1,4 +1,4 @@
-name: Test baseline (v1.0.1)
+name: Test v1.1.0 (v1.0.1 algorithm baseline)
 
 on:
   pull_request:
