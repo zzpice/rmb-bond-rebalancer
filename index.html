@@ -696,8 +696,8 @@ function adjustmentReason(plan,i){
   const trade=plan.totalTrades[i],flowPart=plan.flowTrades[i],internalPart=plan.internal[i],rounding=plan.rounding[i];
   if(plan.force)return trade?`强制回到目标比例，${trade>0?"买入":"卖出"}至目标附近。`:"已在目标附近，无需操作。";
   if(!trade){
-    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
     if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
+    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
     return plan.flow?"资金处理后位于免调整范围内，无需操作。":"当前位于免调整范围内，无需操作。";
   }
   const reasons=[];
