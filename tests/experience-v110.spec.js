@@ -37,9 +37,9 @@ test.describe("v1.1.0 结果说明", () => {
 
     const rows = page.locator("#comparisonBody tr");
     await expect(rows).toHaveCount(4);
-    await expect(rows.nth(2).locator("td").nth(1)).toHaveText("14.2857%");
-    await expect(rows.nth(2).locator("td").nth(2)).toHaveText("12.5000%");
-    await expect(rows.nth(2).locator("td").nth(3)).toHaveText("14.2857%");
+    await expect(rows.nth(2).locator("td").nth(1)).toHaveText("14.29%");
+    await expect(rows.nth(2).locator("td").nth(2)).toHaveText("12.50%");
+    await expect(rows.nth(2).locator("td").nth(3)).toHaveText("14.29%");
   });
 
   test("无交易时逐只说明位于免调整范围内", async ({ page }) => {
