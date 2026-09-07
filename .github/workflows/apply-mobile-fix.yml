@@ -36,29 +36,31 @@ jobs:
           test_text = spec.read_text(encoding='utf-8')
           marker = 'test("手机端当前比例和目标标签不会溢出持仓卡片"'
           if marker not in test_text:
-              test_text += r'''
-
-test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ page }) => {
-  for (const width of [375, 390]) {
-    await page.setViewportSize({ width, height: 844 });
-    await page.goto("/");
-    await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
-
-    const cards = page.locator("#fundBody .fund-card");
-    for (let i = 0; i < 4; i++) {
-      const cardBox = await cards.nth(i).boundingBox();
-      const weightBox = await cards.nth(i).locator(".live-weight").boundingBox();
-      const targetBox = await cards.nth(i).locator(".target-label").boundingBox();
-      expect(cardBox).not.toBeNull();
-      expect(weightBox).not.toBeNull();
-      expect(targetBox).not.toBeNull();
-      expect(weightBox.x + weightBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
-      expect(targetBox.x + targetBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
-    }
-  }
-});
-'''
-              spec.write_text(test_text, encoding='utf-8')
+              lines = [
+                  '',
+                  '',
+                  'test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ page }) => {',
+                  '  for (const width of [375, 390]) {',
+                  '    await page.setViewportSize({ width, height: 844 });',
+                  '    await page.goto("/");',
+                  '    await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });',
+                  '',
+                  '    const cards = page.locator("#fundBody .fund-card");',
+                  '    for (let i = 0; i < 4; i++) {',
+                  '      const cardBox = await cards.nth(i).boundingBox();',
+                  '      const weightBox = await cards.nth(i).locator(".live-weight").boundingBox();',
+                  '      const targetBox = await cards.nth(i).locator(".target-label").boundingBox();',
+                  '      expect(cardBox).not.toBeNull();',
+                  '      expect(weightBox).not.toBeNull();',
+                  '      expect(targetBox).not.toBeNull();',
+                  '      expect(weightBox.x + weightBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);',
+                  '      expect(targetBox.x + targetBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);',
+                  '    }',
+                  '  }',
+                  '});',
+                  ''
+              ]
+              spec.write_text(test_text + '\n'.join(lines), encoding='utf-8')
           PY
       - name: Commit scoped fix
         run: |
