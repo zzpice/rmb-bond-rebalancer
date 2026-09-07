@@ -1,0 +1,70 @@
+name: Apply scoped mobile UI fix
+
+on:
+  push:
+    branches:
+      - fix/v1.1.0-mobile-live-weight
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/v1.1.0-mobile-live-weight
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply minimal CSS fix and regression test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+          old = '.fund-main{grid-template-columns:minmax(0,1fr) 82px;gap:10px;padding-top:10px}.amount-box'
+          new = '.fund-main{grid-template-columns:minmax(0,1fr) 82px;gap:10px;padding-top:10px}.live-weight{min-width:0}.amount-box'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one mobile fund-main rule, found {text.count(old)}')
+          index.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          spec = Path('tests/experience-v110.spec.js')
+          test_text = spec.read_text(encoding='utf-8')
+          marker = 'test("手机端当前比例和目标标签不会溢出持仓卡片"'
+          if marker not in test_text:
+              test_text += r'''
+
+test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ page }) => {
+  for (const width of [375, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
+
+    const cards = page.locator("#fundBody .fund-card");
+    for (let i = 0; i < 4; i++) {
+      const cardBox = await cards.nth(i).boundingBox();
+      const weightBox = await cards.nth(i).locator(".live-weight").boundingBox();
+      const targetBox = await cards.nth(i).locator(".target-label").boundingBox();
+      expect(cardBox).not.toBeNull();
+      expect(weightBox).not.toBeNull();
+      expect(targetBox).not.toBeNull();
+      expect(weightBox.x + weightBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
+      expect(targetBox.x + targetBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
+    }
+  }
+});
+'''
+              spec.write_text(test_text, encoding='utf-8')
+          PY
+      - name: Commit scoped fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-mobile-fix.yml
+          git add index.html tests/experience-v110.spec.js
+          git commit -m "fix: prevent mobile allocation clipping"
+          git push origin HEAD:fix/v1.1.0-mobile-live-weight
