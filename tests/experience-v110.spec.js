@@ -242,3 +242,24 @@ test("手机端结果卡片不造成整页横向滚动", async ({ page }) => {
   await expect(page.locator("#resultBody .reason-cell").first()).toBeVisible();
   expect((await page.locator("#copyPlan").boundingBox()).height).toBeGreaterThanOrEqual(44);
 });
+
+
+test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ page }) => {
+  for (const width of [375, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
+
+    const cards = page.locator("#fundBody .fund-card");
+    for (let i = 0; i < 4; i++) {
+      const cardBox = await cards.nth(i).boundingBox();
+      const weightBox = await cards.nth(i).locator(".live-weight").boundingBox();
+      const targetBox = await cards.nth(i).locator(".target-label").boundingBox();
+      expect(cardBox).not.toBeNull();
+      expect(weightBox).not.toBeNull();
+      expect(targetBox).not.toBeNull();
+      expect(weightBox.x + weightBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
+      expect(targetBox.x + targetBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
+    }
+  }
+});
