@@ -89,6 +89,29 @@ test.describe("禁止卖出（forbid）", () => {
 });
 
 test.describe("尽量不卖（avoid）", () => {
+  test("资金取出与内部纠偏叠加时仍优先保护 avoid 基金", async ({ page }) => {
+    const holdings = [40, 32, 16, 8];
+
+    await page.goto("/");
+    await fillPortfolio(page, { holdings, flow: -4, policies: [null, null, "avoid", null] });
+    await generate(page);
+    const avoidResult = await readResult(page);
+
+    await page.goto("/");
+    await fillPortfolio(page, { holdings, flow: -4 });
+    await generate(page);
+    const normalResult = await readResult(page);
+
+    expect(avoidResult.trades[2]).toBeGreaterThan(normalResult.trades[2]);
+    expect(avoidResult.trades[1]).toBeLessThan(0);
+    expect(normalResult.trades[1]).toBe(0);
+    assertInvariants(avoidResult, {
+      effectiveCents: holdings.map(wanToCents),
+      flowCents: wanToCents(-4),
+      policies: ["normal", "normal", "avoid", "normal"]
+    });
+  });
+
   test("取出资金时 avoid 基金卖出量低于 normal（真实优先级行为）", async ({ page }) => {
     await page.goto("/");
     await fillPortfolio(page, { holdings: AT_TARGET, flow: -24, policies: [null, null, null, "avoid"] });

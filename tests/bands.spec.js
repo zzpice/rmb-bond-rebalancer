@@ -2,15 +2,19 @@
 // 免调整区间规则来自真实代码：outerBand = min(5个百分点, 目标×25%)，边界为闭区间
 // （bounds(): low=ceil(total*outerLow-1e-7), high=floor(total*outerHigh+1e-7)；
 //   outerBreaches(): x<low || x>high，恰好等于边界不触发）。
-// 本文件所有边界值都用 v1.0.1 真实代码（tests/golden/core.mjs）现场计算，不预设数值。
+// 关键边界以 v1.0.1 的已发布数值直接冻结，避免从被测 core.mjs 动态生成期望值而自证。
 import { test, expect } from "@playwright/test";
 import { fillPortfolio, generate, readResult, readStatus, wanToCents } from "./helpers.mjs";
-import { bounds, targetCents, outerBreaches } from "./golden/core.mjs";
 
 const TOTAL_WAN = 96;
 const totalCents = wanToCents(TOTAL_WAN);
-const b = bounds(totalCents);
-const t = targetCents(totalCents);
+const t = [48, 32, 12, 4].map(wanToCents);
+const b = [
+  { low: wanToCents(43.2), high: wanToCents(52.8), innerLow: wanToCents(45.6), innerHigh: wanToCents(50.4) },
+  { low: wanToCents(27.2), high: wanToCents(36.8), innerLow: wanToCents(29.6), innerHigh: wanToCents(34.4) },
+  { low: wanToCents(9), high: wanToCents(15), innerLow: wanToCents(10.5), innerHigh: wanToCents(13.5) },
+  { low: wanToCents(3), high: wanToCents(5), innerLow: wanToCents(3.5), innerHigh: wanToCents(4.5) }
+];
 const ONE_YUAN = 100; // 分；页面输入最小精度 0.0001 万 = 1 元
 
 //  donor 基金：把差额转移给宽限带内的其他基金，保持总额不变
@@ -33,6 +37,10 @@ function buildAtBoundary(k, which, epsilonCents = 0) {
   return amounts;
 }
 
+function frozenOuterBreaches(amounts) {
+  return amounts.map((amount, i) => amount < b[i].low || amount > b[i].high);
+}
+
 const centsToWan = c => (c / 1e6).toFixed(4);
 
 test.describe("免调整区间（区间内部）", () => {
@@ -48,8 +56,7 @@ test.describe("免调整区间（区间内部）", () => {
   for (const { name, build } of insideCases) {
     test(name + " → 不调整", async ({ page }) => {
       const amounts = build();
-      // 用真实代码确认构造前提：确实无任何越界
-      expect(outerBreaches(amounts)).toEqual([false, false, false, false]);
+      expect(frozenOuterBreaches(amounts)).toEqual([false, false, false, false]);
       await page.goto("/");
       await fillPortfolio(page, { holdings: amounts.map(centsToWan), flow: 0 });
       await generate(page);
@@ -67,7 +74,7 @@ test.describe("边界值（精确边界与边界内外最小变化）", () => {
     for (const which of ["low", "high"]) {
       test(`基金 ${k} 恰好等于${which === "low" ? "下" : "上"}边界 → 不触发（边界为闭区间）`, async ({ page }) => {
         const amounts = buildAtBoundary(k, which, 0);
-        expect(outerBreaches(amounts)).toEqual([false, false, false, false]);
+        expect(frozenOuterBreaches(amounts)).toEqual([false, false, false, false]);
         await page.goto("/");
         await fillPortfolio(page, { holdings: amounts.map(centsToWan), flow: 0 });
         await generate(page);
@@ -80,7 +87,7 @@ test.describe("边界值（精确边界与边界内外最小变化）", () => {
       test(`基金 ${k} 越过${which === "low" ? "下" : "上"}边界 1 元 → 触发调整`, async ({ page }) => {
         const epsilon = which === "low" ? -ONE_YUAN : ONE_YUAN;
         const amounts = buildAtBoundary(k, which, epsilon);
-        const breaches = outerBreaches(amounts);
+        const breaches = frozenOuterBreaches(amounts);
         expect(breaches[k]).toBe(true); // 用真实代码确认确实越界
         await page.goto("/");
         await fillPortfolio(page, { holdings: amounts.map(centsToWan), flow: 0 });

@@ -3,9 +3,14 @@
 // 内部买卖严格配平，组合总额不变。
 import { test, expect } from "@playwright/test";
 import { fillPortfolio, generate, readResult, readStatus, assertInvariants, wanToCents } from "./helpers.mjs";
-import { bounds } from "./golden/core.mjs";
 
 const QUANTUM = 100 * 100; // 默认取整单位 100 CNY（分）
+const BOUNDS_96 = [
+  { innerLow: wanToCents(45.6), innerHigh: wanToCents(50.4) },
+  { innerLow: wanToCents(29.6), innerHigh: wanToCents(34.4) },
+  { innerLow: wanToCents(10.5), innerHigh: wanToCents(13.5) },
+  { innerLow: wanToCents(3.5), innerHigh: wanToCents(4.5) }
+];
 
 test.describe("明显低配场景", () => {
   test("002065 明显低配（30万/96万 = 31.25%）→ 买入拉回，方向正确", async ({ page }) => {
@@ -23,8 +28,7 @@ test.describe("明显低配场景", () => {
     expect(result.trades[2]).toBeLessThan(0);
     expect(result.trades[3]).toBeLessThan(0);
     // 落点：002065 被拉到内下界 innerLow（47.5%）
-    const b = bounds(wanToCents(96));
-    expect(Math.abs(result.finals[0] - b[0].innerLow)).toBeLessThanOrEqual(QUANTUM);
+    expect(Math.abs(result.finals[0] - BOUNDS_96[0].innerLow)).toBeLessThanOrEqual(QUANTUM);
     assertInvariants(result, { effectiveCents: holdings.map(wanToCents), flowCents: 0 });
   });
 
@@ -35,8 +39,7 @@ test.describe("明显低配场景", () => {
     await generate(page);
     const result = await readResult(page);
     expect(result.trades[0]).toBeGreaterThan(0);
-    const b = bounds(wanToCents(48));
-    expect(Math.abs(result.finals[0] - b[0].innerLow)).toBeLessThanOrEqual(QUANTUM);
+    expect(Math.abs(result.finals[0] - wanToCents(22.8))).toBeLessThanOrEqual(QUANTUM);
     assertInvariants(result, { effectiveCents: holdings.map(wanToCents), flowCents: 0 });
   });
 });
@@ -52,9 +55,8 @@ test.describe("明显超配场景", () => {
     expect(status.text).toContain("002065");
     const result = await readResult(page);
     expect(result.trades[0]).toBeLessThan(0); // 超配基金被卖出
-    const b = bounds(wanToCents(96));
     // 落点：内上界 innerHigh（52.5%）
-    expect(Math.abs(result.finals[0] - b[0].innerHigh)).toBeLessThanOrEqual(QUANTUM);
+    expect(Math.abs(result.finals[0] - BOUNDS_96[0].innerHigh)).toBeLessThanOrEqual(QUANTUM);
     assertInvariants(result, { effectiveCents: holdings.map(wanToCents), flowCents: 0 });
   });
 
@@ -65,8 +67,7 @@ test.describe("明显超配场景", () => {
     await generate(page);
     const result = await readResult(page);
     expect(result.trades[3]).toBeLessThan(0);
-    const b = bounds(wanToCents(96));
-    expect(Math.abs(result.finals[3] - b[3].innerHigh)).toBeLessThanOrEqual(QUANTUM);
+    expect(Math.abs(result.finals[3] - BOUNDS_96[3].innerHigh)).toBeLessThanOrEqual(QUANTUM);
     // 买入方向：低配基金获得买入
     expect(result.trades[0] + result.trades[1] + result.trades[2]).toBeGreaterThan(0);
     assertInvariants(result, { effectiveCents: holdings.map(wanToCents), flowCents: 0 });
