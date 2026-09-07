@@ -263,3 +263,15 @@ test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ pa
     }
   }
 });
+
+
+test("取整合并归零时说明真实原因而不是内部转换相抵", async ({ page }) => {
+  await page.goto("/");
+  await fillPortfolio(page, { holdings: AT_TARGET, flow: 3.33 });
+  await generate(page);
+
+  const row = page.locator("#resultBody tr").nth(3);
+  await expect(row.locator(".trade-cell")).toHaveText("不操作");
+  await expect(row.locator(".reason-cell")).toHaveText("建议金额经取整与小额合并后无需下单。");
+  await expect(row.locator(".reason-cell")).not.toContainText("内部转换相抵");
+});
