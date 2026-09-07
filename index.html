@@ -188,7 +188,7 @@ label{font-size:12px;color:var(--muted)}
         </div>
         <div class="rule">
           <b id="innerRule">越界后：回调偏差的 50%</b>
-          <small>只拉回安全区，不强求精确归位，减少重复交易。</small>
+          <small>只回调到安全区，不强求精确归位，减少重复交易。</small>
         </div>
         <div class="rule">
           <b>优先使用资金变动纠偏</b>
@@ -223,7 +223,7 @@ label{font-size:12px;color:var(--muted)}
   </div>
 
   <details class="card info-card">
-    <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与最低交易额，一般无需修改</small></span></summary>
+    <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与小额交易阈值，一般无需修改</small></span></summary>
     <div class="details-inner">
       <div class="setting-grid">
         <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
@@ -281,7 +281,7 @@ label{font-size:12px;color:var(--muted)}
         <div class="stat"><div class="k">买入合计</div><div class="v" id="sBuy">—</div></div>
         <div class="stat"><div class="k">卖出合计</div><div class="v" id="sSell">—</div></div>
       </div>
-      <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金之间转换后的最终操作。</dd></dl>
+      <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金间转换后的最终操作。</dd></dl>
     </details>
   </div>
 
@@ -307,7 +307,7 @@ const DEN=960,CENTS_PER_WAN=1000000,INPUT_UNITS_PER_WAN=10000;
 const SETTING_DEFINITIONS=[
   {id:"absoluteBandPP",defaultValue:5,min:0.01,max:20,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=20,error:"绝对触发阈值须大于 0 且不超过 20 个百分点。"},
   {id:"relativeBandPct",defaultValue:25,min:0.01,max:100,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=100,error:"相对触发阈值须大于 0% 且不超过 100%。"},
-  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后拉回比例须为允许偏差的 10%～90%。"},
+  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后回调比例须为允许偏差的 10%～90%。"},
   {id:"roundYuan",defaultValue:100,min:1,max:10000,step:1,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=1&&value<=10000,error:"取整单位须为 1～10,000 CNY 的整数。"},
   {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"最低交易额须为 0～100,000 CNY 的整数。"}
 ];
@@ -704,10 +704,10 @@ function externalFlowText(plan){return plan.flow>0?"新增 "+money(plan.flow):pl
 function renderExecutionSummary(plan){
   const buys=sum(plan.totalTrades.filter(amount=>amount>0)),sells=-sum(plan.totalTrades.filter(amount=>amount<0)),count=plan.totalTrades.filter(Boolean).length;
   let headline;
-  if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，外部资金与内部转换均为零。";
+  if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，资金变动与基金间转换均为零。";
   else{
-    const parts=[plan.flow>0?`新增 ${money(plan.flow)}`:plan.flow<0?`取出 ${money(-plan.flow)}`:"无外部资金变动"];
-    parts.push(plan.internalTurnover?`内部转换 ${money(plan.internalTurnover)}`:"无内部转换");
+    const parts=[plan.flow>0?`新增 ${money(plan.flow)}`:plan.flow<0?`取出 ${money(-plan.flow)}`:"无资金变动"];
+    parts.push(plan.internalTurnover?`基金间转换 ${money(plan.internalTurnover)}`:"无基金间转换");
     headline=parts.join("，")+"。";
   }
   $("summaryHeadline").textContent=headline;$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
@@ -724,14 +724,14 @@ function adjustmentReason(plan,i){
   if(plan.force)return trade?`按目标比例调整，${trade>0?"买入":"卖出"}至目标附近。`:"已在目标附近，无需操作。";
   if(!trade){
     if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
-    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
-    return plan.flow?"资金处理后位于免调整范围内，无需操作。":"当前位于免调整范围内，无需操作。";
+    if(flowPart||internalPart)return"资金分配与基金间转换相抵，最终无需操作。";
+    return plan.flow?"资金分配后位于免调范围内，无需操作。":"当前位于免调范围内，无需操作。";
   }
   const reasons=[];
   if(flowPart)reasons.push(plan.flow>0?"新增资金分配买入":"取出资金分配卖出");
   if(internalPart){
     const action=internalPart>0?"买入":"卖出";
-    reasons.push(plan.postFlowBreaches[i]?`资金处理后仍越界，参与内部转换${action}`:`为配平越界基金，参与内部转换${action}`);
+    reasons.push(plan.postFlowBreaches[i]?`资金分配后仍越界，参与基金间转换${action}`:`为配平越界基金，参与基金间转换${action}`);
   }
   if(!flowPart&&!internalPart)reasons.push(`取整配平产生${trade>0?"买入":"卖出"}`);
   if(rounding)reasons.push("最终金额已按执行单位取整");
@@ -763,14 +763,14 @@ function renderPlanRows(plan,holdings,policies){
 function renderExecutionNote(plan){
   const notes=[];
   if(plan.totalTrades.some(amount=>amount<0))notes.push("卖出前请核对持有期和赎回费率。");
-  if(plan.smallRequired.length)notes.push("低于最低交易额的必要交易会保留，以处理尾差或防止越界。");
+  if(plan.smallRequired.length)notes.push("低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。");
   notes.push(`建议金额按 ${compactNumber(CONFIG.roundYuan)} CNY 取整，不含费用及确认期间的净值变化。`);
   $("execNote").textContent=notes.join("");
 }
 function buildCopyText(plan){
   const lines=["债基再平衡执行方案",`资金变动：${externalFlowText(plan)}`,`基金间转换：${money(plan.internalTurnover)}`,""];
   FUNDS.forEach((fund,i)=>lines.push(`${fund.code} ${fund.displayName}：${tradeText(plan.totalTrades[i])}`));
-  lines.push("","比例对比（调整前 / 目标 / 调整后）");
+  lines.push("","调整前后（调整前 / 目标 / 调整后）");
   FUNDS.forEach((fund,i)=>lines.push(`${fund.code}：${fmt(plan.amounts[i]/plan.currentTotal*100,2)}% / ${fmt(fund.targetW*100,2)}% / ${fmt(plan.final[i]/plan.afterTotal*100,2)}%`));
   return lines.join("\n");
 }
