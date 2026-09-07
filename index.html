@@ -579,9 +579,9 @@ function renderFunds(){
 }
 function renderStaticFundInfo(){
   $("targetSummary").textContent=`目标比例：${FUNDS.map(f=>compactNumber(f.targetW*100)+"%").join(" / ")}。`;
-  $("bandHelp").innerHTML=FUNDS.map(f=>`<dt>${f.code}</dt><dd>目标 ${compactNumber(f.targetW*100)}%，${compactNumber(f.outerLow*100)}%～${compactNumber(f.outerHigh*100)}% 内不调整。</dd>`).join("");
 }
 function updateBandLabels(){
+  $("bandHelp").innerHTML=FUNDS.map(f=>`<dt>${f.code}</dt><dd>目标 ${compactNumber(f.targetW*100)}%，${compactNumber(f.outerLow*100)}%～${compactNumber(f.outerHigh*100)}% 内不调整。</dd>`).join("");
   [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>card.querySelector(".target-label").textContent=`目标 ${fmt(FUNDS[i].targetW*100)}%`);
   [...$("fundExtraBody").querySelectorAll(".fund-extra-card")].forEach((card,i)=>{
     card.querySelector(".target-amount").textContent=`${fmt(FUNDS[i].targetW*100)}%`;
@@ -591,6 +591,7 @@ function updateBandLabels(){
   $("innerRule").textContent=`调整后位置：拉回偏差的 ${compactNumber(CONFIG.landingPct)}%`;
 }
 function resetLiveCards(cards,extras){
+  updateBandLabels();
   cards.forEach(card=>{card.querySelector(".curw").textContent="—";card.querySelector(".state").innerHTML='<span class="tag neutral">待填写</span>'});
   extras.forEach(card=>card.querySelector(".distance").textContent="—");
 }
