@@ -17,7 +17,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: feature/v1.2.2
-          fetch-depth: 4
       - name: Align copy assertions with approved v1.2.2 wording
         run: |
           python - <<'PY'
@@ -70,11 +69,12 @@ jobs:
                   text = text.replace(old, new)
               p.write_text(text, encoding='utf-8')
 
+          normal_workflow = "name: Regression & UI Tests\n\non:\n  pull_request:\n    branches: [main]\n  push:\n    branches-ignore: [main]\n\njobs:\n  playwright:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: npm\n      - run: npm ci\n      - run: npx playwright install --with-deps chromium\n      - run: npx playwright test\n      - uses: actions/upload-artifact@v4\n        if: failure()\n        with:\n          name: playwright-report\n          path: playwright-report/\n          retention-days: 14\n"
+          Path('.github/workflows/test.yml').write_text(normal_workflow, encoding='utf-8')
           Path('.github/workflows/v122-sync-tests.yml').unlink(missing_ok=True)
           Path('v122-sync-trigger.txt').unlink(missing_ok=True)
           PY
 
-          git show 45e15371914b9bed2ea82231b9ca3c9a3fb0f64a:.github/workflows/test.yml > .github/workflows/test.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
