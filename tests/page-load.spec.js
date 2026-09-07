@@ -55,7 +55,7 @@ test.describe("页面基础可用性", () => {
     await expect(page.locator("#targetSummary")).toContainText("33.33%");
     await expect(page.locator("#targetSummary")).toContainText("12.50%");
     await expect(page.locator("#targetSummary")).toContainText("4.17%");
-    await expect(page.locator("#outerRule")).toContainText("5/25");
+    await expect(page.locator("#outerRule")).toContainText("5 / 25");
     await expect(page.locator("#innerRule")).toContainText("50%");
   });
 

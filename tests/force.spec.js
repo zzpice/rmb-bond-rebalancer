@@ -23,7 +23,7 @@ test.describe("强制回到目标", () => {
       await generate(page, { force: true });
       const status = await readStatus(page);
       expect(status.type).toBe("warn");
-      expect(status.text).toContain("已强制恢复目标比例");
+      expect(status.text).toContain("已按目标比例调整");
       const result = await readResult(page);
       const total = holdings.reduce((s, x) => s + x, 0) + flow;
       assertInvariants(result, {

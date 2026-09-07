@@ -174,128 +174,128 @@ label{font-size:12px;color:var(--muted)}
   <details class="card info-card">
     <summary><span class="summary-copy">使用说明<small>三步操作、调整规则与免调范围</small></span></summary>
     <div class="details-inner">
-      <h3>平时只需要三步</h3>
+      <h3>日常使用只需三步</h3>
       <div class="guide-steps">
-        <div class="guide-step"><span class="step-num">1</span><div><b>填写持仓</b><small>录入四只基金已确认的最新市值。</small></div></div>
-        <div class="guide-step"><span class="step-num">2</span><div><b>填写资金变动</b><small>无变动保持 0；有在途订单再单独录入。</small></div></div>
+        <div class="guide-step"><span class="step-num">1</span><div><b>录入持仓</b><small>填写四只基金已确认的最新市值。</small></div></div>
+        <div class="guide-step"><span class="step-num">2</span><div><b>录入资金变动</b><small>无变动保持 0；有在途订单再单独录入。</small></div></div>
         <div class="guide-step"><span class="step-num">3</span><div><b>生成建议</b><small>最终只需按执行清单操作。</small></div></div>
       </div>
-      <h3>什么时候才需要调整</h3>
+      <h3>何时触发调整</h3>
       <div class="rules">
         <div class="rule">
-          <b id="outerRule">免调整范围：5/25 规则</b>
+          <b id="outerRule">免调范围：5 / 25 规则</b>
           <small>大仓位最多偏离 5 个百分点，小仓位最多偏离目标的 25%，取更严格的一项。</small>
         </div>
         <div class="rule">
-          <b id="innerRule">越界后：拉回偏差的 50%</b>
-          <small>只拉回安全区，不强求精确归位，减少重复交易。</small>
+          <b id="innerRule">越界后：回调偏差的 50%</b>
+          <small>只回调到安全区，不强求精确归位，减少重复交易。</small>
         </div>
         <div class="rule">
-          <b>执行顺序：先处理资金变动</b>
+          <b>优先使用资金变动纠偏</b>
           <small>优先用新增或取出资金纠偏，再考虑基金间转换。</small>
         </div>
       </div>
-      <details class="inline-help"><summary>查看各基金免调整范围</summary><dl class="help-list" id="bandHelp"></dl></details>
+      <details class="inline-help"><summary>查看各基金免调范围</summary><dl class="help-list" id="bandHelp"></dl></details>
       <div class="plain-tip">建议按季度检查；发生较大申购或赎回时可额外检查。</div>
     </div>
   </details>
 
   <div class="card" id="holdingsSection">
-    <div class="section-head"><h2>1. 填写当前持仓</h2><button class="btn-ghost" id="clear" type="button">清空本次输入</button></div>
-    <div class="section-note">单位：万 CNY。日常只需填写四项当前持仓；其他内容按需展开。</div>
+    <div class="section-head"><h2>1. 当前持仓</h2><button class="btn-ghost" id="clear" type="button">清空输入</button></div>
+    <div class="section-note">单位：万 CNY。录入四只基金已确认的最新市值；其他内容按需展开。</div>
     <div class="fund-grid" id="fundBody"></div>
     <details class="inline-help special-panel">
-      <summary>在途交易、赎回限制与比例详情</summary>
+      <summary>在途交易与卖出设置</summary>
       <div class="details-inner">
         <div class="fund-extra-grid" id="fundExtraBody"></div>
-        <div class="note">在途买入填正数，在途卖出填负数。“尽量不卖”会降低卖出优先级，“禁止卖出”则完全不卖。</div>
+        <div class="note">在途买入填正数，在途卖出填负数。卖出策略为“尽量不卖”时会降低卖出优先级，“禁止卖出”则完全不卖。</div>
       </div>
     </details>
   </div>
 
   <div class="card">
-    <h2>2. 填写资金变动</h2>
+    <h2>2. 本次资金变动</h2>
     <div class="flowline">
-      <div class="field"><label for="cashFlow">新增／取出（万 CNY）</label><input id="cashFlow" type="number" inputmode="decimal" enterkeyhint="done" autocomplete="off" step="0.0001" value="0"></div>
+      <div class="field"><label for="cashFlow">新增 / 取出资金（万 CNY）</label><input id="cashFlow" type="number" inputmode="decimal" enterkeyhint="done" autocomplete="off" step="0.0001" value="0"></div>
       <div class="note">无变动填 0；新增为正，取出为负。</div>
     </div>
-    <details class="inline-help"><summary>资金分配规则</summary><div class="note">新增优先补低配基金；取出优先使用短债和纯债，再考虑固收增强。赎回限制优先于该顺序。</div></details>
+    <details class="inline-help"><summary>资金使用顺序</summary><div class="note">新增优先补低配基金；取出优先使用短债和纯债，再考虑固收增强。卖出策略优先于该顺序。</div></details>
   </div>
 
   <details class="card info-card">
-    <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与最低交易额，一般无需修改</small></span></summary>
+    <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与小额交易阈值，一般无需修改</small></span></summary>
     <div class="details-inner">
       <div class="setting-grid">
-        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
+        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
         <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number"></div>
-        <div class="field"><label for="landingPct">越界后拉回偏差（%）</label><div class="field-help">50% 表示拉回目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number"></div>
+        <div class="field"><label for="landingPct">越界后回调比例（%）</label><div class="field-help">50% 表示回调到目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number"></div>
         <div class="field"><label for="roundYuan">取整单位（CNY）</label><div class="field-help">让建议更方便下单。</div><input class="setting" id="roundYuan" type="number"></div>
-        <div class="field"><label for="minTradeYuan">忽略低于（CNY）</label><div class="field-help">合并不必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number"></div>
+        <div class="field"><label for="minTradeYuan">小额交易阈值（CNY）</label><div class="field-help">合并不必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number"></div>
       </div>
-      <div class="actions settings-actions"><button id="restoreDefaults">恢复默认参数</button></div>
+      <div class="actions settings-actions"><button id="restoreDefaults">恢复默认设置</button></div>
       <div class="note">推荐值适合低频、低换手使用。为保证配平或不越界，必要的小额交易仍会保留。</div>
     </div>
   </details>
 
   <div class="card action-dock"><div class="actions">
     <button class="primary" id="check">生成建议</button>
-    <div class="force-wrap"><button id="force">强制回到目标</button><div class="force-hint">忽略阈值与最小换手限制</div></div>
+    <div class="force-wrap"><button id="force">按目标比例调整</button><div class="force-hint">忽略免调范围，直接回到目标附近</div></div>
   </div></div>
 
   <div class="card empty" id="resultsCard" tabindex="-1">
-    <h2>3. 查看建议</h2>
+    <h2>3. 执行建议</h2>
     <div class="result-lead"><div id="status" role="status" aria-live="polite"></div></div>
     <div class="empty-results" id="emptyResults">填写 4 项当前持仓后，点击“生成建议”查看执行方案。</div>
     <section class="execution-summary" aria-labelledby="summaryHeadline">
       <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
       <div class="summary-quick">
-        <div class="quick-stat"><span class="k">外部资金</span><div class="v" id="quickFlow">—</div></div>
-        <div class="quick-stat"><span class="k">内部转换</span><div class="v" id="quickTurnover">—</div></div>
+        <div class="quick-stat"><span class="k">资金变动</span><div class="v" id="quickFlow">—</div></div>
+        <div class="quick-stat"><span class="k">基金间转换</span><div class="v" id="quickTurnover">—</div></div>
         <div class="quick-stat"><span class="k">买入／卖出</span><div class="v" id="quickTrades">—</div></div>
         <div class="quick-stat"><span class="k">需操作基金</span><div class="v" id="quickCount">—</div></div>
       </div>
     </section>
     <section class="result-block block-comparison">
-      <div class="comparison-title"><h3>比例对比</h3><span class="section-note">调整前含在途交易</span></div>
+      <div class="comparison-title"><h3>调整前后</h3><span class="section-note">调整前含在途交易</span></div>
       <div class="table-wrap"><table class="comparison-table">
         <thead><tr><th>基金</th><th>调整前</th><th>目标</th><th>调整后</th></tr></thead>
-        <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示比例对比</td></tr></tbody>
+        <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示调整前后</td></tr></tbody>
       </table></div>
     </section>
     <section class="result-block block-execution">
       <div class="execution-title"><h3>执行清单</h3><div class="result-tools"><span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span><button class="copy-button" id="copyPlan" type="button" disabled>复制执行方案</button></div></div>
       <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
       <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>基金</th><th>最终操作</th><th>预计交易后金额</th><th>预计占比</th><th>赎回限制</th><th>调整说明</th></tr></thead>
-        <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成调整建议”</td></tr></tbody>
+        <thead><tr><th>基金</th><th>操作</th><th>调整后金额</th><th>调整后占比</th><th>卖出策略</th><th>原因</th></tr></thead>
+        <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
       </table></div>
       <div class="exec-note" id="execNote"></div>
     </section>
     <details class="result-details">
-      <summary>查看汇总与计算说明</summary>
+      <summary>查看计算明细</summary>
       <div class="summary">
-        <div class="stat"><div class="k">当前总额</div><div class="v" id="sCurrent">—</div></div>
-        <div class="stat"><div class="k">变动后总额</div><div class="v" id="sAfter">—</div></div>
-        <div class="stat"><div class="k">资金处理后越界</div><div class="v" id="sBreach">—</div></div>
-        <div class="stat"><div class="k">内部转换</div><div class="v" id="sTurnover">—</div></div>
+        <div class="stat"><div class="k">当前总资产</div><div class="v" id="sCurrent">—</div></div>
+        <div class="stat"><div class="k">资金变动后总资产</div><div class="v" id="sAfter">—</div></div>
+        <div class="stat"><div class="k">资金分配后越界</div><div class="v" id="sBreach">—</div></div>
+        <div class="stat"><div class="k">基金间转换</div><div class="v" id="sTurnover">—</div></div>
         <div class="stat"><div class="k">买入合计</div><div class="v" id="sBuy">—</div></div>
         <div class="stat"><div class="k">卖出合计</div><div class="v" id="sSell">—</div></div>
       </div>
-      <dl class="help-list"><dt>资金处理后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>内部转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金之间转换后的最终操作。</dd></dl>
+      <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金间转换后的最终操作。</dd></dl>
     </details>
   </div>
 
   <details class="card">
-    <summary>为什么会得到这个结果</summary>
+    <summary>计算过程</summary>
     <div class="details-inner">
       <div class="table-wrap"><table class="detail-table">
-        <thead><tr><th>基金</th><th>已确认金额</th><th>尚未确认的交易</th><th>新增／取出资金分配</th><th>基金之间转换</th><th>取整与小额合并</th><th>最终操作</th></tr></thead>
-        <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成调整建议”</td></tr></tbody>
+        <thead><tr><th>基金</th><th>当前持仓</th><th>在途交易</th><th>资金变动分配</th><th>基金间转换</th><th>取整调整</th><th>最终操作</th></tr></thead>
+        <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
       </table></div>
     </div>
   </details>
   <footer class="footer">
-    <div>© 2026 Zhipeng Zhou · v1.2.1</div>
+    <div>© 2026 Zhipeng Zhou · v1.2.2</div>
     <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span><button class="footer-button" id="refreshVersion" type="button">刷新版本</button></div>
     <div class="install-guide" id="installGuide" role="note" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
   </footer>
@@ -307,20 +307,20 @@ const DEN=960,CENTS_PER_WAN=1000000,INPUT_UNITS_PER_WAN=10000;
 const SETTING_DEFINITIONS=[
   {id:"absoluteBandPP",defaultValue:5,min:0.01,max:20,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=20,error:"绝对触发阈值须大于 0 且不超过 20 个百分点。"},
   {id:"relativeBandPct",defaultValue:25,min:0.01,max:100,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=100,error:"相对触发阈值须大于 0% 且不超过 100%。"},
-  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后拉回比例须为允许偏差的 10%～90%。"},
+  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后回调比例须为允许偏差的 10%～90%。"},
   {id:"roundYuan",defaultValue:100,min:1,max:10000,step:1,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=1&&value<=10000,error:"取整单位须为 1～10,000 CNY 的整数。"},
-  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"最低交易额须为 0～100,000 CNY 的整数。"}
+  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"小额交易阈值须为 0～100,000 CNY 的整数。"}
 ];
 const DEFAULTS=Object.fromEntries(SETTING_DEFINITIONS.map(({id,defaultValue})=>[id,defaultValue]));
 let CONFIG={...DEFAULTS};
 const FUNDS=[
-  {name:"景顺长城景盛双息收益债券A类",code:"002065",url:"https://www.igwfmc.com/main/jjcp/product/002065/detail.html",targetW:1/2,role:"固收增强主仓",withdrawRank:2},
-  {name:"易方达增强回报债券A",code:"110017",url:"https://www.efunds.com.cn/fund/110017.shtml",targetW:1/3,role:"固收增强副仓",withdrawRank:2},
-  {name:"广发纯债债券A",code:"270048",url:"https://www.gffunds.com.cn/funds/?fundcode=270048",targetW:1/8,role:"纯债稳定仓",withdrawRank:1},
-  {name:"长城短债A",code:"007194",url:"https://www.ccfund.com.cn/main/jjcp/cache/007194.shtml",targetW:1/24,role:"短债流动性仓",withdrawRank:0}
+  {name:"景顺长城景盛双息收益债券A",displayName:"景顺长城景盛双息 A",code:"002065",url:"https://www.morningstar.cn/fund/002065.html",targetW:1/2,category:"固收增强",withdrawRank:2},
+  {name:"易方达增强回报债券A",displayName:"易方达增强回报 A",code:"110017",url:"https://www.morningstar.cn/fund/110017.html",targetW:1/3,category:"固收增强",withdrawRank:2},
+  {name:"广发纯债债券A",displayName:"广发纯债 A",code:"270048",url:"https://www.morningstar.cn/fund/270048.html",targetW:1/8,category:"纯债",withdrawRank:1},
+  {name:"长城短债债券A",displayName:"长城短债 A",code:"007194",url:"https://www.morningstar.cn/fund/007194.html",targetW:1/24,category:"短债",withdrawRank:0}
 ];
 const SELL_POLICIES={
-  normal:{optionLabel:"可以正常卖出",resultLabel:"正常",tagClass:"ok",sellPriority:0},
+  normal:{optionLabel:"正常卖出",resultLabel:"正常",tagClass:"ok",sellPriority:0},
   avoid:{optionLabel:"尽量不卖",resultLabel:"尽量不卖",tagClass:"neutral",sellPriority:1},
   forbid:{optionLabel:"禁止卖出",resultLabel:"禁止卖出",tagClass:"bad",sellPriority:null}
 };
@@ -333,7 +333,7 @@ const fmt=(x,d=2)=>Number(x).toLocaleString('zh-CN',{minimumFractionDigits:d,max
 const compactNumber=x=>fmt(x,2).replace(/\.00$/,'');
 const money=x=>"CNY "+fmt((x||0)/100,2);
 const wanMoney=x=>fmt((x||0)/CENTS_PER_WAN,2)+" 万 CNY";
-const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer">${f.name}<span class="external" aria-hidden="true">↗</span></a>`;
+const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer" title="${f.name}">${f.displayName}<span class="external" aria-hidden="true">↗</span></a>`;
 
 function updateBands(){
   FUNDS.forEach(f=>{
@@ -394,7 +394,7 @@ function allocateByPolicy(capacity,budget,direction,policies){
     const take=Math.min(left,sum(caps)),part=allocateCents(caps,take);
     part.forEach((x,i)=>out[i]+=x);left-=take;
   }
-  if(left)throw new Error("可卖出金额不足，请调整赎回限制或减少取出资金。");
+  if(left)throw new Error("可卖出金额不足，请调整卖出策略或减少取出资金。");
   return out;
 }
 
@@ -419,7 +419,7 @@ function minimalInternalRebalance(post,policies){
     const take=Math.min(Math.abs(gap),Math.max(0,direction*(t[i]-final[i])));
     final[i]+=direction*take;gap-=direction*take;
   }
-  if(gap)throw new Error(gap<0?"赎回限制导致内部卖出资金不足。":"内部再平衡资金未配平。");
+  if(gap)throw new Error(gap<0?"卖出策略导致内部卖出资金不足。":"内部再平衡资金未配平。");
   for(let i=0;i<final.length;i++){
     const lo=breach[i]?b[i].innerLow:b[i].low,hi=breach[i]?b[i].innerHigh:b[i].high;
     if(final[i]<lo||final[i]>hi)throw new Error("交易后金额未满足调整区间。");
@@ -440,7 +440,7 @@ function flowCorrection(amounts,flow,policies){
     // holding is protected, but never below its outer safe boundary.
     return policies[i]==='forbid'?0:Math.max(0,x-b[i].low);
   });
-  if(sum(caps)<budget)throw new Error("可用资金容量不足，请调整赎回限制或资金变动金额。");
+  if(sum(caps)<budget)throw new Error("可用资金容量不足，请调整卖出策略或资金变动金额。");
   const correctable=indices().filter(i=>caps[i]>0&&(direction>0?amounts[i]<b[i].low:amounts[i]>b[i].high));
   let best=null,lastError=null;
   for(let mask=0;mask<(1<<correctable.length);mask++){
@@ -468,7 +468,7 @@ function flowCorrection(amounts,flow,policies){
             part=allocateCents(widerBand,Math.min(remaining,sum(widerBand)));
             part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
           }
-          if(remaining)throw new Error("可卖出金额不足，请调整赎回限制或减少取出资金。");
+          if(remaining)throw new Error("可卖出金额不足，请调整卖出策略或减少取出资金。");
         }
         extra.forEach((x,i)=>allocation[i]+=x);left-=take;
       }
@@ -618,9 +618,9 @@ function createNode(tag,className,html){const node=document.createElement(tag);n
 function renderFunds(){
   const body=$("fundBody"),extraBody=$("fundExtraBody");body.innerHTML="";extraBody.innerHTML="";
   FUNDS.forEach(f=>{
-    const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.role}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
+    const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.category}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
       <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small><small class="live-deviation">—</small></div></div>`);
-    const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.name}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>赎回限制<select aria-label="${f.name}赎回限制" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
+    const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.displayName}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>卖出策略<select aria-label="${f.name}卖出策略" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
     body.appendChild(card);extraBody.appendChild(extra);
   });
   renderStaticFundInfo();
@@ -636,8 +636,8 @@ function updateBandLabels(){
     card.querySelector(".target-amount").textContent=`${fmt(FUNDS[i].targetW*100)}%`;
     card.querySelector(".outer-range").textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
   });
-  $("outerRule").textContent=`免调整范围：${compactNumber(CONFIG.absoluteBandPP)}/${compactNumber(CONFIG.relativeBandPct)} 规则`;
-  $("innerRule").textContent=`调整后位置：拉回偏差的 ${compactNumber(CONFIG.landingPct)}%`;
+  $("outerRule").textContent=`免调范围：${compactNumber(CONFIG.absoluteBandPP)} / ${compactNumber(CONFIG.relativeBandPct)} 规则`;
+  $("innerRule").textContent=`越界后：回调偏差的 ${compactNumber(CONFIG.landingPct)}%`;
 }
 function resetLiveCards(cards,extras){
   updateBandLabels();
@@ -669,7 +669,7 @@ function emptyRow(bodyId,colspan,message){
   const row=document.createElement("tr"),cell=document.createElement("td");
   cell.colSpan=colspan;cell.className="empty";cell.textContent=message;row.appendChild(cell);body.appendChild(row);
 }
-function invalidateResults(message="数据已变化，请重新点击“生成调整建议”。"){
+function invalidateResults(message="数据已变化，请重新点击“生成建议”。"){
   emptyRow("comparisonBody",4,message);emptyRow("resultBody",6,message);emptyRow("detailBody",7,message);
   SUMMARY_IDS.forEach(id=>$(id).textContent="—");
   ["quickFlow","quickTurnover","quickTrades","quickCount"].forEach(id=>$(id).textContent="—");
@@ -704,10 +704,10 @@ function externalFlowText(plan){return plan.flow>0?"新增 "+money(plan.flow):pl
 function renderExecutionSummary(plan){
   const buys=sum(plan.totalTrades.filter(amount=>amount>0)),sells=-sum(plan.totalTrades.filter(amount=>amount<0)),count=plan.totalTrades.filter(Boolean).length;
   let headline;
-  if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，外部资金与内部转换均为零。";
+  if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，资金变动与基金间转换均为零。";
   else{
-    const parts=[plan.flow>0?`新增 ${money(plan.flow)}`:plan.flow<0?`取出 ${money(-plan.flow)}`:"无外部资金变动"];
-    parts.push(plan.internalTurnover?`内部转换 ${money(plan.internalTurnover)}`:"无内部转换");
+    const parts=[plan.flow>0?`新增 ${money(plan.flow)}`:plan.flow<0?`取出 ${money(-plan.flow)}`:"无资金变动"];
+    parts.push(plan.internalTurnover?`基金间转换 ${money(plan.internalTurnover)}`:"无基金间转换");
     headline=parts.join("，")+"。";
   }
   $("summaryHeadline").textContent=headline;$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
@@ -715,23 +715,23 @@ function renderExecutionSummary(plan){
 }
 function renderComparison(plan){
   $("comparisonBody").innerHTML="";
-  FUNDS.forEach((fund,i)=>appendRow("comparisonBody",`<td class="comparison-fund"><div>${fund.name}</div><div class="code">${fund.code}</div></td><td class="before-weight" data-label="调整前">${fmt(plan.amounts[i]/plan.currentTotal*100,2)}%</td><td class="target-weight" data-label="目标">${fmt(fund.targetW*100,2)}%</td><td class="after-weight" data-label="调整后">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td>`));
+  FUNDS.forEach((fund,i)=>appendRow("comparisonBody",`<td class="comparison-fund"><div>${fund.displayName}</div><div class="code">${fund.code}</div></td><td class="before-weight" data-label="调整前">${fmt(plan.amounts[i]/plan.currentTotal*100,2)}%</td><td class="target-weight" data-label="目标">${fmt(fund.targetW*100,2)}%</td><td class="after-weight" data-label="调整后">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td>`));
 }
 // Explanations consume only decisions already returned by computePlan; they do
 // not reproduce threshold, allocation, or rounding rules in the UI layer.
 function adjustmentReason(plan,i){
   const trade=plan.totalTrades[i],flowPart=plan.flowTrades[i],internalPart=plan.internal[i],rounding=plan.rounding[i];
-  if(plan.force)return trade?`强制回到目标比例，${trade>0?"买入":"卖出"}至目标附近。`:"已在目标附近，无需操作。";
+  if(plan.force)return trade?`按目标比例调整，${trade>0?"买入":"卖出"}至目标附近。`:"已在目标附近，无需操作。";
   if(!trade){
     if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
-    if(flowPart||internalPart)return"资金分配与内部转换相抵，最终无需操作。";
-    return plan.flow?"资金处理后位于免调整范围内，无需操作。":"当前位于免调整范围内，无需操作。";
+    if(flowPart||internalPart)return"资金分配与基金间转换相抵，最终无需操作。";
+    return plan.flow?"资金分配后位于免调范围内，无需操作。":"当前位于免调范围内，无需操作。";
   }
   const reasons=[];
   if(flowPart)reasons.push(plan.flow>0?"新增资金分配买入":"取出资金分配卖出");
   if(internalPart){
     const action=internalPart>0?"买入":"卖出";
-    reasons.push(plan.postFlowBreaches[i]?`资金处理后仍越界，参与内部转换${action}`:`为配平越界基金，参与内部转换${action}`);
+    reasons.push(plan.postFlowBreaches[i]?`资金分配后仍越界，参与基金间转换${action}`:`为配平越界基金，参与基金间转换${action}`);
   }
   if(!flowPart&&!internalPart)reasons.push(`取整配平产生${trade>0?"买入":"卖出"}`);
   if(rounding)reasons.push("最终金额已按执行单位取整");
@@ -739,13 +739,13 @@ function adjustmentReason(plan,i){
 }
 function renderPlanStatus(plan,force,breachCount){
   let type,verdict,detail;
-  if(force){type="warn";verdict="已强制恢复目标比例";detail="本次忽略触发阈值和最小换手规则，已按执行单位取整配平。";}
+  if(force){type="warn";verdict="已按目标比例调整";detail="本次忽略免调范围，已按执行单位取整并调整到目标附近。";}
   else if(!breachCount){
     type="ok";verdict="无需调整";
-    detail=plan.flow?"外部资金已优先用于纠偏，处理后无需内部换仓。":"当前持仓在允许区间内，不建议再平衡。";
+    detail=plan.flow?"本次资金已完成纠偏，无需基金间转换。":"当前持仓均在免调范围内，无需调整。";
   }else{
     type="warn";verdict="需要调整";
-    detail="处理资金变动后仍超出免调整范围："+FUNDS.filter((_,i)=>plan.postFlowBreaches[i]).map(f=>f.code).join("、")+"，已按最小换手拉回安全位置。";
+    detail="资金分配后仍有基金越界："+FUNDS.filter((_,i)=>plan.postFlowBreaches[i]).map(f=>f.code).join("、")+"，已按最小换手原则调整至安全区间。";
   }
   const box=document.createElement("div");box.className="statusbox "+type;
   box.innerHTML=`<strong class="status-verdict">${verdict}</strong><span class="status-detail">${detail}</span>`;
@@ -755,7 +755,7 @@ function renderPlanRows(plan,holdings,policies){
   $("resultBody").innerHTML="";$("detailBody").innerHTML="";
   FUNDS.forEach((fund,i)=>{
     const policy=SELL_POLICIES[policies[i]],trade=plan.totalTrades[i];
-    appendRow("resultBody",`<td class="fund-cell"><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td data-label="最终操作" class="trade-cell ${tradeClass(trade)}">${tradeText(trade)}</td><td data-label="交易后金额">${money(plan.final[i])}</td><td data-label="预计占比">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td><td class="policy-result" data-label="赎回限制"><span class="tag ${policy.tagClass}">${policy.resultLabel}</span></td><td class="reason-cell" data-label="调整说明">${adjustmentReason(plan,i)}</td>`);
+    appendRow("resultBody",`<td class="fund-cell"><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td data-label="操作" class="trade-cell ${tradeClass(trade)}">${tradeText(trade)}</td><td data-label="调整后金额">${money(plan.final[i])}</td><td data-label="调整后占比">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td><td class="policy-result" data-label="卖出策略"><span class="tag ${policy.tagClass}">${policy.resultLabel}</span></td><td class="reason-cell" data-label="原因">${adjustmentReason(plan,i)}</td>`);
     const rounding=plan.rounding[i]?((plan.rounding[i]>0?"增加 ":"减少 ")+money(Math.abs(plan.rounding[i]))):"无";
     appendRow("detailBody",`<td><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td>${money(holdings.confirmed[i])}</td><td class="${tradeClass(holdings.pending[i])}">${tradeText(holdings.pending[i])}</td><td class="${tradeClass(plan.flowTrades[i])}">${tradeText(plan.flowTrades[i])}</td><td class="${tradeClass(plan.internal[i])}">${tradeText(plan.internal[i])}</td><td class="${tradeClass(plan.rounding[i])}">${rounding}</td><td class="${tradeClass(trade)}">${tradeText(trade)}</td>`);
   });
@@ -763,14 +763,14 @@ function renderPlanRows(plan,holdings,policies){
 function renderExecutionNote(plan){
   const notes=[];
   if(plan.totalTrades.some(amount=>amount<0))notes.push("卖出前请核对持有期和赎回费率。");
-  if(plan.smallRequired.length)notes.push("低于最低交易额的必要交易会保留，以处理尾差或防止越界。");
+  if(plan.smallRequired.length)notes.push("低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。");
   notes.push(`建议金额按 ${compactNumber(CONFIG.roundYuan)} CNY 取整，不含费用及确认期间的净值变化。`);
   $("execNote").textContent=notes.join("");
 }
 function buildCopyText(plan){
-  const lines=["债基再平衡执行方案",`外部资金：${externalFlowText(plan)}`,`内部转换：${money(plan.internalTurnover)}`,""];
-  FUNDS.forEach((fund,i)=>lines.push(`${fund.code} ${fund.name}：${tradeText(plan.totalTrades[i])}`));
-  lines.push("","比例对比（调整前 / 目标 / 调整后）");
+  const lines=["债基再平衡执行方案",`资金变动：${externalFlowText(plan)}`,`基金间转换：${money(plan.internalTurnover)}`,""];
+  FUNDS.forEach((fund,i)=>lines.push(`${fund.code} ${fund.displayName}：${tradeText(plan.totalTrades[i])}`));
+  lines.push("","调整前后（调整前 / 目标 / 调整后）");
   FUNDS.forEach((fund,i)=>lines.push(`${fund.code}：${fmt(plan.amounts[i]/plan.currentTotal*100,2)}% / ${fmt(fund.targetW*100,2)}% / ${fmt(plan.final[i]/plan.afterTotal*100,2)}%`));
   return lines.join("\n");
 }
@@ -808,10 +808,10 @@ function setFieldValues(selector,value){$$(selector).forEach(field=>{field.value
 function clearAll(){
   if(typeof confirm==="function"&&!confirm("确定清空当前输入吗？"))return;
   setFieldValues(".amount","");setFieldValues(".pending",0);setFieldValues(".sell-policy","normal");$("cashFlow").value=0;clearFieldValidity($("cashFlow"));
-  invalidateResults("填写 4 项当前持仓后点击“生成调整建议”。");refreshLive();
+  invalidateResults("填写 4 项当前持仓后点击“生成建议”。");refreshLive();
   const first=$$(".amount")[0];if(first&&typeof first.focus==="function")first.focus();
 }
-function restoreDefaults(){writeSettingValues(DEFAULTS);applySettings(readSettings());invalidateResults("参数已恢复默认值，请重新点击“生成调整建议”。")}
+function restoreDefaults(){writeSettingValues(DEFAULTS);applySettings(readSettings());invalidateResults("参数已恢复默认值，请重新点击“生成建议”。")}
 
 function bindMainInputFlow(){
   const sequence=[...$$(".amount"),$("cashFlow")];

@@ -5,33 +5,33 @@ import { fillPortfolio, generate } from "./helpers.mjs";
 const AT_TARGET = [48, 32, 12, 4];
 
 test.describe("v1.2.0 操作层级", () => {
-  test("生成建议是唯一主操作，强制回到目标是次级操作并带说明", async ({ page }) => {
+  test("生成建议是唯一主操作，按目标比例调整是次级操作并带说明", async ({ page }) => {
     await page.goto("/");
     const check = page.locator("#check");
     const force = page.locator("#force");
     await expect(check).toHaveClass(/primary/);
     await expect(force).not.toHaveClass(/primary/);
-    await expect(page.locator(".force-hint")).toHaveText("忽略阈值与最小换手限制");
+    await expect(page.locator(".force-hint")).toHaveText("忽略免调范围，直接回到目标附近");
   });
 
-  test("强制回到目标仅生成方案，不需要确认弹窗", async ({ page }) => {
+  test("按目标比例调整仅生成方案，不需要确认弹窗", async ({ page }) => {
     await page.goto("/");
     let dialogFired = false;
     page.on("dialog", dialog => { dialogFired = true; dialog.dismiss(); });
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
     await page.locator("#force").click();
     expect(dialogFired).toBe(false);
-    await expect(page.locator("#status .status-verdict")).toHaveText("已强制恢复目标比例");
+    await expect(page.locator("#status .status-verdict")).toHaveText("已按目标比例调整");
   });
 
-  test("清空本次输入为低权重次级按钮，不再使用红色危险样式", async ({ page }) => {
+  test("清空输入为低权重次级按钮，不再使用红色危险样式", async ({ page }) => {
     await page.goto("/");
     const clear = page.locator("#clear");
     await expect(clear).toHaveClass(/btn-ghost/);
     await expect(clear).not.toHaveClass(/text-danger/);
     const color = await clear.evaluate(el => getComputedStyle(el).color);
     expect(color).not.toBe("rgb(215, 0, 21)");
-    await expect(clear).toHaveText("清空本次输入");
+    await expect(clear).toHaveText("清空输入");
   });
 });
 
@@ -43,7 +43,7 @@ test.describe("v1.2.0 结果结论与摘要合并", () => {
     const box = page.locator("#status .statusbox");
     await expect(box).toHaveClass(/ok/);
     await expect(box.locator(".status-verdict")).toHaveText("无需调整");
-    await expect(box.locator(".status-detail")).toContainText("允许区间内");
+    await expect(box.locator(".status-detail")).toContainText("免调范围内");
   });
 
   test("越界时结论框显示「需要调整」并说明免调范围", async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe("v1.2.0 结果结论与摘要合并", () => {
     const box = page.locator("#status .statusbox");
     await expect(box).toHaveClass(/warn/);
     await expect(box.locator(".status-verdict")).toHaveText("需要调整");
-    await expect(box.locator(".status-detail")).toContainText("超出免调整范围");
+    await expect(box.locator(".status-detail")).toContainText("基金越界");
   });
 
   test("输入变化后结论与状态框重置", async ({ page }) => {
@@ -85,7 +85,7 @@ test.describe("v1.2.0 百分比与说明", () => {
     for (let i = 0; i < await comparison.count(); i++) {
       await expect(comparison.nth(i)).toHaveText(/^\d{1,3}\.\d{2}%$/);
     }
-    const resultWeights = page.locator("#resultBody td[data-label='预计占比']");
+    const resultWeights = page.locator("#resultBody td[data-label='调整后占比']");
     for (let i = 0; i < await resultWeights.count(); i++) {
       await expect(resultWeights.nth(i)).toHaveText(/^\d{1,3}\.\d{2}%$/);
     }
@@ -101,7 +101,7 @@ test.describe("v1.2.0 百分比与说明", () => {
 
   test("footer 以低权重方式展示版本信息", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("footer.footer")).toContainText("v1.2.1");
+    await expect(page.locator("footer.footer")).toContainText("v1.2.2");
   });
 });
 
@@ -189,7 +189,7 @@ test.describe("v1.2.0 手机端 sticky 说明收口", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const hint = page.locator(".action-dock .force-hint");
-    await expect(hint).toHaveText("忽略阈值与最小换手限制");
+    await expect(hint).toHaveText("忽略免调范围，直接回到目标附近");
     // 未填完四项：静态状态，说明可见
     await expect(hint).toBeVisible();
     // 填完四项：进入 sticky 状态，说明隐藏，只保留两个按钮

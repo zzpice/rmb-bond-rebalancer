@@ -47,12 +47,12 @@ test.describe("v1.1.0 结果说明", () => {
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
     await generate(page);
 
-    await expect(page.locator("#summaryHeadline")).toHaveText("无需买卖，外部资金与内部转换均为零。");
+    await expect(page.locator("#summaryHeadline")).toHaveText("无需买卖，资金变动与基金间转换均为零。");
     await expect(page.locator("#resultBody .reason-cell")).toHaveText([
-      "当前位于免调整范围内，无需操作。",
-      "当前位于免调整范围内，无需操作。",
-      "当前位于免调整范围内，无需操作。",
-      "当前位于免调整范围内，无需操作。"
+      "当前位于免调范围内，无需操作。",
+      "当前位于免调范围内，无需操作。",
+      "当前位于免调范围内，无需操作。",
+      "当前位于免调范围内，无需操作。"
     ]);
   });
 
@@ -60,33 +60,33 @@ test.describe("v1.1.0 结果说明", () => {
     { name: "资金流入", flow: 1, expected: "新增 CNY 10,000.00" },
     { name: "资金流出", flow: -1, expected: "取出 CNY 10,000.00" }
   ]) {
-    test(`执行摘要明确区分${scenario.name}且无内部转换`, async ({ page }) => {
+    test(`执行摘要明确区分${scenario.name}且无基金间转换`, async ({ page }) => {
       await page.goto("/");
       await fillPortfolio(page, { holdings: AT_TARGET, flow: scenario.flow });
       await generate(page);
 
       await expect(page.locator("#quickFlow")).toHaveText(scenario.expected);
       await expect(page.locator("#quickTurnover")).toHaveText("CNY 0.00");
-      await expect(page.locator("#summaryHeadline")).toContainText("无内部转换");
+      await expect(page.locator("#summaryHeadline")).toContainText("无基金间转换");
     });
   }
 
-  test("内部再平衡仅展示可靠汇总金额，原因来自资金分配和内部转换结果", async ({ page }) => {
+  test("内部再平衡仅展示可靠汇总金额，原因来自资金分配和基金间转换结果", async ({ page }) => {
     await page.goto("/");
     await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
     await generate(page);
 
     await expect(page.locator("#quickFlow")).toHaveText("无");
     expect(parseMoney(await page.locator("#quickTurnover").textContent())).toBeGreaterThan(0);
-    await expect(page.locator("#summaryHeadline")).toContainText("内部转换");
-    await expect(page.locator("#resultBody .reason-cell").nth(0)).toContainText("参与内部转换买入");
-    await expect(page.locator("#resultBody .reason-cell").nth(1)).toContainText("参与内部转换卖出");
+    await expect(page.locator("#summaryHeadline")).toContainText("基金间转换");
+    await expect(page.locator("#resultBody .reason-cell").nth(0)).toContainText("参与基金间转换买入");
+    await expect(page.locator("#resultBody .reason-cell").nth(1)).toContainText("参与基金间转换卖出");
     await expect(page.locator("#summaryHeadline")).not.toContainText("→");
   });
 });
 
 test.describe("v1.1.0 执行操作", () => {
-  test("一键复制包含资金、逐只操作和比例对比", async ({ page }) => {
+  test("一键复制包含资金、逐只操作和调整前后", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "clipboard", {
         configurable: true,
@@ -102,10 +102,10 @@ test.describe("v1.1.0 执行操作", () => {
     await expect(page.locator("#copyStatus")).toHaveText("已复制到剪贴板");
     const copied = await page.evaluate(() => window.__copiedPlan);
     expect(copied).toContain("债基再平衡执行方案");
-    expect(copied).toContain("外部资金：新增 CNY 10,000.00");
-    expect(copied).toContain("内部转换：CNY 0.00");
-    expect(copied).toContain("002065 景顺长城景盛双息收益债券A类：");
-    expect(copied).toContain("比例对比（调整前 / 目标 / 调整后）");
+    expect(copied).toContain("资金变动：新增 CNY 10,000.00");
+    expect(copied).toContain("基金间转换：CNY 0.00");
+    expect(copied).toContain("002065 景顺长城景盛双息 A：");
+    expect(copied).toContain("调整前后（调整前 / 目标 / 调整后）");
   });
 
   test("Clipboard API 拒绝后尝试降级复制，并在降级失败时提供已选中的完整方案", async ({ page }) => {
@@ -132,7 +132,7 @@ test.describe("v1.1.0 执行操作", () => {
     expect(await page.evaluate(() => window.__fallbackText)).toContain("债基再平衡执行方案");
     const manual = page.locator("#manualCopy");
     await expect(manual).toBeVisible();
-    await expect(manual).toHaveValue(/外部资金：新增 CNY 10,000\.00/);
+    await expect(manual).toHaveValue(/资金变动：新增 CNY 10,000\.00/);
     const selection = await manual.evaluate(field => ({ start: field.selectionStart, end: field.selectionEnd, length: field.value.length }));
     expect(selection).toEqual({ start: 0, end: selection.length, length: selection.length });
     await expect(page.locator("#copyStatus")).toHaveText("自动复制失败，请复制下方内容");
@@ -147,7 +147,7 @@ test.describe("v1.1.0 执行操作", () => {
     await expect(page.locator("#copyPlan")).toBeDisabled();
   });
 
-  test("清空本次输入和恢复默认参数互不混淆", async ({ page }) => {
+  test("清空输入和恢复默认设置互不混淆", async ({ page }) => {
     page.on("dialog", dialog => dialog.accept());
     await page.goto("/");
     await fillPortfolio(page, {
@@ -265,7 +265,7 @@ test("手机端当前比例和目标标签不会溢出持仓卡片", async ({ pa
 });
 
 
-test("取整合并归零时说明真实原因而不是内部转换相抵", async ({ page }) => {
+test("取整合并归零时说明真实原因而不是基金间转换相抵", async ({ page }) => {
   await page.goto("/");
   await fillPortfolio(page, { holdings: AT_TARGET, flow: 3.33 });
   await generate(page);
@@ -273,5 +273,5 @@ test("取整合并归零时说明真实原因而不是内部转换相抵", async
   const row = page.locator("#resultBody tr").nth(3);
   await expect(row.locator(".trade-cell")).toHaveText("不操作");
   await expect(row.locator(".reason-cell")).toHaveText("建议金额经取整与小额合并后无需下单。");
-  await expect(row.locator(".reason-cell")).not.toContainText("内部转换相抵");
+  await expect(row.locator(".reason-cell")).not.toContainText("基金间转换相抵");
 });

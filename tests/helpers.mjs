@@ -9,10 +9,10 @@ import { expect } from "@playwright/test";
 
 export const FUND_CODES = ["002065", "110017", "270048", "007194"];
 export const FUND_NAMES = [
-  "景顺长城景盛双息收益债券A类",
-  "易方达增强回报债券A",
-  "广发纯债债券A",
-  "长城短债A"
+  "景顺长城景盛双息 A",
+  "易方达增强回报 A",
+  "广发纯债 A",
+  "长城短债 A"
 ];
 
 // "CNY 1,234.56" -> integer cents

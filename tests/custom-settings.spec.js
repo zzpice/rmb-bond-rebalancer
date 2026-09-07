@@ -11,7 +11,7 @@ test.describe("高级阈值设置会改变真实计算", () => {
     });
     await generate(page);
 
-    await expect(page.locator("#outerRule")).toContainText("2/25");
+    await expect(page.locator("#outerRule")).toContainText("2 / 25");
     const result = await readResult(page);
     expect(result.trades).toEqual([-2.04, 2.04, 0, 0].map(wanToCents));
     expect(result.finals).toEqual([48.96, 31.04, 12, 4].map(wanToCents));
@@ -26,7 +26,7 @@ test.describe("高级阈值设置会改变真实计算", () => {
     });
     await generate(page);
 
-    await expect(page.locator("#outerRule")).toContainText("5/10");
+    await expect(page.locator("#outerRule")).toContainText("5 / 10");
     const result = await readResult(page);
     expect(result.trades).toEqual([0.3, 0, 0, -0.3].map(wanToCents));
     expect(result.finals).toEqual([47.8, 32, 12, 4.2].map(wanToCents));
