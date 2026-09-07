@@ -1,0 +1,107 @@
+name: Sync v1.2.2 Copy Assertions
+
+on:
+  push:
+    branches:
+      - feature/v1.2.2
+    paths:
+      - v122-sync-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/v1.2.2
+      - name: Align copy assertions with approved v1.2.2 wording
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          changes = {
+            'tests/at-target.spec.js': [
+              ('当前持仓在允许区间内，不建议再平衡。', '当前持仓均在免调范围内，无需调整。'),
+            ],
+            'tests/custom-settings.spec.js': [
+              ('toContainText("2/25")', 'toContainText("2 / 25")'),
+              ('toContainText("5/10")', 'toContainText("5 / 10")'),
+            ],
+            'tests/experience-v110.spec.js': [
+              ('无需买卖，外部资金与内部转换均为零。', '无需买卖，资金变动与基金间转换均为零。'),
+              ('当前位于免调整范围内，无需操作。', '当前位于免调范围内，无需操作。'),
+              ('且无内部转换', '且无基金间转换'),
+              ('toContainText("无内部转换")', 'toContainText("无基金间转换")'),
+              ('内部再平衡仅展示可靠汇总金额，原因来自资金分配和内部转换结果', '内部再平衡仅展示可靠汇总金额，原因来自资金分配和基金间转换结果'),
+              ('toContainText("内部转换")', 'toContainText("基金间转换")'),
+              ('参与内部转换买入', '参与基金间转换买入'),
+              ('参与内部转换卖出', '参与基金间转换卖出'),
+              ('一键复制包含资金、逐只操作和比例对比', '一键复制包含资金、逐只操作和调整前后'),
+              ('外部资金：新增 CNY 10,000.00', '资金变动：新增 CNY 10,000.00'),
+              ('内部转换：CNY 0.00', '基金间转换：CNY 0.00'),
+              ('002065 景顺长城景盛双息收益债券A类：', '002065 景顺长城景盛双息 A：'),
+              ('比例对比（调整前 / 目标 / 调整后）', '调整前后（调整前 / 目标 / 调整后）'),
+              ('/外部资金：新增 CNY 10,000\\.00/', '/资金变动：新增 CNY 10,000\\.00/'),
+              ('清空本次输入和恢复默认参数互不混淆', '清空输入和恢复默认设置互不混淆'),
+              ('取整合并归零时说明真实原因而不是内部转换相抵', '取整合并归零时说明真实原因而不是基金间转换相抵'),
+              ('内部转换相抵', '基金间转换相抵'),
+            ],
+            'tests/force.spec.js': [
+              ('已强制恢复目标比例', '已按目标比例调整'),
+            ],
+            'tests/invalid.spec.js': [
+              ('高级设置越界（拉回比例 95%）', '高级设置越界（回调比例 95%）'),
+              ('越界后拉回比例须为允许偏差的 10%～90%', '越界后回调比例须为允许偏差的 10%～90%'),
+            ],
+            'tests/min-trade.spec.js': [
+              ('低于最低交易额的必要交易会保留', '低于小额交易阈值的必要交易会保留'),
+              ('最低交易额须为 0～100,000 CNY 的整数', '小额交易阈值须为 0～100,000 CNY 的整数'),
+            ],
+          }
+
+          for path, pairs in changes.items():
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              p.write_text(text, encoding='utf-8')
+
+          Path('.github/workflows/test.yml').write_text('''name: Regression & UI Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches-ignore: [main]
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+''', encoding='utf-8')
+          Path('.github/workflows/v122-sync-tests.yml').unlink(missing_ok=True)
+          Path('v122-sync-trigger.txt').unlink(missing_ok=True)
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "test: align v1.2.2 copy assertions"
+          git push origin HEAD:feature/v1.2.2
