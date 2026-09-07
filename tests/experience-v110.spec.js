@@ -108,6 +108,36 @@ test.describe("v1.1.0 执行操作", () => {
     expect(copied).toContain("比例对比（调整前 / 目标 / 调整后）");
   });
 
+  test("Clipboard API 拒绝后尝试降级复制，并在降级失败时提供已选中的完整方案", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: { writeText: async () => { throw new Error("permission denied"); } }
+      });
+      Object.defineProperty(document, "execCommand", {
+        configurable: true,
+        value: command => {
+          window.__fallbackCommand = command;
+          window.__fallbackText = document.activeElement?.value;
+          return false;
+        }
+      });
+    });
+    await page.goto("/");
+    await fillPortfolio(page, { holdings: AT_TARGET, flow: 1 });
+    await generate(page);
+    await page.locator("#copyPlan").click();
+
+    expect(await page.evaluate(() => window.__fallbackCommand)).toBe("copy");
+    expect(await page.evaluate(() => window.__fallbackText)).toContain("债基再平衡执行方案");
+    const manual = page.locator("#manualCopy");
+    await expect(manual).toBeVisible();
+    await expect(manual).toHaveValue(/外部资金：新增 CNY 10,000\.00/);
+    const selection = await manual.evaluate(field => ({ start: field.selectionStart, end: field.selectionEnd, length: field.value.length }));
+    expect(selection).toEqual({ start: 0, end: selection.length, length: selection.length });
+    await expect(page.locator("#copyStatus")).toHaveText("自动复制失败，请复制下方内容");
+  });
+
   test("输入变化后旧方案不可继续复制", async ({ page }) => {
     await page.goto("/");
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
@@ -144,7 +174,7 @@ test.describe("v1.1.0 执行操作", () => {
 });
 
 test.describe("v1.1.0 PWA 安装体验", () => {
-  test("支持安装提示时唤起浏览器安装流程", async ({ page }) => {
+  test("安装提示取消后隐藏失效按钮，直到浏览器重新触发安装事件", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => {
       const event = new Event("beforeinstallprompt");
@@ -157,7 +187,16 @@ test.describe("v1.1.0 PWA 安装体验", () => {
     await expect(page.locator("#installApp")).toHaveText("安装应用");
     await page.locator("#installApp").click();
     expect(await page.evaluate(() => window.__installPrompted)).toBe(true);
+    await expect(page.locator("#installApp")).toBeHidden();
+
+    await page.evaluate(() => {
+      const event = new Event("beforeinstallprompt");
+      event.prompt = async () => {};
+      event.userChoice = Promise.resolve({ outcome: "dismissed", platform: "web" });
+      window.dispatchEvent(event);
+    });
     await expect(page.locator("#installApp")).toBeVisible();
+    await expect(page.locator("#installApp")).toHaveText("安装应用");
   });
 
   test("iOS 显示添加到主屏幕指引", async ({ page }) => {

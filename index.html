@@ -72,6 +72,7 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .statusbox.bad{background:var(--redbg);color:var(--red)}
 .statusbox.warn{background:var(--amberbg);color:var(--amber)}
 .result-lead{margin-bottom:13px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:12px 0 16px}.summary-headline{font-size:16px;font-weight:700;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:11px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:14px}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-details .summary{margin-top:10px}
+.manual-copy{width:100%;min-height:150px;margin:8px 0 0;resize:vertical;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.manual-copy[hidden]{display:none}
 .buy{color:var(--green);font-weight:700}.sell{color:var(--red);font-weight:700}.hold{color:var(--muted)}
 .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:650}
 .tag.ok{background:var(--greenbg);color:var(--green)}
@@ -238,6 +239,7 @@ label{font-size:12px;color:var(--muted)}
       <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示比例对比</td></tr></tbody>
     </table></div>
     <div class="execution-title"><h3>执行清单</h3><div class="result-tools"><span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span><button class="copy-button" id="copyPlan" type="button" disabled>复制执行方案</button></div></div>
+    <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
     <div class="table-wrap"><table class="result-table">
       <thead><tr><th>基金</th><th>最终操作</th><th>预计交易后金额</th><th>预计占比</th><th>赎回限制</th><th>调整说明</th></tr></thead>
       <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成调整建议”</td></tr></tbody>
@@ -645,7 +647,7 @@ function invalidateResults(message="数据已变化，请重新点击“生成�
   SUMMARY_IDS.forEach(id=>$(id).textContent="—");
   ["quickFlow","quickTurnover","quickTrades","quickCount"].forEach(id=>$(id).textContent="—");
   $("summaryHeadline").textContent="生成建议后显示执行摘要";$("status").innerHTML="";$("roleSummary").textContent="";$("execNote").textContent="";
-  copyPlanText="";$("copyPlan").disabled=true;$("copyPlan").textContent="复制执行方案";$("copyStatus").textContent="";
+  copyPlanText="";$("copyPlan").disabled=true;$("copyPlan").textContent="复制执行方案";$("copyStatus").textContent="";$("manualCopy").value="";$("manualCopy").hidden=true;
 }
 function tradeClass(amount){return amount>0?"buy":amount<0?"sell":"hold"}
 function tradeText(amount){return amount>0?"买入 "+money(amount):amount<0?"卖出 "+money(-amount):"不操作"}
@@ -738,15 +740,16 @@ function buildCopyText(plan){
 }
 let copyPlanText="",copyResetTimer;
 async function writeClipboard(text){
-  if(typeof navigator!=="undefined"&&navigator.clipboard?.writeText)return navigator.clipboard.writeText(text);
-  const field=document.createElement("textarea");field.value=text;field.setAttribute("readonly","");field.style.position="fixed";field.style.opacity="0";document.body.appendChild(field);field.select();
+  if(typeof navigator!=="undefined"&&navigator.clipboard?.writeText){try{await navigator.clipboard.writeText(text);return}catch{}}
+  const field=document.createElement("textarea");field.value=text;field.setAttribute("readonly","");field.style.position="fixed";field.style.left="-9999px";field.style.top="0";document.body.appendChild(field);field.focus();field.select();field.setSelectionRange(0,field.value.length);
   const copied=document.execCommand&&document.execCommand("copy");field.remove();if(!copied)throw new Error("copy failed");
 }
+function revealManualCopy(text){const field=$("manualCopy");field.value=text;field.hidden=false;field.focus();field.select();field.setSelectionRange(0,field.value.length)}
 async function copyPlan(){
   if(!copyPlanText)return;
   const button=$("copyPlan");clearTimeout(copyResetTimer);
   try{await writeClipboard(copyPlanText);button.textContent="已复制";$("copyStatus").textContent="已复制到剪贴板"}
-  catch{button.textContent="复制失败";$("copyStatus").textContent="请手动复制"}
+  catch{revealManualCopy(copyPlanText);button.textContent="已选中方案";$("copyStatus").textContent="自动复制失败，请复制下方内容"}
   copyResetTimer=setTimeout(()=>{button.textContent="复制执行方案";$("copyStatus").textContent=""},1800);
 }
 
@@ -820,8 +823,8 @@ async function installApp(){
   if(isStandalone()){hideInstallEntry();return}
   if(deferredInstallPrompt){
     const prompt=deferredInstallPrompt;deferredInstallPrompt=null;
-    try{await prompt.prompt();const choice=await prompt.userChoice;if(choice?.outcome==="accepted")hideInstallEntry();else showInstallEntry("安装应用")}
-    catch{showInstallEntry("安装应用")}
+    try{await prompt.prompt();await prompt.userChoice}catch{}
+    hideInstallEntry();
     return;
   }
   if(isIOSDevice()){const guide=$("installGuide");guide.hidden=false;$("installApp").setAttribute("aria-expanded","true")}
