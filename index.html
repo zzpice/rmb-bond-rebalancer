@@ -525,7 +525,7 @@ function renderFunds(){
     body.appendChild(card);extraBody.appendChild(extra);
   });
   document.querySelectorAll(".amount,.pending").forEach(x=>x.addEventListener("input",()=>{if(typeof x.setCustomValidity==="function")x.setCustomValidity("");invalidateResults();refreshLive()}));
-  document.querySelectorAll(".sell-policy").forEach(x=>x.addEventListener("change",invalidateResults));updateBandLabels();bindMainInputFlow();
+  document.querySelectorAll(".sell-policy").forEach(x=>x.addEventListener("change",()=>invalidateResults()));updateBandLabels();bindMainInputFlow();
 }
 function updateBandLabels(){
   [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>{const label=card.querySelector(".target-label");if(label)label.textContent=`目标 ${fmt(FUNDS[i].targetW*100)}%`});
