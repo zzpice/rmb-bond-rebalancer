@@ -63,8 +63,7 @@ details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-
 button{cursor:pointer;font-weight:650;touch-action:manipulation;transition:transform .12s ease,opacity .12s ease}
 button:active{transform:scale(.975);opacity:.78}
 button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-button.danger{color:var(--red)}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.settings-actions{margin-top:12px}
 .summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .stat{border:1px solid var(--line);border-radius:10px;padding:12px}
 .k{font-size:12px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:3px;overflow-wrap:anywhere}
@@ -83,7 +82,6 @@ button.danger{color:var(--red)}
 .field{display:flex;flex-direction:column;gap:5px;min-width:210px}
 label{font-size:12px;color:var(--muted)}
 .exec-note{margin-top:10px;font-size:12px;color:var(--muted)}
-.mobile-label{display:none}
 .footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}
 @media(max-width:900px){
   .header{flex-direction:column;align-items:flex-start}
@@ -144,7 +142,7 @@ label{font-size:12px;color:var(--muted)}
   <div class="header">
     <div>
       <h1>债基再平衡助手</h1>
-      <div class="sub">目标比例：50% / 33.33% / 12.50% / 4.17%。</div>
+      <div class="sub" id="targetSummary"></div>
     </div>
     <div class="badge">CNY · 最小换手</div>
   </div>
@@ -173,7 +171,7 @@ label{font-size:12px;color:var(--muted)}
           <small>优先用新增或取出资金纠偏，再考虑基金间转换。</small>
         </div>
       </div>
-      <details class="inline-help"><summary>查看各基金免调整范围</summary><dl class="help-list"><dt>002065</dt><dd>目标 50%，45%～55% 内不调整。</dd><dt>110017</dt><dd>目标 33.33%，28.33%～38.33% 内不调整。</dd><dt>270048</dt><dd>目标 12.50%，9.38%～15.63% 内不调整。</dd><dt>007194</dt><dd>目标 4.17%，3.13%～5.21% 内不调整。</dd></dl></details>
+      <details class="inline-help"><summary>查看各基金免调整范围</summary><dl class="help-list" id="bandHelp"></dl></details>
       <div class="plain-tip">建议按季度检查；发生较大申购或赎回时可额外检查。</div>
     </div>
   </details>
@@ -204,13 +202,13 @@ label{font-size:12px;color:var(--muted)}
     <summary>高级设置</summary>
     <div class="details-inner">
       <div class="setting-grid">
-        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number" inputmode="decimal" min="0.01" max="20" step="0.01" value="5"></div>
-        <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number" inputmode="decimal" min="0.01" max="100" step="0.01" value="25"></div>
-        <div class="field"><label for="landingPct">越界后拉回偏差（%）</label><div class="field-help">50% 表示拉回目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number" inputmode="decimal" min="10" max="90" step="1" value="50"></div>
-        <div class="field"><label for="roundYuan">取整单位（CNY）</label><div class="field-help">让建议更方便下单。</div><input class="setting" id="roundYuan" type="number" inputmode="numeric" min="1" max="10000" step="1" value="100"></div>
-        <div class="field"><label for="minTradeYuan">忽略低于（CNY）</label><div class="field-help">合并不必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number" inputmode="numeric" min="0" max="100000" step="100" value="5000"></div>
+        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调整范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
+        <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number"></div>
+        <div class="field"><label for="landingPct">越界后拉回偏差（%）</label><div class="field-help">50% 表示拉回目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number"></div>
+        <div class="field"><label for="roundYuan">取整单位（CNY）</label><div class="field-help">让建议更方便下单。</div><input class="setting" id="roundYuan" type="number"></div>
+        <div class="field"><label for="minTradeYuan">忽略低于（CNY）</label><div class="field-help">合并不必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number"></div>
       </div>
-      <div class="actions" style="margin-top:12px"><button id="restoreDefaults">恢复推荐值</button></div>
+      <div class="actions settings-actions"><button id="restoreDefaults">恢复推荐值</button></div>
       <div class="note">推荐值适合低频、低换手使用。为保证配平或不越界，必要的小额交易仍会保留。</div>
     </div>
   </details>
@@ -257,7 +255,14 @@ label{font-size:12px;color:var(--muted)}
 <script>
 // All holdings and trades use integer cents. Inputs are in ten-thousand CNY.
 const DEN=960,CENTS_PER_WAN=1000000,INPUT_UNITS_PER_WAN=10000;
-const DEFAULTS={absoluteBandPP:5,relativeBandPct:25,landingPct:50,roundYuan:100,minTradeYuan:5000};
+const SETTING_DEFINITIONS=[
+  {id:"absoluteBandPP",defaultValue:5,min:0.01,max:20,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=20,error:"绝对触发阈值须大于 0 且不超过 20 个百分点。"},
+  {id:"relativeBandPct",defaultValue:25,min:0.01,max:100,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=100,error:"相对触发阈值须大于 0% 且不超过 100%。"},
+  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后拉回比例须为允许偏差的 10%～90%。"},
+  {id:"roundYuan",defaultValue:100,min:1,max:10000,step:1,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=1&&value<=10000,error:"取整单位须为 1～10,000 CNY 的整数。"},
+  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"最低交易额须为 0～100,000 CNY 的整数。"}
+];
+const DEFAULTS=Object.fromEntries(SETTING_DEFINITIONS.map(({id,defaultValue})=>[id,defaultValue]));
 let CONFIG={...DEFAULTS};
 const FUNDS=[
   {name:"景顺长城景盛双息收益债券A类",code:"002065",url:"https://www.igwfmc.com/main/jjcp/product/002065/detail.html",targetW:1/2,role:"固收增强主仓",withdrawRank:2},
@@ -265,10 +270,18 @@ const FUNDS=[
   {name:"广发纯债债券A",code:"270048",url:"https://www.gffunds.com.cn/funds/?fundcode=270048",targetW:1/8,role:"纯债稳定仓",withdrawRank:1},
   {name:"长城短债A",code:"007194",url:"https://www.ccfund.com.cn/main/jjcp/cache/007194.shtml",targetW:1/24,role:"短债流动性仓",withdrawRank:0}
 ];
+const SELL_POLICIES={
+  normal:{optionLabel:"可以正常卖出",resultLabel:"正常",tagClass:"ok",sellPriority:0},
+  avoid:{optionLabel:"尽量不卖",resultLabel:"尽量不卖",tagClass:"neutral",sellPriority:1},
+  forbid:{optionLabel:"禁止卖出",resultLabel:"禁止卖出",tagClass:"bad",sellPriority:null}
+};
+const SELL_PRIORITY=Object.entries(SELL_POLICIES).filter(([,policy])=>policy.sellPriority!==null).sort((a,b)=>a[1].sellPriority-b[1].sellPriority).map(([name])=>name);
 const sum=a=>a.reduce((s,x)=>s+x,0);
 const indices=()=>FUNDS.map((_,i)=>i);
 const $=id=>document.getElementById(id);
+const $$=selector=>[...document.querySelectorAll(selector)];
 const fmt=(x,d=2)=>Number(x).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const compactNumber=x=>fmt(x,2).replace(/\.00$/,'');
 const money=x=>"CNY "+fmt((x||0)/100,2);
 const wanMoney=x=>fmt((x||0)/CENTS_PER_WAN,2)+" 万 CNY";
 const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer">${f.name}<span class="external" aria-hidden="true">↗</span></a>`;
@@ -308,9 +321,8 @@ function bounds(total){
 }
 function outerBreaches(a){const b=bounds(sum(a));return a.map((x,i)=>x<b[i].low||x>b[i].high)}
 function normalizePolicies(policies){
-  const allowed=new Set(['normal','avoid','forbid']);
   if(!Array.isArray(policies)||policies.length!==FUNDS.length)return FUNDS.map(()=>"normal");
-  return policies.map(x=>allowed.has(x)?x:"normal");
+  return policies.map(policy=>Object.prototype.hasOwnProperty.call(SELL_POLICIES,policy)?policy:"normal");
 }
 
 function allocateCents(capacity,budget){
@@ -328,7 +340,7 @@ function allocateCents(capacity,budget){
 function allocateByPolicy(capacity,budget,direction,policies){
   if(direction>0)return allocateCents(capacity,budget);
   const out=capacity.map(()=>0);let left=budget;
-  for(const policy of ['normal','avoid']){
+  for(const policy of SELL_PRIORITY){
     const caps=capacity.map((x,i)=>policies[i]===policy?x:0);
     const take=Math.min(left,sum(caps)),part=allocateCents(caps,take);
     part.forEach((x,i)=>out[i]+=x);left-=take;
@@ -399,7 +411,7 @@ function flowCorrection(amounts,flow,policies){
           extra=capacity.map(()=>0);let remaining=take;
           // Exhaust normal holdings before touching an "avoid" holding. Within
           // each policy, sell toward target before using the wider safe band.
-          for(const policy of ['normal','avoid']){
+          for(const policy of SELL_PRIORITY){
             const towardTarget=capacity.map((x,i)=>policies[i]===policy?Math.min(x,Math.max(0,preferred[i]-allocation[i])):0);
             let part=allocateCents(towardTarget,Math.min(remaining,sum(towardTarget)));
             part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
@@ -497,86 +509,121 @@ function computePlan(input,flowInput,force=false,options={}){
   return {...exact,rawFinal:exactFinal,rawTotalTrades:totalTrades,totalTrades:practical.trades,final:practical.final,rounding:practical.rounding,smallRequired:practical.smallRequired,internalTurnover:(sum(practical.trades.map(Math.abs))-Math.abs(flow))/2};
 }
 
-function rawAmounts(){return [...document.querySelectorAll(".amount")].map(x=>String(x.value).trim())}
-function rawPending(){return [...document.querySelectorAll(".pending")].map(x=>String(x.value).trim())}
-function rawPolicies(){return [...document.querySelectorAll(".sell-policy")].map(x=>x.value)}
+const SUMMARY_IDS=["sCurrent","sAfter","sBreach","sTurnover","sBuy","sSell"];
+const POLICY_OPTIONS=Object.entries(SELL_POLICIES).map(([value,{optionLabel}])=>`<option value="${value}">${optionLabel}</option>`).join("");
+
+function fieldValue(field){return String(field.value).trim()}
+function clearFieldValidity(field){if(typeof field?.setCustomValidity==="function")field.setCustomValidity("")}
 function fieldError(field,message){const error=new Error(message);error.field=field;throw error}
+function centsFromField(field,emptyAsZero=false){
+  try{return toCents(fieldValue(field)||(emptyAsZero?0:""))}
+  catch(error){error.field=field;throw error}
+}
+function readPolicies(){return $$(".sell-policy").map(field=>field.value)}
+function readHoldings(){
+  const amountFields=$$(".amount"),pendingFields=$$(".pending");
+  const blankIndex=amountFields.findIndex(field=>fieldValue(field)==="");
+  if(blankIndex>=0)fieldError(amountFields[blankIndex],"请把 4 只基金的当前金额全部填写完整。");
+
+  const confirmed=amountFields.map(field=>centsFromField(field));
+  const pending=pendingFields.map(field=>centsFromField(field,true));
+  const effective=confirmed.map((amount,i)=>amount+pending[i]);
+  const total=sum(effective);
+  const negativeIndex=confirmed.findIndex(amount=>amount<0);
+  if(negativeIndex>=0)fieldError(amountFields[negativeIndex],"当前持仓不能为负数。");
+  const overdrawnIndex=effective.findIndex(amount=>amount<0);
+  if(overdrawnIndex>=0)fieldError(pendingFields[overdrawnIndex],"在途卖出不能超过对应基金的当前持仓。");
+  if(total<=0)fieldError(amountFields[0],"预计当前总资产必须大于 0。");
+  if(!Number.isSafeInteger(total*DEN))fieldError(amountFields[0],"金额超出精确计算范围。");
+  return {confirmed,pending,effective,values:effective.map(amount=>amount/CENTS_PER_WAN)};
+}
+function holdingsState(){
+  try{return {ok:true,data:readHoldings()}}
+  catch(error){return {ok:false,error}}
+}
+
+function initializeSettingFields(){
+  for(const definition of SETTING_DEFINITIONS){
+    const field=$(definition.id);
+    field.min=definition.min;field.max=definition.max;field.step=definition.step;field.inputMode=definition.inputMode;
+  }
+  writeSettingValues(DEFAULTS);
+}
+function writeSettingValues(values){
+  for(const {id} of SETTING_DEFINITIONS){const field=$(id);field.value=values[id];clearFieldValidity(field)}
+}
 function readSettings(){
-  const settingIds=["absoluteBandPP","relativeBandPct","landingPct","roundYuan","minTradeYuan"];
-  const emptyId=settingIds.find(id=>String($(id).value).trim()==="");if(emptyId)fieldError($(emptyId),"请填写全部高级设置。");
-  const values={absoluteBandPP:Number($("absoluteBandPP").value),relativeBandPct:Number($("relativeBandPct").value),landingPct:Number($("landingPct").value),roundYuan:Number($("roundYuan").value),minTradeYuan:Number($("minTradeYuan").value)};
-  if(!(values.absoluteBandPP>0&&values.absoluteBandPP<=20))fieldError($("absoluteBandPP"),"绝对触发阈值须大于 0 且不超过 20 个百分点。");
-  if(!(values.relativeBandPct>0&&values.relativeBandPct<=100))fieldError($("relativeBandPct"),"相对触发阈值须大于 0% 且不超过 100%。");
-  if(!(values.landingPct>=10&&values.landingPct<=90))fieldError($("landingPct"),"越界后拉回比例须为允许偏差的 10%～90%。");
-  if(!(Number.isInteger(values.roundYuan)&&values.roundYuan>=1&&values.roundYuan<=10000))fieldError($("roundYuan"),"取整单位须为 1～10,000 CNY 的整数。");
-  if(!(Number.isInteger(values.minTradeYuan)&&values.minTradeYuan>=0&&values.minTradeYuan<=100000))fieldError($("minTradeYuan"),"最低交易额须为 0～100,000 CNY 的整数。");
+  const values={};
+  for(const definition of SETTING_DEFINITIONS){
+    const field=$(definition.id),raw=fieldValue(field);
+    if(raw==="")fieldError(field,"请填写全部高级设置。");
+    const value=Number(raw);
+    if(!definition.isValid(value))fieldError(field,definition.error);
+    values[definition.id]=value;
+  }
   return values;
 }
-function applySettings(values){CONFIG={...values};updateBands();updateBandLabels();refreshLive()}
+function applySettings(values,state){CONFIG={...values};updateBands();updateBandLabels();refreshLive(state)}
 
+function createNode(tag,className,html){const node=document.createElement(tag);node.className=className;node.innerHTML=html;return node}
 function renderFunds(){
   const body=$("fundBody"),extraBody=$("fundExtraBody");body.innerHTML="";extraBody.innerHTML="";
-  FUNDS.forEach((f,i)=>{
-    const card=document.createElement("article");card.className="fund-card";
-    card.innerHTML=`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.role}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
-      <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" data-i="${i}" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label">目标 ${fmt(f.targetW*100)}%</small></div></div>`;
-    const extra=document.createElement("div");extra.className="fund-extra-card";
-    extra.innerHTML=`<div class="extra-head">${f.name}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" data-i="${i}" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>赎回限制<select aria-label="${f.name}赎回限制" class="sell-policy" data-i="${i}"><option value="normal">可以正常卖出</option><option value="avoid">尽量不卖</option><option value="forbid">禁止卖出</option></select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`;
+  FUNDS.forEach(f=>{
+    const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.role}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
+      <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small></div></div>`);
+    const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.name}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>赎回限制<select aria-label="${f.name}赎回限制" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
     body.appendChild(card);extraBody.appendChild(extra);
   });
-  document.querySelectorAll(".amount,.pending").forEach(x=>x.addEventListener("input",()=>{if(typeof x.setCustomValidity==="function")x.setCustomValidity("");invalidateResults();refreshLive()}));
-  document.querySelectorAll(".sell-policy").forEach(x=>x.addEventListener("change",()=>invalidateResults()));updateBandLabels();bindMainInputFlow();
+  renderStaticFundInfo();
+  updateBandLabels();
+}
+function renderStaticFundInfo(){
+  $("targetSummary").textContent=`目标比例：${FUNDS.map(f=>compactNumber(f.targetW*100)+"%").join(" / ")}。`;
+  $("bandHelp").innerHTML=FUNDS.map(f=>`<dt>${f.code}</dt><dd>目标 ${compactNumber(f.targetW*100)}%，${compactNumber(f.outerLow*100)}%～${compactNumber(f.outerHigh*100)}% 内不调整。</dd>`).join("");
 }
 function updateBandLabels(){
-  [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>{const label=card.querySelector(".target-label");if(label)label.textContent=`目标 ${fmt(FUNDS[i].targetW*100)}%`});
+  [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>card.querySelector(".target-label").textContent=`目标 ${fmt(FUNDS[i].targetW*100)}%`);
   [...$("fundExtraBody").querySelectorAll(".fund-extra-card")].forEach((card,i)=>{
-    const target=card.querySelector(".target-amount"),outer=card.querySelector(".outer-range");
-    if(target)target.textContent=`${fmt(FUNDS[i].targetW*100)}%`;
-    if(outer)outer.textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
+    card.querySelector(".target-amount").textContent=`${fmt(FUNDS[i].targetW*100)}%`;
+    card.querySelector(".outer-range").textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
   });
-  $("outerRule").textContent=`免调整范围：${fmt(CONFIG.absoluteBandPP,CONFIG.absoluteBandPP%1?2:0)}/${fmt(CONFIG.relativeBandPct,CONFIG.relativeBandPct%1?2:0)} 规则`;
-  $("innerRule").textContent=`调整后位置：拉回偏差的 ${fmt(CONFIG.landingPct,CONFIG.landingPct%1?2:0)}%`;
+  $("outerRule").textContent=`免调整范围：${compactNumber(CONFIG.absoluteBandPP)}/${compactNumber(CONFIG.relativeBandPct)} 规则`;
+  $("innerRule").textContent=`调整后位置：拉回偏差的 ${compactNumber(CONFIG.landingPct)}%`;
 }
-function validatedHoldings(){
-  const amountEls=[...document.querySelectorAll(".amount")],pendingEls=[...document.querySelectorAll(".pending")],raw=rawAmounts(),pendingRaw=rawPending(),blank=raw.findIndex(v=>v==="");
-  if(blank>=0)return {ok:false,msg:"请把 4 只基金的当前金额全部填写完整。",field:amountEls[blank]};
-  try{
-    const confirmed=raw.map((v,i)=>{try{return toCents(v)}catch(e){e.field=amountEls[i];throw e}}),pending=pendingRaw.map((v,i)=>{try{return toCents(v||0)}catch(e){e.field=pendingEls[i];throw e}}),effective=confirmed.map((x,i)=>x+pending[i]);
-    const negative=confirmed.findIndex(x=>x<0);if(negative>=0)fieldError(amountEls[negative],"当前持仓不能为负数。");
-    const overdrawn=effective.findIndex(x=>x<0);if(overdrawn>=0)fieldError(pendingEls[overdrawn],"在途卖出不能超过对应基金的当前持仓。");
-    if(sum(effective)<=0)fieldError(amountEls[0],"预计当前总资产必须大于 0。");
-    if(!Number.isSafeInteger(sum(effective)*DEN))fieldError(amountEls[0],"金额超出精确计算范围。");
-    return {ok:true,confirmed,pending,effective,vals:effective.map(x=>x/CENTS_PER_WAN)};
-  }catch(e){return {ok:false,msg:e.message,field:e.field}}
+function resetLiveCards(cards,extras){
+  cards.forEach(card=>{card.querySelector(".curw").textContent="—";card.querySelector(".state").innerHTML='<span class="tag neutral">待填写</span>'});
+  extras.forEach(card=>card.querySelector(".distance").textContent="—");
 }
-function refreshLive(){
-  const v=validatedHoldings(),cards=[...$("fundBody").querySelectorAll(".fund-card")],extras=[...$("fundExtraBody").querySelectorAll(".fund-extra-card")];
-  if(!v.ok){updateBandLabels();cards.forEach(card=>{card.querySelector(".curw").textContent="—";card.querySelector(".state").innerHTML='<span class="tag neutral">待填写</span>'});extras.forEach(card=>card.querySelector(".distance").textContent="—");return}
-  const total=sum(v.effective),breach=outerBreaches(v.effective),target=targetCents(total),b=bounds(total);
+function refreshLive(state=holdingsState()){
+  const cards=[...$("fundBody").querySelectorAll(".fund-card")],extras=[...$("fundExtraBody").querySelectorAll(".fund-extra-card")];
+  if(!state.ok){resetLiveCards(cards,extras);return}
+  const holdings=state.data,total=sum(holdings.effective),breaches=outerBreaches(holdings.effective),targets=targetCents(total),limits=bounds(total);
   cards.forEach((card,i)=>{
-    const lowLimit=b[i].low,highLimit=b[i].high,x=v.effective[i];
-    const extra=extras[i];
-    extra.querySelector(".target-amount").innerHTML=`${wanMoney(target[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
-    extra.querySelector(".outer-range").innerHTML=`${wanMoney(lowLimit)} ～ ${wanMoney(highLimit)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
-    card.querySelector(".curw").textContent=fmt(x/total*100)+"%";
-    if(x<lowLimit)extra.querySelector(".distance").textContent="低于下限 "+wanMoney(lowLimit-x);
-    else if(x>highLimit)extra.querySelector(".distance").textContent="高于上限 "+wanMoney(x-highLimit);
-    else{
-      const dl=x-lowLimit,du=highLimit-x;
-      extra.querySelector(".distance").textContent=dl<=du?"距下限 "+wanMoney(dl):"距上限 "+wanMoney(du);
-    }
-    card.querySelector(".state").innerHTML=breach[i]?'<span class="tag bad">需调整</span>':'<span class="tag ok">范围内</span>';
+    const {low,high}=limits[i],amount=holdings.effective[i],extra=extras[i];
+    extra.querySelector(".target-amount").innerHTML=`${wanMoney(targets[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
+    extra.querySelector(".outer-range").innerHTML=`${wanMoney(low)} ～ ${wanMoney(high)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
+    card.querySelector(".curw").textContent=fmt(amount/total*100)+"%";
+    const distance=extra.querySelector(".distance");
+    if(amount<low)distance.textContent="低于下限 "+wanMoney(low-amount);
+    else if(amount>high)distance.textContent="高于上限 "+wanMoney(amount-high);
+    else distance.textContent=amount-low<=high-amount?"距下限 "+wanMoney(amount-low):"距上限 "+wanMoney(high-amount);
+    card.querySelector(".state").innerHTML=breaches[i]?'<span class="tag bad">需调整</span>':'<span class="tag ok">范围内</span>';
   });
 }
+
 function emptyRow(bodyId,colspan,message){
-  const body=$(bodyId);body.innerHTML="";const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=colspan;td.className="empty";td.textContent=message;tr.appendChild(td);body.appendChild(tr);
+  const body=$(bodyId);body.innerHTML="";
+  const row=document.createElement("tr"),cell=document.createElement("td");
+  cell.colSpan=colspan;cell.className="empty";cell.textContent=message;row.appendChild(cell);body.appendChild(row);
 }
 function invalidateResults(message="数据已变化，请重新点击“生成调整建议”。"){
-  emptyRow("resultBody",5,message);emptyRow("detailBody",7,message);["sCurrent","sAfter","sBreach","sTurnover","sBuy","sSell"].forEach(id=>$(id).textContent="—");$("status").innerHTML="";$("roleSummary").textContent="";$("execNote").textContent="";
+  emptyRow("resultBody",5,message);emptyRow("detailBody",7,message);
+  SUMMARY_IDS.forEach(id=>$(id).textContent="—");
+  $("status").innerHTML="";$("roleSummary").textContent="";$("execNote").textContent="";
 }
-function tradeClass(x){return x>0?"buy":x<0?"sell":"hold"}
-function tradeText(x){return x>0?"买入 "+money(x):x<0?"卖出 "+money(-x):"不操作"}
-function policyText(x){return x==='forbid'?"禁止卖出":x==='avoid'?"尽量不卖":"正常"}
+function tradeClass(amount){return amount>0?"buy":amount<0?"sell":"hold"}
+function tradeText(amount){return amount>0?"买入 "+money(amount):amount<0?"卖出 "+money(-amount):"不操作"}
+function appendRow(bodyId,html){const row=document.createElement("tr");row.innerHTML=html;$(bodyId).appendChild(row)}
 function showStatus(type,text){const box=document.createElement("div");box.className="statusbox "+type;box.textContent=text;$("status").appendChild(box)}
 function scrollElementIntoView(element){
   if(!element||typeof element.scrollIntoView!=="function")return;
@@ -589,41 +636,79 @@ function revealField(field,message){
   if(typeof field.setCustomValidity==="function"){field.setCustomValidity(message);if(typeof field.reportValidity==="function")field.reportValidity()}
   if(typeof field.focus==="function")field.focus({preventScroll:true});scrollElementIntoView(field);
 }
+function showInputError(error){showStatus("warn",error.message);revealField(error.field,error.message)}
+
+function renderSummary(plan,breachCount){
+  const values={
+    sCurrent:money(plan.currentTotal),sAfter:money(plan.afterTotal),sBreach:String(breachCount),sTurnover:money(plan.internalTurnover),
+    sBuy:money(sum(plan.totalTrades.filter(amount=>amount>0))),sSell:money(-sum(plan.totalTrades.filter(amount=>amount<0)))
+  };
+  Object.entries(values).forEach(([id,value])=>$(id).textContent=value);
+}
+function renderPlanStatus(plan,force,breachCount){
+  if(force)showStatus("warn","已强制恢复目标比例，并按执行单位取整配平。本次忽略触发阈值和最小换手规则。");
+  else if(!breachCount)showStatus("ok",plan.flow?"外部资金已优先用于纠偏，处理后无需内部换仓。":"当前持仓在允许区间内，不建议再平衡。");
+  else showStatus("warn","处理资金变动后仍超出免调整范围："+FUNDS.filter((_,i)=>plan.postFlowBreaches[i]).map(f=>f.code).join("、")+"。已按最小换手原则拉回安全位置。");
+}
+function renderPlanRows(plan,holdings,policies){
+  $("resultBody").innerHTML="";$("detailBody").innerHTML="";
+  FUNDS.forEach((fund,i)=>{
+    const policy=SELL_POLICIES[policies[i]],trade=plan.totalTrades[i];
+    appendRow("resultBody",`<td class="fund-cell"><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td data-label="最终操作" class="trade-cell ${tradeClass(trade)}">${tradeText(trade)}</td><td data-label="交易后金额">${money(plan.final[i])}</td><td data-label="预计占比">${fmt(plan.final[i]/plan.afterTotal*100,4)}%</td><td class="policy-result" data-label="赎回限制"><span class="tag ${policy.tagClass}">${policy.resultLabel}</span></td>`);
+    const rounding=plan.rounding[i]?((plan.rounding[i]>0?"增加 ":"减少 ")+money(Math.abs(plan.rounding[i]))):"无";
+    appendRow("detailBody",`<td><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td>${money(holdings.confirmed[i])}</td><td class="${tradeClass(holdings.pending[i])}">${tradeText(holdings.pending[i])}</td><td class="${tradeClass(plan.flowTrades[i])}">${tradeText(plan.flowTrades[i])}</td><td class="${tradeClass(plan.internal[i])}">${tradeText(plan.internal[i])}</td><td class="${tradeClass(plan.rounding[i])}">${rounding}</td><td class="${tradeClass(trade)}">${tradeText(trade)}</td>`);
+  });
+}
+function renderExecutionNote(plan){
+  const notes=[];
+  if(plan.totalTrades.some(amount=>amount<0))notes.push("卖出前请核对持有期和赎回费率。");
+  if(plan.smallRequired.length)notes.push("低于最低交易额的必要交易会保留，以处理尾差或防止越界。");
+  notes.push(`建议金额按 ${compactNumber(CONFIG.roundYuan)} CNY 取整，不含费用及确认期间的净值变化。`);
+  $("execNote").textContent=notes.join("");
+}
+
+function evaluate(force=false){
+  invalidateResults("尚未生成有效建议，请检查输入后重新计算。");
+  const state=holdingsState();if(!state.ok){showInputError(state.error);return}
+  try{applySettings(readSettings(),state)}catch(error){showInputError(error);return}
+  const cash=$("cashFlow");if(cash.validity?.badInput){const message="资金变动请输入有效数字。";showStatus("warn",message);revealField(cash,message);return}
+
+  const holdings=state.data,policies=normalizePolicies(readPolicies());let plan;
+  try{plan=computePlan(holdings.values,fieldValue(cash)||0,force,{sellPolicies:policies})}
+  catch(error){showStatus("bad","计算检查未通过："+error.message);scrollElementIntoView($("resultsCard"));return}
+
+  const breachCount=plan.postFlowBreaches.filter(Boolean).length;
+  renderSummary(plan,breachCount);renderPlanStatus(plan,force,breachCount);
+  const enhanced=(plan.final[0]+plan.final[1])/plan.afterTotal;
+  $("roleSummary").textContent=`交易后：固收增强仓 ${fmt(enhanced*100)}%，纯债及短债防守仓 ${fmt((1-enhanced)*100)}%。`;
+  renderPlanRows(plan,holdings,policies);renderExecutionNote(plan);scrollElementIntoView($("resultsCard"));
+}
+
+function setFieldValues(selector,value){$$(selector).forEach(field=>{field.value=value;clearFieldValidity(field)})}
+function clearAll(){
+  if(typeof confirm==="function"&&!confirm("确定清空当前输入吗？"))return;
+  setFieldValues(".amount","");setFieldValues(".pending",0);setFieldValues(".sell-policy","normal");$("cashFlow").value=0;clearFieldValidity($("cashFlow"));
+  invalidateResults("填写 4 项当前持仓后点击“生成调整建议”。");refreshLive();
+  const first=$$(".amount")[0];if(first&&typeof first.focus==="function")first.focus();
+}
+function restoreDefaults(){writeSettingValues(DEFAULTS);applySettings(readSettings());invalidateResults("参数已恢复推荐值，请重新点击“生成调整建议”。")}
+
 function bindMainInputFlow(){
-  const sequence=[...document.querySelectorAll(".amount"),$("cashFlow")];
+  const sequence=[...$$(".amount"),$("cashFlow")];
   sequence.forEach((field,i)=>field.addEventListener("keydown",event=>{
     if(event.key!=="Enter")return;if(typeof event.preventDefault==="function")event.preventDefault();
     if(i<sequence.length-1&&typeof sequence[i+1].focus==="function")sequence[i+1].focus();else{if(typeof field.blur==="function")field.blur();evaluate(false)}
   }));
 }
-
-function evaluate(force=false){
-  invalidateResults("尚未生成有效建议，请检查输入后重新计算。");const v=validatedHoldings();if(!v.ok){showStatus("warn",v.msg);revealField(v.field,v.msg);return}
-  try{applySettings(readSettings())}catch(e){showStatus("warn",e.message);revealField(e.field,e.message);return}
-  const cash=$("cashFlow");if(cash.validity?.badInput){const message="资金变动请输入有效数字。";showStatus("warn",message);revealField(cash,message);return}
-  let p;const policies=rawPolicies();try{p=computePlan(v.vals,cash.value.trim()||0,force,{sellPolicies:policies})}catch(e){showStatus("bad","计算检查未通过："+e.message);scrollElementIntoView($("resultsCard"));return}
-  const breachCount=p.postFlowBreaches.filter(Boolean).length;
-  $("sCurrent").textContent=money(p.currentTotal);$("sAfter").textContent=money(p.afterTotal);$("sBreach").textContent=String(breachCount);$("sTurnover").textContent=money(p.internalTurnover);
-  $("sBuy").textContent=money(sum(p.totalTrades.filter(x=>x>0)));$("sSell").textContent=money(-sum(p.totalTrades.filter(x=>x<0)));
-  if(force)showStatus("warn","已强制恢复目标比例，并按执行单位取整配平。本次忽略触发阈值和最小换手规则。");
-  else if(!breachCount)showStatus("ok",p.flow?"外部资金已优先用于纠偏，处理后无需内部换仓。":"当前持仓在允许区间内，不建议再平衡。");
-  else showStatus("warn","处理资金变动后仍超出免调整范围："+FUNDS.filter((_,i)=>p.postFlowBreaches[i]).map(f=>f.code).join("、")+"。已按最小换手原则拉回安全位置。");
-  const enhanced=(p.final[0]+p.final[1])/p.afterTotal,defensive=1-enhanced;
-  $("roleSummary").textContent=`交易后：固收增强仓 ${fmt(enhanced*100)}%，纯债及短债防守仓 ${fmt(defensive*100)}%。`;
-  $("resultBody").innerHTML="";$("detailBody").innerHTML="";
-  FUNDS.forEach((f,i)=>{
-    const row=document.createElement("tr");row.innerHTML=`<td class="fund-cell"><div class="fund">${fundLink(f)}</div><div class="code">${f.code}</div></td><td data-label="最终操作" class="trade-cell ${tradeClass(p.totalTrades[i])}">${tradeText(p.totalTrades[i])}</td><td data-label="交易后金额">${money(p.final[i])}</td><td data-label="预计占比">${fmt(p.final[i]/p.afterTotal*100,4)}%</td><td class="policy-result" data-label="赎回限制"><span class="tag ${policies[i]==='forbid'?'bad':policies[i]==='avoid'?'neutral':'ok'}">${policyText(policies[i])}</span></td>`;$("resultBody").appendChild(row);
-    const detail=document.createElement("tr");detail.innerHTML=`<td><div class="fund">${fundLink(f)}</div><div class="code">${f.code}</div></td><td>${money(v.confirmed[i])}</td><td class="${tradeClass(v.pending[i])}">${tradeText(v.pending[i])}</td><td class="${tradeClass(p.flowTrades[i])}">${tradeText(p.flowTrades[i])}</td><td class="${tradeClass(p.internal[i])}">${tradeText(p.internal[i])}</td><td class="${tradeClass(p.rounding[i])}">${p.rounding[i]?((p.rounding[i]>0?"增加 ":"减少 ")+money(Math.abs(p.rounding[i]))):"无"}</td><td class="${tradeClass(p.totalTrades[i])}">${tradeText(p.totalTrades[i])}</td>`;$("detailBody").appendChild(detail);
-  });
-  const notes=[];if(p.totalTrades.some(x=>x<0))notes.push("卖出前请核对持有期和赎回费率。");if(p.smallRequired.length)notes.push("低于最低交易额的必要交易会保留，以处理尾差或防止越界。");notes.push(`建议金额按 ${fmt(CONFIG.roundYuan,CONFIG.roundYuan%1?2:0)} CNY 取整，不含费用及确认期间的净值变化。`);$("execNote").textContent=notes.join("");
-  scrollElementIntoView($("resultsCard"));
+function bindEvents(){
+  $$(".amount,.pending").forEach(field=>field.addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults();refreshLive()}));
+  $$(".sell-policy").forEach(field=>field.addEventListener("change",()=>invalidateResults()));
+  $$(".setting").forEach(field=>field.addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults();try{applySettings(readSettings())}catch{}}));
+  $("cashFlow").addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults()});
+  $("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));
+  $("clear").addEventListener("click",clearAll);$("restoreDefaults").addEventListener("click",restoreDefaults);
+  bindMainInputFlow();
 }
-function clearAll(){
-  if(typeof confirm==="function"&&!confirm("确定清空当前输入吗？"))return;
-  document.querySelectorAll(".amount").forEach(el=>{el.value="";if(typeof el.setCustomValidity==="function")el.setCustomValidity("")});document.querySelectorAll(".pending").forEach(el=>{el.value=0;if(typeof el.setCustomValidity==="function")el.setCustomValidity("")});document.querySelectorAll(".sell-policy").forEach(el=>el.value="normal");$("cashFlow").value=0;if(typeof $("cashFlow").setCustomValidity==="function")$("cashFlow").setCustomValidity("");invalidateResults("填写 4 项当前持仓后点击“生成调整建议”。");refreshLive();
-  const first=document.querySelectorAll(".amount")[0];if(first&&typeof first.focus==="function")first.focus();
-}
-function restoreDefaults(){for(const [key,value] of Object.entries(DEFAULTS)){const field=$(key);field.value=value;if(typeof field.setCustomValidity==="function")field.setCustomValidity("")}applySettings(readSettings());invalidateResults("参数已恢复推荐值，请重新点击“生成调整建议”。")}
 
 let viewportBaseline=typeof window!=="undefined"&&window.visualViewport?window.visualViewport.height:0;
 function syncKeyboardState(){
@@ -632,21 +717,17 @@ function syncKeyboardState(){
   if(!focused)viewportBaseline=window.visualViewport.height;
   document.body.classList.toggle("keyboard-open",focused&&window.visualViewport.height<viewportBaseline-120);
 }
-if(typeof window!=="undefined"&&window.visualViewport&&typeof document.addEventListener==="function"){
-  window.visualViewport.addEventListener("resize",syncKeyboardState);
-  window.visualViewport.addEventListener("scroll",syncKeyboardState);
-  document.addEventListener("focusin",syncKeyboardState);
-  document.addEventListener("focusout",()=>setTimeout(syncKeyboardState,0));
+function bindViewportEvents(){
+  if(typeof window==="undefined"||!window.visualViewport||typeof document.addEventListener!=="function")return;
+  window.visualViewport.addEventListener("resize",syncKeyboardState);window.visualViewport.addEventListener("scroll",syncKeyboardState);
+  document.addEventListener("focusin",syncKeyboardState);document.addEventListener("focusout",()=>setTimeout(syncKeyboardState,0));
 }
-$("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));$("clear").addEventListener("click",clearAll);
-$("cashFlow").addEventListener("input",()=>{if(typeof $("cashFlow").setCustomValidity==="function")$("cashFlow").setCustomValidity("");invalidateResults()});$("restoreDefaults").addEventListener("click",restoreDefaults);
-document.querySelectorAll(".setting").forEach(el=>el.addEventListener("input",()=>{if(typeof el.setCustomValidity==="function")el.setCustomValidity("");invalidateResults();try{applySettings(readSettings())}catch(e){}}));
-renderFunds();refreshLive();
-
-if(typeof window!=="undefined"&&typeof navigator!=="undefined"&&"serviceWorker" in navigator){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{}));
+function registerServiceWorker(){
+  if(typeof window!=="undefined"&&typeof navigator!=="undefined"&&"serviceWorker" in navigator)
+    window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{}));
 }
 
+initializeSettingFields();renderFunds();bindEvents();bindViewportEvents();refreshLive();registerServiceWorker();
 </script>
 </body>
 </html>
