@@ -101,7 +101,7 @@ test.describe("v1.2.0 百分比与说明", () => {
 
   test("footer 以低权重方式展示版本信息", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("footer.footer")).toContainText("v1.2.2");
+    await expect(page.locator("footer.footer")).toContainText("v1.2.3");
   });
 });
 
