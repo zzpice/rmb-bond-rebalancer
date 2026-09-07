@@ -82,7 +82,7 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .field{display:flex;flex-direction:column;gap:5px;min-width:210px}
 label{font-size:12px;color:var(--muted)}
 .exec-note{margin-top:10px;font-size:12px;color:var(--muted)}
-.footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}
+.footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}.refresh-version{min-height:0;margin-left:4px;border:0;background:transparent;color:var(--blue);padding:4px 6px;font-size:inherit}.refresh-version:disabled{cursor:default;color:var(--muted)}
 @media(max-width:900px){
   .header{flex-direction:column;align-items:flex-start}
   .rules,.guide-steps{grid-template-columns:1fr}
@@ -249,7 +249,7 @@ label{font-size:12px;color:var(--muted)}
       </table></div>
     </div>
   </details>
-  <footer class="footer">© 2026 Zhipeng Zhou</footer>
+  <footer class="footer">© 2026 Zhipeng Zhou · <button class="refresh-version" id="refreshVersion" type="button">刷新版本</button></footer>
 </div>
 
 <script>
@@ -708,6 +708,7 @@ function bindEvents(){
   $("cashFlow").addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults()});
   $("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));
   $("clear").addEventListener("click",clearAll);$("restoreDefaults").addEventListener("click",restoreDefaults);
+  $("refreshVersion").addEventListener("click",refreshVersion);
   bindMainInputFlow();
 }
 
@@ -726,6 +727,31 @@ function bindViewportEvents(){
 function registerServiceWorker(){
   if(typeof window!=="undefined"&&typeof navigator!=="undefined"&&"serviceWorker" in navigator)
     window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{}));
+}
+function setRefreshButton(text,disabled=false){const button=$("refreshVersion");button.textContent=text;button.disabled=disabled}
+function restoreRefreshButton(){setTimeout(()=>setRefreshButton("刷新版本"),1600)}
+function waitForServiceWorker(worker){
+  if(!worker||worker.state==="activated"||worker.state==="redundant")return Promise.resolve();
+  return new Promise(resolve=>{
+    const finish=()=>{clearTimeout(timeout);worker.removeEventListener("statechange",onStateChange);resolve()};
+    const onStateChange=()=>{
+      if(worker.state==="installed")worker.postMessage({type:"SKIP_WAITING"});
+      if(worker.state==="activated"||worker.state==="redundant")finish();
+    };
+    const timeout=setTimeout(finish,8000);worker.addEventListener("statechange",onStateChange);onStateChange();
+  });
+}
+async function refreshVersion(){
+  if(typeof navigator==="undefined"||!("serviceWorker" in navigator)){window.location.reload();return}
+  if(navigator.onLine===false){setRefreshButton("当前离线",true);restoreRefreshButton();return}
+  setRefreshButton("正在刷新…",true);
+  try{
+    let registration=await navigator.serviceWorker.getRegistration("./");
+    if(registration)await registration.update();
+    else registration=await navigator.serviceWorker.register("./service-worker.js",{scope:"./"});
+    await waitForServiceWorker(registration.installing||registration.waiting);
+    window.location.reload();
+  }catch{setRefreshButton("刷新失败",true);restoreRefreshButton()}
 }
 
 initializeSettingFields();renderFunds();bindEvents();bindViewportEvents();refreshLive();registerServiceWorker();

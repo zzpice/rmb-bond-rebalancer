@@ -1,5 +1,5 @@
 const CACHE_PREFIX="bond-rebalancer-";
-const CACHE_NAME=`${CACHE_PREFIX}v4.8.2`;
+const CACHE_NAME=`${CACHE_PREFIX}v1.0.1`;
 const appURL=path=>new URL(path,self.location.href).href;
 const INDEX_URL=appURL("./index.html");
 const APP_SHELL=[
@@ -28,6 +28,10 @@ self.addEventListener("activate",event=>{
       .then(keys=>Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&key!==CACHE_NAME).map(key=>caches.delete(key))))
       .then(()=>self.clients.claim())
   );
+});
+
+self.addEventListener("message",event=>{
+  if(event.data?.type==="SKIP_WAITING")self.skipWaiting();
 });
 
 self.addEventListener("fetch",event=>{
