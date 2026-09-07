@@ -19,11 +19,11 @@ test.describe("结果展示与基金映射", () => {
     const detailHeadings = await page.locator(".detail-table th").allTextContents();
     expect(detailHeadings).toEqual([
       "基金",
-      "已确认金额",
-      "尚未确认的交易",
-      "新增／取出资金分配",
-      "基金之间转换",
-      "取整与小额合并",
+      "当前持仓",
+      "在途交易",
+      "资金变动分配",
+      "基金间转换",
+      "取整调整",
       "最终操作"
     ]);
     await expect(detailRows.nth(1).locator("td").nth(3)).toHaveText("买入 CNY 89,218.65");
