@@ -70,6 +70,14 @@ test.describe("v1.3.0 再平衡区间", () => {
 });
 
 test.describe("v1.3.0 结果摘要与资金配平", () => {
+  test("普通生成建议始终提示费用及确认期间的净值变化", async ({ page }) => {
+    await page.goto("/");
+    await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
+    await generate(page);
+    await expect(page.locator("#executionRiskNote")).toBeVisible();
+    await expect(page.locator("#executionRiskNote")).toHaveText("执行金额仅供参考，未计入相关费用及确认期间的净值变化。");
+  });
+
   test("无需再平衡时顶部摘要按总资产、结论、偏离、笔数展示", async ({ page }) => {
     await page.goto("/");
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
@@ -116,8 +124,11 @@ test.describe("v1.3.0 结果摘要与资金配平", () => {
     await expect(page.locator("#execNote")).toBeHidden();
 
     await page.locator("#cashFlow").fill("1");
+    expect(await page.locator("#fundBody .band-visual").evaluateAll(bands => bands.map(band => band.dataset.bandState))).toEqual(["ok", "ok", "ok", "ok"]);
     await generate(page);
     await expect(page.locator("#execNote [data-note=inflow]")).toBeVisible();
+    await expect(page.locator("#execNote [data-note=inflow]")).toHaveText("本次新增资金已优先用于拉近当前配置与目标配置的差距。");
+    await expect(page.locator("#execNote")).not.toContainText("纠正低配资产");
     await expect(page.locator("#execNote [data-note=redemption]")).toHaveCount(0);
 
     await page.reload();

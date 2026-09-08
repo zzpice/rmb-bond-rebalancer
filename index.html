@@ -94,7 +94,7 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .flowline{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:5px;min-width:210px}
 label{font-size:12px;color:var(--muted)}
-.exec-note{margin-top:10px;padding:11px 12px;border-radius:11px;background:var(--bluebg);color:var(--text);font-size:12px}.exec-note[hidden]{display:none}.exec-note-title{color:var(--blue);font-weight:700}.exec-note ul{margin:6px 0 0;padding-left:18px}.exec-note li+li{margin-top:4px}
+.execution-risk-note{margin:9px 1px 0;color:var(--muted);font-size:12px;line-height:1.45}.exec-note{margin-top:10px;padding:11px 12px;border-radius:11px;background:var(--bluebg);color:var(--text);font-size:12px}.exec-note[hidden]{display:none}.exec-note-title{color:var(--blue);font-weight:700}.exec-note ul{margin:6px 0 0;padding-left:18px}.exec-note li+li{margin-top:4px}
 input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tabular-nums lining-nums}
 .footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}.footer-actions{display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap}.footer-button{min-height:0;border:0;background:transparent;color:var(--blue);padding:4px 6px;font-size:inherit}.footer-button:disabled{cursor:default;color:var(--muted)}.footer-separator{color:var(--line)}.install-guide{max-width:520px;margin:10px auto 0;padding:12px 34px 12px 13px;position:relative;text-align:left;border-radius:12px;background:var(--bluebg);color:var(--blue);line-height:1.5}.install-guide button{position:absolute;right:5px;top:4px;min-width:32px;min-height:32px;padding:2px;border:0;background:transparent;color:inherit;font-size:18px}.install-guide[hidden]{display:none}
 @media(max-width:900px){
@@ -288,6 +288,7 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
         <thead><tr><th>基金</th><th>操作</th><th>调整后金额</th><th>调整后占比</th><th>卖出策略</th><th>原因</th></tr></thead>
         <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
       </table></div>
+      <p class="execution-risk-note" id="executionRiskNote">执行金额仅供参考，未计入相关费用及确认期间的净值变化。</p>
       <div class="exec-note" id="execNote"></div>
     </section>
     <details class="result-details">
@@ -824,7 +825,7 @@ function renderPlanRows(plan,holdings,policies){
 }
 function renderExecutionNote(plan){
   const notes=[];
-  if(plan.flow>0)notes.push({kind:"inflow",text:"本次新增资金已优先用于纠正低配资产。"});
+  if(plan.flow>0)notes.push({kind:"inflow",text:"本次新增资金已优先用于拉近当前配置与目标配置的差距。"});
   if(plan.totalTrades.some(amount=>amount<0))notes.push({kind:"redemption",text:"存在卖出操作，请执行前核对持有期和赎回费。"});
   if(plan.rawTotalTrades.some((amount,i)=>amount&&!plan.totalTrades[i]))notes.push({kind:"small-merged",text:"部分零碎建议经取整或小额合并后已取消，无需单独下单。"});
   if(plan.smallRequired.length)notes.push({kind:"small-required",text:"低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。"});
