@@ -51,7 +51,8 @@ test.describe("在途交易", () => {
     const status = await readStatus(page);
     expect(status.type).toBe("warn");
     expect(status.text).toContain("在途卖出不能超过对应基金的当前持仓");
-    await expect(page.locator("#resultBody td.empty")).toBeVisible();
+    await expect(page.locator("#resultBody td.empty")).toBeHidden();
+    await expect(page.locator("#resultsCard .block-execution")).toBeHidden();
   });
 
   test("在途卖出恰好等于持仓（有效持仓为 0）→ 允许，按极端低配处理", async ({ page }) => {

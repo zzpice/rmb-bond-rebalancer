@@ -16,7 +16,8 @@ test.describe("禁止卖出（forbid）", () => {
     expect(status.type).toBe("bad");
     expect(status.text).toContain("002065 已高配越界，但被设为禁止卖出");
     await expect(page.locator("#resultBody tr")).toHaveCount(1);
-    await expect(page.locator("#resultBody td.empty")).toBeVisible();
+    await expect(page.locator("#resultBody td.empty")).toBeHidden();
+    await expect(page.locator("#resultsCard .block-execution")).toBeHidden();
   });
 
   test("强制回到目标需要卖出被禁基金 → 明确报错", async ({ page }) => {
