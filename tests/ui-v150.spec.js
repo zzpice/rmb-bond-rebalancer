@@ -268,7 +268,8 @@ test.describe("v1.5.0 Patch 2 调整后区间", () => {
           panelRight: panel.right,
           panelHeight: panel.height,
           rowHeight: firstRow.height,
-          bandBelowFund: firstBand.top > firstFund.top,
+          bandBelowFund: firstBand.top >= firstFund.bottom,
+          bandAlignedWithFund: Math.abs((firstBand.top + firstBand.height / 2) - (firstFund.top + firstFund.height / 2)) <= 1,
           comparisonScrollWidth: comparisonWrap.scrollWidth,
           comparisonClientWidth: comparisonWrap.clientWidth
         };
@@ -281,7 +282,7 @@ test.describe("v1.5.0 Patch 2 调整后区间", () => {
         expect(layout.bandBelowFund).toBe(true);
       } else {
         expect(layout.panelHeight).toBeLessThanOrEqual(150);
-        expect(layout.bandBelowFund).toBe(false);
+        expect(layout.bandAlignedWithFund).toBe(true);
         expect(layout.comparisonScrollWidth).toBeLessThanOrEqual(layout.comparisonClientWidth + 1);
       }
     }
