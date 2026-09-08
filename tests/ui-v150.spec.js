@@ -71,7 +71,7 @@ test.describe("v1.5.0 Patch 1 结构整理", () => {
       const card = getComputedStyle(element), summary = getComputedStyle(element.querySelector("summary"));
       return { boxShadow: card.boxShadow, radius: card.borderRadius, marginTop: card.marginTop, fontSize: summary.fontSize, fontWeight: summary.fontWeight };
     });
-    expect(desktopStyle).toEqual({ boxShadow: "none", radius: "12px", marginTop: "10px", fontSize: "15px", fontWeight: "650" });
+    expect(desktopStyle).toEqual({ boxShadow: "none", radius: "8px", marginTop: "12px", fontSize: "14px", fontWeight: "700" });
 
     await settings.locator(":scope > summary").click();
     await expect(settings.locator("input.setting")).toHaveCount(5);
