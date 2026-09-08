@@ -27,13 +27,17 @@ test.describe("v1.4.0 单页工作台导航", () => {
     await expect(sidebar).toBeVisible();
     await expect(page.locator(".mobile-tabs")).toBeHidden();
     expect((await sidebar.boundingBox()).width).toBeLessThanOrEqual(220);
+    await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
+    await generate(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 
     const before = await page.evaluate(() => ({
       scrollY: window.scrollY,
       toolbarTop: document.querySelector(".workspace-toolbar").getBoundingClientRect().top,
       sidebarTop: document.querySelector(".desktop-sidebar").getBoundingClientRect().top
     }));
-    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop + 120, behavior: "instant" }));
+    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop - 40, behavior: "instant" }));
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
     await expect(sidebar.locator('[data-nav-key="cash"]')).toHaveAttribute("aria-current", "step");
     const after = await page.evaluate(() => ({
@@ -64,8 +68,12 @@ test.describe("v1.4.0 单页工作台导航", () => {
     await expect(tabs).toBeVisible();
     await expect(page.locator(".desktop-sidebar")).toBeHidden();
     await expect(tabs.locator(".workspace-nav-item")).toHaveCount(3);
+    await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
+    await generate(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 
-    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop + 80, behavior: "instant" }));
+    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop - 40, behavior: "instant" }));
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
     await expect(tabs.locator('[data-nav-key="cash"]')).toHaveAttribute("aria-current", "step");
     const stickyGeometry = await page.evaluate(() => {
