@@ -101,7 +101,7 @@ test.describe("v1.2.0 百分比与说明", () => {
 
   test("footer 以低权重方式展示版本信息", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("footer.footer")).toContainText("v1.3.0");
+    await expect(page.locator("footer.footer")).toContainText("v1.4.0");
   });
 });
 
@@ -149,7 +149,7 @@ test.describe("v1.2.0 手机端结果区排序", () => {
     expect(order.comparison).toBeLessThan(order.details);
   });
 
-  test("桌面端保持 比例对比→执行清单 原顺序", async ({ page }) => {
+  test("桌面端也按 执行清单→比例对比 排序", async ({ page }) => {
     await page.setViewportSize({ width: 1200, height: 900 });
     await page.goto("/");
     await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
@@ -159,7 +159,7 @@ test.describe("v1.2.0 手机端结果区排序", () => {
       const top = sel => card.querySelector(sel).getBoundingClientRect().top;
       return { comparison: top(".block-comparison"), execution: top(".block-execution") };
     });
-    expect(order.comparison).toBeLessThan(order.execution);
+    expect(order.execution).toBeLessThan(order.comparison);
   });
 });
 
@@ -233,10 +233,12 @@ test.describe("v1.2.0 手机端未生成空状态", () => {
     await expect(page.locator("#emptyResults")).toBeHidden();
   });
 
-  test("桌面端未生成时仍显示占位区块（不受手机端空状态收口影响）", async ({ page }) => {
+  test("桌面端未生成时也只显示统一空状态", async ({ page }) => {
     await page.setViewportSize({ width: 1200, height: 900 });
     await page.goto("/");
-    await expect(page.locator("#resultsCard .execution-summary")).toBeVisible();
-    await expect(page.locator("#emptyResults")).toBeHidden();
+    await expect(page.locator("#resultsCard .execution-summary")).toBeHidden();
+    await expect(page.locator("#resultsCard .block-comparison")).toBeHidden();
+    await expect(page.locator("#resultsCard .block-execution")).toBeHidden();
+    await expect(page.locator("#emptyResults")).toBeVisible();
   });
 });

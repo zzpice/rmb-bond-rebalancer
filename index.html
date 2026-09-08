@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="themeColor" content="#f4f6fa">
 <meta name="application-name" content="再平衡助手">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,16 +22,17 @@
 <title>债基再平衡助手 · CNY</title>
 <style>
 :root{
-  color-scheme:light dark;
-  --bg:#f2f2f7;--card:#fff;--elevated:#fff;--text:#1c1c1e;--muted:#6c6c70;
-  --line:rgba(60,60,67,.16);--fill:rgba(120,120,128,.12);
-  --blue:#007aff;--bluebg:rgba(0,122,255,.10);--green:#248a3d;--greenbg:rgba(52,199,89,.12);
-  --red:#d70015;--redbg:rgba(255,59,48,.11);--amber:#a05a00;--amberbg:rgba(255,159,10,.13);
-  --shadow:0 1px 2px rgba(0,0,0,.03),0 8px 28px rgba(0,0,0,.055);
+  color-scheme:light;
+  --bg:#f4f6fa;--card:#fff;--elevated:#fff;--text:#182033;--muted:#667085;
+  --line:#e0e5ee;--fill:#f3f5f9;--surface-strong:#e9eef8;
+  --blue:#2463eb;--blue-strong:#1749b8;--bluebg:#eaf1ff;--green:#18794e;--greenbg:#e8f6ef;
+  --red:#c4323f;--redbg:#fcecef;--amber:#a15c07;--amberbg:#fff4df;
+  --shadow:0 1px 2px rgba(16,24,40,.025),0 10px 30px rgba(31,42,68,.05);
+  --toolbar-bg:rgba(244,246,250,.88);--sidebar:#101828;--sidebar-text:#d0d5dd;--sidebar-muted:#98a2b3;--dock-bg:rgba(255,255,255,.92);
 }
 *{box-sizing:border-box}
-html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
-body{width:100%;min-width:0;margin:0;overflow-x:hidden;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-tap-highlight-color:transparent}
+html{width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
+body{width:100%;min-width:0;margin:0;overflow-x:clip;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:1180px;margin:auto;padding:26px 18px 42px}
 .header{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:18px}
 h1{font-size:25px;letter-spacing:-.02em;margin:0 0 5px}.sub{color:var(--muted)}
@@ -165,13 +165,85 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
   .footer{padding-left:0;padding-right:0}.footer-actions{gap:0}.footer-button{min-height:42px;padding:8px}.install-guide{font-size:13px}
 }
 @media(prefers-color-scheme:dark){
-  :root{--bg:#000;--card:#1c1c1e;--elevated:#2c2c2e;--text:#f2f2f7;--muted:#98989d;--line:rgba(84,84,88,.65);--fill:rgba(118,118,128,.20);--blue:#0a84ff;--bluebg:rgba(10,132,255,.17);--green:#30d158;--greenbg:rgba(48,209,88,.14);--red:#ff453a;--redbg:rgba(255,69,58,.15);--amber:#ffd60a;--amberbg:rgba(255,214,10,.13);--shadow:none}
-  @media(max-width:640px){body.dock-ready .action-dock{background:rgba(28,28,30,.9)}}
+  :root:not([data-theme]),:root[data-theme="system"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
 }
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
+:root[data-theme="light"]{color-scheme:light}
+
+/* v1.4 workstation shell */
+body{font-size:15px;letter-spacing:.001em}
+.app-shell{display:grid;min-height:100svh;grid-template-columns:minmax(0,1fr)}
+.desktop-sidebar{display:none}
+.workspace{min-width:0}
+.workspace-toolbar{position:sticky;top:0;z-index:28;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:58px;padding:8px 18px;border-bottom:1px solid var(--line);background:var(--toolbar-bg);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px)}
+.toolbar-context{display:flex;align-items:center;gap:10px;min-width:0}.toolbar-brand{display:flex;align-items:center;gap:9px;min-width:0}.toolbar-brand img{width:30px;height:30px;border-radius:8px}.toolbar-copy{min-width:0}.toolbar-title{display:block;font-size:14px;font-weight:750;line-height:1.2;white-space:nowrap}.toolbar-meta{display:block;margin-top:2px;color:var(--muted);font-size:11px;line-height:1.2;white-space:nowrap}
+.toolbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.toolbar-button,.theme-control{min-height:36px;border-color:var(--line);background:var(--card);font-size:12px}.toolbar-button{padding:6px 10px;color:var(--blue);white-space:nowrap}.theme-field{display:flex;align-items:center;gap:7px}.theme-field label{white-space:nowrap}.theme-control{width:auto;max-width:114px;padding:6px 25px 6px 9px}
+.mobile-tabs{position:sticky;top:58px;z-index:27;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:6px 10px;border-bottom:1px solid var(--line);background:var(--toolbar-bg);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px)}
+.workspace-nav-item{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;min-height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);padding:7px 8px;text-decoration:none;font-size:12px;font-weight:650;white-space:nowrap}.workspace-nav-item svg{flex:0 0 auto;width:17px;height:17px;stroke:currentColor}.workspace-nav-item:hover{background:var(--fill);color:var(--text)}.workspace-nav-item.active{background:var(--bluebg);color:var(--blue-strong);font-weight:750}.workspace-nav-item[aria-current="step"]{box-shadow:inset 0 -2px 0 var(--blue)}
+.wrap{max-width:1180px;padding:23px 18px 36px}.header{align-items:center;margin-bottom:14px}.header h1{font-size:25px}.badge{border:1px solid rgba(36,99,235,.15);padding:5px 9px;font-size:11px;letter-spacing:.02em}
+.card{border-radius:13px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}.card h2{letter-spacing:-.01em}.card[id]{scroll-margin-top:122px}
+.section-head h2,.card>h2{position:relative;padding-left:11px}.section-head h2::before,.card>h2::before{content:"";position:absolute;left:0;top:.2em;bottom:.2em;width:3px;border-radius:2px;background:var(--blue)}
+.fund-card{border-radius:12px}.fund-card-head{padding-bottom:9px}.fund-main{padding-top:10px}.role,.tag{letter-spacing:.01em}.band-safe{background:rgba(36,99,235,.18)}.band-inner-zone{background:rgba(24,121,78,.17)}
+.result-block{min-width:0}.execution-summary{position:relative;border-radius:13px;background:transparent;padding:0;border:0;margin:0 0 12px}.summary-layout{display:grid;grid-template-columns:minmax(0,1.7fr) repeat(2,minmax(0,1fr));gap:10px}.verdict-kpi,.secondary-kpi{min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px}.verdict-kpi{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label meta" "value meta" "headline headline";gap:2px 16px;padding-left:18px;overflow:hidden}.verdict-kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}.verdict-kpi.needs-action::before{background:var(--amber)}.verdict-kpi.no-action::before{background:var(--green)}.verdict-kpi .k{grid-area:label}.verdict-kpi .v{grid-area:value;font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:4px 0}.verdict-side{grid-area:meta;text-align:right;align-self:start}.verdict-side .v{font-size:19px;margin:2px 0}.summary-headline{grid-area:headline;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px}.secondary-kpi{display:flex;flex-direction:column;justify-content:space-between;min-height:111px}.secondary-kpi .v{font-size:21px;line-height:1.25;margin-top:8px}.secondary-kpi .quick-meta{font-size:11px}.statusbox{border:1px solid transparent;margin-top:10px}.statusbox.ok{border-color:rgba(24,121,78,.16)}.statusbox.warn{border-color:rgba(161,92,7,.16)}.statusbox.bad{border-color:rgba(196,50,63,.16)}
+.action-pills{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}.action-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--fill);font-size:12px;font-weight:650;font-variant-numeric:tabular-nums}.action-pill.buy{background:var(--greenbg);border-color:transparent}.action-pill.sell{background:var(--redbg);border-color:transparent}.action-pill.hold{display:none}
+.comparison-title,.execution-title{margin-top:15px}.comparison-title h3,.execution-title h3{letter-spacing:-.01em}.balance-summary{border-radius:12px}.result-details{margin-top:15px}
+#resultsCard.empty{padding:17px!important;text-align:left!important;color:var(--text)}
+#resultsCard.empty .execution-summary,#resultsCard.empty .block-execution,#resultsCard.empty .block-comparison,#resultsCard.empty .result-details{display:none}
+#resultsCard.empty .empty-results:not([hidden]){display:grid;place-items:center;min-height:132px;padding:24px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;background:var(--fill);border:1px dashed var(--line);border-radius:12px}
+.footer{padding-top:22px}.footer-main{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}.footer a{color:var(--blue);text-decoration:none}.footer a:hover{text-decoration:underline}.footer-risk{max-width:760px;margin:7px auto 0;line-height:1.5}
+
+@media(min-width:960px){
+  .app-shell{grid-template-columns:204px minmax(0,1fr)}
+  .desktop-sidebar{position:sticky;top:0;display:flex;flex-direction:column;height:100svh;padding:18px 12px 15px;background:var(--sidebar);color:var(--sidebar-text)}
+  .sidebar-brand{display:flex;align-items:center;gap:10px;padding:3px 5px 18px;border-bottom:1px solid rgba(255,255,255,.09)}.sidebar-brand img{width:34px;height:34px;border-radius:9px}.sidebar-brand strong{display:block;color:#fff;font-size:13px;line-height:1.25}.sidebar-brand small{display:block;color:var(--sidebar-muted);font-size:10px;margin-top:2px}
+  .sidebar-nav{display:flex;flex-direction:column;gap:5px;margin-top:17px}.desktop-sidebar .workspace-nav-item{justify-content:flex-start;min-height:42px;color:var(--sidebar-text);padding:9px 11px}.desktop-sidebar .workspace-nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.desktop-sidebar .workspace-nav-item.active{background:#2358c9;color:#fff}.desktop-sidebar .workspace-nav-item[aria-current="step"]{box-shadow:inset 3px 0 0 #8db2ff}
+  .sidebar-meta{margin-top:auto;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.09);color:var(--sidebar-muted);font-size:10px;line-height:1.55}
+  .mobile-tabs{display:none}.workspace-toolbar{top:0}.toolbar-brand img{display:none}.toolbar-title{font-size:15px}.card[id]{scroll-margin-top:74px}
+}
+@media(max-width:959px){
+  .toolbar-context{max-width:50%}.toolbar-meta{display:none}.theme-field label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.workspace-toolbar{padding-top:max(8px,env(safe-area-inset-top));min-height:calc(58px + env(safe-area-inset-top))}.mobile-tabs{top:calc(58px + env(safe-area-inset-top))}
+}
+@media(max-width:640px){
+  .wrap{padding:13px 10px calc(24px + env(safe-area-inset-bottom))}.header{margin:0 3px 10px}.header h1{font-size:22px}.header .sub{margin-top:4px}.badge{align-self:start}
+  .card[id]{scroll-margin-top:calc(116px + env(safe-area-inset-top))}.card{border:1px solid var(--line);border-radius:13px;padding:14px}.fund-card{border:1px solid var(--line);background:var(--card)}#resultsCard.empty{padding:14px!important}
+  .summary-layout{grid-template-columns:1fr 1fr}.verdict-kpi{grid-column:1/-1;grid-template-columns:minmax(0,1fr);grid-template-areas:"label" "value" "meta" "headline";min-height:145px}.verdict-kpi>.v{font-size:29px;white-space:nowrap}.verdict-side{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 9px;margin-top:7px;text-align:left}.verdict-side .k{grid-column:1/-1}.verdict-side .v{font-size:18px;white-space:nowrap}.verdict-side .quick-meta{align-self:center}.secondary-kpi{min-height:100px}.secondary-kpi .v{font-size:18px}.result-lead{margin-bottom:13px}
+  .mobile-tabs{padding-left:8px;padding-right:8px}.workspace-nav-item{font-size:11px;gap:5px;padding-left:5px;padding-right:5px}.toolbar-actions{gap:5px}.toolbar-button{width:36px;overflow:hidden;padding:6px;font-size:0}.toolbar-button::before{content:"↻";font-size:17px}.theme-control{max-width:88px;padding-left:7px;padding-right:19px}.toolbar-brand img{width:28px;height:28px}.toolbar-title{font-size:13px}
+  body.dock-ready .action-dock{background:var(--dock-bg)}
+  body.keyboard-open .mobile-tabs{position:relative;top:auto}
+}
+@media(max-width:374px){.toolbar-title{max-width:110px;overflow:hidden;text-overflow:ellipsis}.theme-control{max-width:82px}.workspace-nav-item svg{width:16px;height:16px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
 </style>
 </head>
 <body>
+<div class="app-shell">
+<aside class="desktop-sidebar" aria-label="任务导航">
+  <div class="sidebar-brand">
+    <img src="./icons/icon-192.png" alt="">
+    <div><strong>债基再平衡助手</strong><small>v1.4.0 · CNY</small></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="workspace-nav-item active" href="#holdingsSection" data-target="holdingsSection" data-nav-key="holdings" aria-current="step"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7M2 19h20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>持仓</span></a>
+    <a class="workspace-nav-item" href="#cashFlowSection" data-target="cashFlowSection" data-nav-key="cash"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7.5h18v11H3zM16 11h5v4h-5a2 2 0 0 1 0-4ZM6 7.5V5h11v2.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>资金</span></a>
+    <a class="workspace-nav-item" href="#resultsCard" data-target="resultsCard" data-nav-key="results"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6M4 20h16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>执行建议</span></a>
+  </nav>
+  <div class="sidebar-meta">数据仅在当前页面处理<br>单页任务流 · 不保存持仓</div>
+</aside>
+<main class="workspace">
+  <header class="workspace-toolbar">
+    <div class="toolbar-context">
+      <div class="toolbar-brand"><img src="./icons/icon-192.png" alt=""><span class="toolbar-copy"><span class="toolbar-title">再平衡工作台</span><span class="toolbar-meta">人民币债基 · 本地计算</span></span></div>
+    </div>
+    <div class="toolbar-actions">
+      <button class="toolbar-button" id="refreshVersion" type="button">刷新版本</button>
+      <div class="theme-field"><label for="themeMode">外观</label><select class="theme-control" id="themeMode" aria-label="外观模式"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></div>
+    </div>
+  </header>
+  <nav class="mobile-tabs" aria-label="任务导航">
+    <a class="workspace-nav-item active" href="#holdingsSection" data-target="holdingsSection" data-nav-key="holdings" aria-current="step"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7M2 19h20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>持仓</span></a>
+    <a class="workspace-nav-item" href="#cashFlowSection" data-target="cashFlowSection" data-nav-key="cash"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7.5h18v11H3zM16 11h5v4h-5a2 2 0 0 1 0-4ZM6 7.5V5h11v2.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>资金</span></a>
+    <a class="workspace-nav-item" href="#resultsCard" data-target="resultsCard" data-nav-key="results"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6M4 20h16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>建议</span></a>
+  </nav>
 <div class="wrap">
   <div class="header">
     <div>
@@ -223,7 +295,7 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
     </details>
   </div>
 
-  <div class="card">
+  <div class="card" id="cashFlowSection">
     <h2>2. 本次资金变动</h2>
     <div class="flowline">
       <div class="field"><label for="cashFlow">新增 / 取出资金（万 CNY）</label><input id="cashFlow" type="number" inputmode="decimal" enterkeyhint="done" autocomplete="off" step="0.0001" value="0"></div>
@@ -256,24 +328,21 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
     <h2>3. 执行建议</h2>
     <div class="empty-results" id="emptyResults">填写 4 项当前持仓后，点击“生成建议”查看执行方案。</div>
     <section class="execution-summary" aria-labelledby="summaryHeadline">
-      <div class="summary-quick">
-        <div class="quick-stat"><span class="k">当前总资产</span><div class="v" id="quickTotal">—</div></div>
-        <div class="quick-stat decision"><span class="k">是否需要操作</span><div class="v" id="quickDecision">—</div></div>
-        <div class="quick-stat"><span class="k">当前最大偏离</span><div class="v" id="quickDeviation">—</div><small class="quick-meta" id="quickDeviationMeta"></small></div>
-        <div class="quick-stat"><span class="k">建议操作</span><div class="v" id="quickCount">—</div></div>
+      <div class="summary-layout">
+        <div class="verdict-kpi" id="verdictKpi">
+          <span class="k">再平衡结论</span>
+          <div class="v" id="quickDecision">—</div>
+          <div class="verdict-side"><span class="k">当前最大偏离</span><div class="v" id="quickDeviation">—</div><small class="quick-meta" id="quickDeviationMeta"></small></div>
+          <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
+        </div>
+        <div class="secondary-kpi"><span class="k">当前总资产</span><div class="v" id="quickTotal">—</div><small class="quick-meta">含已录入的在途交易</small></div>
+        <div class="secondary-kpi"><span class="k">建议操作</span><div class="v" id="quickCount">—</div><small class="quick-meta">按执行单位取整后</small></div>
       </div>
-      <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
     </section>
     <div class="result-lead"><div id="status" role="status" aria-live="polite"></div></div>
-    <section class="result-block block-comparison">
-      <div class="comparison-title"><h3>调整前后</h3><span class="section-note">调整前含在途交易</span></div>
-      <div class="table-wrap"><table class="comparison-table">
-        <thead><tr><th>基金</th><th>调整前</th><th>目标</th><th>调整后</th></tr></thead>
-        <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示调整前后</td></tr></tbody>
-      </table></div>
-    </section>
     <section class="result-block block-execution">
       <div class="execution-title"><h3>执行清单</h3><div class="result-tools"><span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span><button class="copy-button" id="copyPlan" type="button" disabled>复制执行方案</button></div></div>
+      <div class="action-pills" id="actionPills" aria-label="操作摘要"></div>
       <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
       <section class="balance-summary" aria-label="执行方案资金配平汇总">
         <div class="balance-grid">
@@ -290,6 +359,13 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
       </table></div>
       <p class="execution-risk-note" id="executionRiskNote">执行金额仅供参考，未计入相关费用及确认期间的净值变化。</p>
       <div class="exec-note" id="execNote"></div>
+    </section>
+    <section class="result-block block-comparison">
+      <div class="comparison-title"><h3>调整前后</h3><span class="section-note">调整前含在途交易</span></div>
+      <div class="table-wrap"><table class="comparison-table">
+        <thead><tr><th>基金</th><th>调整前</th><th>目标</th><th>调整后</th></tr></thead>
+        <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示调整前后</td></tr></tbody>
+      </table></div>
     </section>
     <details class="result-details">
       <summary>查看计算明细</summary>
@@ -315,10 +391,13 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
     </div>
   </details>
   <footer class="footer">
-    <div>© 2026 Zhipeng Zhou · v1.3.0</div>
-    <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span><button class="footer-button" id="refreshVersion" type="button">刷新版本</button></div>
+    <div class="footer-main"><span>© 2026 Zhipeng Zhou</span><span aria-hidden="true">·</span><a href="https://github.com/zzpice/rmb-bond-rebalancer" target="_blank" rel="noopener noreferrer">GitHub</a><span aria-hidden="true">·</span><span>v1.4.0</span></div>
+    <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span></div>
+    <div class="footer-risk">结果仅供参考，不构成投资建议；执行前请核对费用与确认期间的净值变化。</div>
     <div class="install-guide" id="installGuide" role="status" aria-live="polite" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
   </footer>
+</div>
+</main>
 </div>
 
 <script>
@@ -580,6 +659,46 @@ function computePlan(input,flowInput,force=false,options={}){
 
 const SUMMARY_IDS=["sCurrent","sAfter","sBreach","sTurnover","sBuy","sSell"];
 const POLICY_OPTIONS=Object.entries(SELL_POLICIES).map(([value,{optionLabel}])=>`<option value="${value}">${optionLabel}</option>`).join("");
+const THEME_STORAGE_KEY="rebalancer-theme";
+const NAV_SECTIONS=[
+  {key:"holdings",id:"holdingsSection"},
+  {key:"cash",id:"cashFlowSection"},
+  {key:"results",id:"resultsCard"}
+];
+
+function preferredDark(){return typeof window!=="undefined"&&typeof window.matchMedia==="function"&&window.matchMedia("(prefers-color-scheme: dark)").matches}
+function syncThemeColor(mode){const dark=mode==="dark"||(mode==="system"&&preferredDark());$("themeColor").content=dark?"#0d111a":"#f4f6fa"}
+function applyTheme(mode,persist=false){
+  if(!["system","light","dark"].includes(mode))mode="system";
+  document.documentElement.dataset.theme=mode;$('themeMode').value=mode;syncThemeColor(mode);
+  if(persist){try{localStorage.setItem(THEME_STORAGE_KEY,mode)}catch{}}
+}
+function bindThemeControl(){
+  const field=$("themeMode");let initial="system";try{initial=localStorage.getItem(THEME_STORAGE_KEY)||"system"}catch{}applyTheme(initial);field.addEventListener("change",()=>applyTheme(field.value,true));
+  if(typeof window.matchMedia==="function"){
+    const media=window.matchMedia("(prefers-color-scheme: dark)"),listener=()=>{if(document.documentElement.dataset.theme==="system")syncThemeColor("system")};
+    if(typeof media.addEventListener==="function")media.addEventListener("change",listener);else if(typeof media.addListener==="function")media.addListener(listener);
+  }
+}
+function setActiveSection(key){
+  $$('[data-nav-key]').forEach(item=>{const active=item.dataset.navKey===key;item.classList.toggle("active",active);if(active)item.setAttribute("aria-current","step");else item.removeAttribute("aria-current")});
+}
+function navigationOffset(){
+  const toolbar=document.querySelector(".workspace-toolbar"),tabs=document.querySelector(".mobile-tabs");
+  return (toolbar?.offsetHeight||0)+(window.innerWidth<960?(tabs?.offsetHeight||0):0)+18;
+}
+let navigationFrame=0;
+function syncActiveSection(){
+  navigationFrame=0;let active=NAV_SECTIONS[0].key,marker=navigationOffset();
+  for(const section of NAV_SECTIONS){const node=$(section.id);if(node&&node.getBoundingClientRect().top<=marker)active=section.key}
+  if(window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-3)active=NAV_SECTIONS[NAV_SECTIONS.length-1].key;
+  setActiveSection(active);
+}
+function requestNavigationSync(){if(navigationFrame)return;navigationFrame=requestAnimationFrame(syncActiveSection)}
+function bindWorkspaceNavigation(){
+  $$('[data-target]').forEach(item=>item.addEventListener("click",event=>{event.preventDefault();setActiveSection(item.dataset.navKey);scrollElementIntoView($(item.dataset.target))}));
+  window.addEventListener("scroll",requestNavigationSync,{passive:true});window.addEventListener("resize",requestNavigationSync,{passive:true});syncActiveSection();
+}
 
 function fieldValue(field){return String(field.value).trim()}
 function clearFieldValidity(field){if(typeof field?.setCustomValidity==="function")field.setCustomValidity("")}
@@ -640,7 +759,7 @@ function renderFunds(){
   FUNDS.forEach(f=>{
     const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.category}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
       <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small><small class="live-deviation">—</small></div></div>
-      <div class="band-visual" data-band-state="pending"><div class="band-heading"><span class="band-title">再平衡区间</span><span class="band-status">待填写</span></div><div class="band-track" role="img"><span class="band-safe" aria-hidden="true"></span><span class="band-inner-zone" aria-hidden="true"></span><span class="band-inner band-inner-low" aria-hidden="true"></span><span class="band-target" aria-hidden="true"></span><span class="band-inner band-inner-high" aria-hidden="true"></span><span class="band-current" aria-hidden="true" hidden></span></div><div class="band-values"><span class="band-value target"><b>目标</b><span class="band-target-value">—</span></span><span class="band-value outer"><b>outer band · 免调</b><span class="band-outer-value">—</span></span><span class="band-value inner"><b>inner band · 回调</b><span class="band-inner-value">—</span></span></div><div class="band-explanation">填写完整持仓后显示当前位置。</div></div>`);
+      <div class="band-visual" data-band-state="pending"><div class="band-heading"><span class="band-title">再平衡区间</span><span class="band-status">待填写</span></div><div class="band-track" role="img"><span class="band-safe" aria-hidden="true"></span><span class="band-inner-zone" aria-hidden="true"></span><span class="band-inner band-inner-low" aria-hidden="true"></span><span class="band-target" aria-hidden="true"></span><span class="band-inner band-inner-high" aria-hidden="true"></span><span class="band-current" aria-hidden="true" hidden></span></div><div class="band-values"><span class="band-value target"><b>目标比例</b><span class="band-target-value">—</span></span><span class="band-value outer"><b>免调区间</b><span class="band-outer-value">—</span></span><span class="band-value inner"><b>回调位置</b><span class="band-inner-value">—</span></span></div><div class="band-explanation">填写完整持仓后显示当前位置。</div></div>`);
     const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.displayName}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>卖出策略<select aria-label="${f.name}卖出策略" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
     body.appendChild(card);extraBody.appendChild(extra);
   });
@@ -724,7 +843,7 @@ function invalidateResults(message="数据已变化，请重新点击“生成�
   emptyRow("comparisonBody",4,message);emptyRow("resultBody",6,message);emptyRow("detailBody",7,message);
   SUMMARY_IDS.forEach(id=>$(id).textContent="—");
   ["quickTotal","quickDecision","quickDeviation","quickCount","balanceBuy","balanceSell","quickFlow","quickTurnover"].forEach(id=>$(id).textContent="—");
-  $("quickDecision").className="v";$("quickDeviationMeta").textContent="";$("balanceEquation").textContent="买入合计 − 卖出合计 = 外部资金流";$("balanceEquation").closest(".balance-summary").removeAttribute("data-buy-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-sell-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-flow-cents");
+  $("quickDecision").className="v";$("verdictKpi").className="verdict-kpi";$("quickDeviationMeta").textContent="";$("actionPills").innerHTML="";$("balanceEquation").textContent="买入合计 − 卖出合计 = 外部资金流";$("balanceEquation").closest(".balance-summary").removeAttribute("data-buy-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-sell-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-flow-cents");
   $("summaryHeadline").textContent="生成建议后显示执行摘要";$("status").innerHTML="";$("execNote").innerHTML="";$("execNote").hidden=true;$("resultsCard").classList.add("empty");$("emptyResults").hidden=false;
   copyPlanText="";$("copyPlan").disabled=true;$("copyPlan").textContent="复制执行方案";$("copyStatus").textContent="";$("manualCopy").value="";$("manualCopy").hidden=true;
 }
@@ -770,8 +889,8 @@ function renderExecutionSummary(plan){
     headline=parts.join("，")+"。";
   }
   const deviation=stats.deviations[stats.maxIndex],decision=$("quickDecision");
-  $("summaryHeadline").textContent=headline;$("quickTotal").textContent=money(plan.currentTotal);decision.textContent=count?"需要操作":"无需操作";decision.className="v "+(count?"need":"none");
-  $("quickDeviation").textContent=fmt(stats.maxDeviation,2)+" pp";$("quickDeviationMeta").textContent=stats.maxDeviation<.005?"全部位于目标附近":`${FUNDS[stats.maxIndex].code} ${deviation>0?"高配":"低配"}`;$("quickCount").textContent=count+" 笔";
+  $("summaryHeadline").textContent=headline;$("quickTotal").textContent=money(plan.currentTotal);decision.textContent=count?"需要操作":"无需操作";decision.className="v "+(count?"need":"none");$("verdictKpi").className="verdict-kpi "+(count?"needs-action":"no-action");
+  $("quickDeviation").textContent=fmt(stats.maxDeviation,2)+" 个百分点";$("quickDeviationMeta").textContent=stats.maxDeviation<.005?"全部位于目标附近":`${FUNDS[stats.maxIndex].code} ${deviation>0?"高配":"低配"}`;$("quickCount").textContent=count+" 笔";
   $("balanceBuy").textContent=money(buys);$("balanceSell").textContent=money(sells);$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
   $("balanceEquation").textContent=`${money(buys)} − ${money(sells)} = ${signedMoney(plan.flow)}`;
   const balance=$("balanceEquation").closest(".balance-summary");balance.dataset.buyCents=String(buys);balance.dataset.sellCents=String(sells);balance.dataset.flowCents=String(plan.flow);
@@ -779,6 +898,15 @@ function renderExecutionSummary(plan){
 function renderComparison(plan){
   $("comparisonBody").innerHTML="";
   FUNDS.forEach((fund,i)=>appendRow("comparisonBody",`<td class="comparison-fund"><div>${fund.displayName}</div><div class="code">${fund.code}</div></td><td class="before-weight" data-label="调整前">${fmt(plan.amounts[i]/plan.currentTotal*100,2)}%</td><td class="target-weight" data-label="目标">${fmt(fund.targetW*100,2)}%</td><td class="after-weight" data-label="调整后">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td>`));
+}
+function renderActionPills(plan){
+  const container=$("actionPills");container.innerHTML="";
+  plan.totalTrades.forEach((trade,i)=>{
+    if(!trade)return;
+    const pill=document.createElement("span");pill.className="action-pill "+tradeClass(trade);
+    const code=document.createElement("strong");code.textContent=FUNDS[i].code;const action=document.createElement("span");action.textContent=tradeText(trade);
+    pill.appendChild(code);pill.appendChild(action);container.appendChild(pill);
+  });
 }
 // Explanations consume only decisions already returned by computePlan; they do
 // not reproduce threshold, allocation, or rounding rules in the UI layer.
@@ -867,7 +995,7 @@ function evaluate(force=false){
   catch(error){showStatus("bad","计算检查未通过："+error.message);scrollElementIntoView($("resultsCard"));return}
 
   const breachCount=plan.postFlowBreaches.filter(Boolean).length;
-  renderSummary(plan,breachCount);renderExecutionSummary(plan);renderPlanStatus(plan,force,breachCount);renderComparison(plan);
+  renderSummary(plan,breachCount);renderExecutionSummary(plan);renderPlanStatus(plan,force,breachCount);renderActionPills(plan);renderComparison(plan);
   renderPlanRows(plan,holdings,policies);renderExecutionNote(plan);copyPlanText=buildCopyText(plan);$("copyPlan").disabled=false;$("resultsCard").classList.remove("empty");scrollElementIntoView($("resultsCard"));
 }
 
@@ -962,7 +1090,7 @@ async function refreshVersion(){
   }catch{setRefreshButton("刷新失败",true);restoreRefreshButton()}
 }
 
-initializeSettingFields();renderFunds();bindEvents();bindViewportEvents();bindInstallExperience();refreshLive();registerServiceWorker();
+initializeSettingFields();renderFunds();bindThemeControl();bindWorkspaceNavigation();bindEvents();bindViewportEvents();bindInstallExperience();refreshLive();registerServiceWorker();
 </script>
 </body>
 </html>

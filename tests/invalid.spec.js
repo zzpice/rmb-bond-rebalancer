@@ -10,9 +10,10 @@ async function expectRejection(page, type, textPart) {
   const status = await readStatus(page);
   expect(status.type).toBe(type);
   expect(status.text).toContain(textPart);
-  // 拒绝执行：不生成执行清单（结果表保持占位行）
+  // 拒绝执行：保留错误状态，完整结果表继续折叠
   await expect(page.locator("#resultBody tr")).toHaveCount(1);
-  await expect(page.locator("#resultBody td.empty")).toBeVisible();
+  await expect(page.locator("#resultBody td.empty")).toBeHidden();
+  await expect(page.locator("#resultsCard .block-execution")).toBeHidden();
   // 页面不出现 NaN / Infinity 输出
   const bodyText = await page.locator("#resultsCard").textContent();
   expect(bodyText).not.toContain("NaN");
