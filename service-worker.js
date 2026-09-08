@@ -1,5 +1,5 @@
 const CACHE_PREFIX="bond-rebalancer-";
-const CACHE_NAME=`${CACHE_PREFIX}v1.4.0`;
+const CACHE_NAME=`${CACHE_PREFIX}v1.5.0`;
 const appURL=path=>new URL(path,self.location.href).href;
 const INDEX_URL=appURL("./index.html");
 const APP_SHELL=[

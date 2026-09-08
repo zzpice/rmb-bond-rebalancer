@@ -1,6 +1,6 @@
 {
   "name": "rmb-bond-rebalancer-tests",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "description": "Automated regression tests for the RMB bond fund rebalancer. The v1.0.1 algorithm behavior remains the protected baseline.",
