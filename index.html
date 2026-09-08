@@ -47,7 +47,7 @@ h1{font-size:25px;letter-spacing:-.02em;margin:0 0 5px}.sub{color:var(--muted)}
 .rule b{display:block;margin-bottom:3px}.rule small{color:var(--muted)}
 .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}
 table{width:100%;border-collapse:collapse;min-width:1040px}
-th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 th{font-size:12px;color:var(--muted);background:var(--fill)}
 th:first-child,td:first-child{text-align:left}
 tr:last-child td{border-bottom:0}
@@ -64,6 +64,7 @@ details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-
 .plain-tip{margin-top:11px;padding:11px 13px;border-radius:12px;background:var(--bluebg);color:var(--blue);font-size:13px}
 .inline-help{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.inline-help summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:38px;display:flex;align-items:center}.help-list{display:grid;grid-template-columns:max-content 1fr;gap:7px 14px;margin:5px 0 2px}.help-list dt{font-weight:650}.help-list dd{margin:0;color:var(--muted)}
 .fund-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px}.fund-card{min-width:0;border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--elevated)}.fund-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:11px;border-bottom:1px solid var(--line)}.fund-meta{min-width:0}.fund-meta .fund{overflow-wrap:anywhere}.fund-line{display:flex;flex-wrap:wrap;gap:5px 8px;align-items:center;margin-top:3px}.fund-line .role{margin:0;padding:1px 6px;border-radius:999px;background:var(--bluebg);font-size:11px;line-height:1.45}.fund-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:13px;align-items:end;padding-top:12px}.amount-label{display:block}.amount-box{display:flex;align-items:center;margin-top:5px;border:1px solid var(--line);border-radius:11px;background:var(--card);overflow:hidden}.amount-box:focus-within{outline:3px solid rgba(0,122,255,.25);border-color:var(--blue)}.amount-box input{width:100%;border:0;border-radius:0;text-align:right;background:transparent;outline:0!important}.amount-unit{flex:0 0 auto;padding-right:10px;color:var(--muted);font-size:12px;white-space:nowrap}.live-weight{text-align:right;min-width:104px}.live-weight span{display:block;color:var(--muted);font-size:11px}.live-weight .curw{display:block;font-size:19px;line-height:1.2;margin:4px 0 2px}.live-weight small{display:block;color:var(--muted);line-height:1.4}.live-deviation{margin-top:2px}
+.band-visual{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums lining-nums}.band-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.band-title{font-size:12px;font-weight:650}.band-status{font-size:11px;font-weight:700;color:var(--muted)}.band-visual[data-band-state="ok"] .band-status{color:var(--green)}.band-visual[data-band-state="under"] .band-status,.band-visual[data-band-state="over"] .band-status{color:var(--red)}.band-track{position:relative;height:14px;margin:0 6px}.band-track::before{content:"";position:absolute;left:0;right:0;top:5px;height:4px;border-radius:999px;background:var(--fill)}.band-safe,.band-inner-zone{position:absolute;top:3px;height:8px;border-radius:999px}.band-safe{background:var(--bluebg)}.band-inner-zone{top:4px;height:6px;background:var(--greenbg)}.band-target,.band-inner{position:absolute;top:1px;width:2px;height:12px;border-radius:2px;transform:translateX(-50%)}.band-target{background:var(--blue);z-index:2}.band-inner{top:3px;width:1px;height:8px;background:var(--green);opacity:.85}.band-current{position:absolute;top:7px;width:11px;height:11px;border:2px solid var(--card);border-radius:50%;background:var(--muted);box-shadow:0 1px 4px rgba(0,0,0,.24);transform:translate(-50%,-50%);z-index:3}.band-current[hidden]{display:none}.band-current.ok{background:var(--green)}.band-current.under,.band-current.over{background:var(--red)}.band-values{display:grid;grid-template-columns:.8fr 1.15fr 1.2fr;gap:8px;margin-top:9px}.band-value{min-width:0;font-size:11px;line-height:1.35;color:var(--text);overflow-wrap:anywhere}.band-value b{display:block;margin-bottom:1px;color:var(--muted);font-size:10px;font-weight:500}.band-value b::before{content:"";display:inline-block;width:8px;height:5px;margin-right:4px;border-radius:2px;vertical-align:1px;background:var(--fill)}.band-value.target b::before{width:2px;height:8px;border-radius:1px;background:var(--blue)}.band-value.outer b::before{background:var(--bluebg)}.band-value.inner b::before{background:var(--green)}.band-explanation{margin-top:8px;color:var(--muted);font-size:11px;line-height:1.42}
 .special-panel{margin-top:12px}.special-panel>.details-inner{padding:2px 0 0}.fund-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.fund-extra-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--fill);min-width:0}.extra-head{font-weight:650;margin-bottom:10px}.extra-head .code{display:inline;margin-left:6px}.extra-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extra-fields label{display:block}.extra-fields input,.extra-fields select{width:100%;max-width:none;margin-top:5px}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.metric{min-width:0;border-radius:10px;background:var(--card);padding:9px}.metric.distance-metric{grid-column:1/-1}.metric-label{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.metric-value{display:block;overflow-wrap:anywhere}.metric-value .code{margin-top:2px}
 .field-help{font-size:11px;color:var(--muted);line-height:1.35;min-height:30px}
 button{cursor:pointer;font-weight:650;touch-action:manipulation;transition:transform .12s ease,opacity .12s ease}
@@ -76,12 +77,13 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .actions{display:flex;gap:10px;flex-wrap:wrap}.settings-actions{margin-top:12px}
 .summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .stat{border:1px solid var(--line);border-radius:10px;padding:12px}
-.k{font-size:12px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:3px;overflow-wrap:anywhere}
+.k{font-size:12px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:3px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums lining-nums}
 .statusbox{border-radius:12px;padding:14px 15px;margin-top:12px}
 .statusbox.ok{background:var(--greenbg);color:var(--green)}
 .statusbox.bad{background:var(--redbg);color:var(--red)}
 .statusbox.warn{background:var(--amberbg);color:var(--amber)}
-.result-lead{margin-bottom:13px}.empty-results{display:none}.status-verdict{display:block;font-size:16px;font-weight:700;line-height:1.35}.status-detail{display:block;font-size:13px;line-height:1.5;opacity:.92;margin-top:3px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:12px 0 16px}.summary-headline{font-size:16px;font-weight:700;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:11px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:14px}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-details .summary{margin-top:10px}
+.result-lead{margin:0 0 16px}.empty-results{display:none}.status-verdict{display:block;font-size:16px;font-weight:700;line-height:1.35}.status-detail{display:block;font-size:13px;line-height:1.5;opacity:.92;margin-top:3px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:0 0 12px}.summary-headline{margin-top:10px;color:var(--muted);font-size:13px;font-weight:500;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:15px}.quick-meta{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:500;line-height:1.3}.quick-stat.decision .v.need{color:var(--amber)}.quick-stat.decision .v.none{color:var(--green)}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-details .summary{margin-top:10px}
+.balance-summary{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--fill)}.balance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.balance-stat{min-width:0;padding:9px 10px;border-radius:10px;background:var(--card)}.balance-stat .k{display:block}.balance-stat .v{font-size:14px}.balance-equation{margin-top:9px;color:var(--text);font-size:12px;font-weight:650;text-align:center;font-variant-numeric:tabular-nums lining-nums}.balance-secondary{margin-top:4px;color:var(--muted);font-size:11px;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .manual-copy{width:100%;min-height:150px;margin:8px 0 0;resize:vertical;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.manual-copy[hidden]{display:none}
 .buy{color:var(--green);font-weight:700}.sell{color:var(--red);font-weight:700}.hold{color:var(--muted)}
 .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:650}
@@ -92,7 +94,8 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .flowline{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:5px;min-width:210px}
 label{font-size:12px;color:var(--muted)}
-.exec-note{margin-top:10px;font-size:12px;color:var(--muted)}
+.execution-risk-note{margin:9px 1px 0;color:var(--muted);font-size:12px;line-height:1.45}.exec-note{margin-top:10px;padding:11px 12px;border-radius:11px;background:var(--bluebg);color:var(--text);font-size:12px}.exec-note[hidden]{display:none}.exec-note-title{color:var(--blue);font-weight:700}.exec-note ul{margin:6px 0 0;padding-left:18px}.exec-note li+li{margin-top:4px}
+input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tabular-nums lining-nums}
 .footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}.footer-actions{display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap}.footer-button{min-height:0;border:0;background:transparent;color:var(--blue);padding:4px 6px;font-size:inherit}.footer-button:disabled{cursor:default;color:var(--muted)}.footer-separator{color:var(--line)}.install-guide{max-width:520px;margin:10px auto 0;padding:12px 34px 12px 13px;position:relative;text-align:left;border-radius:12px;background:var(--bluebg);color:var(--blue);line-height:1.5}.install-guide button{position:absolute;right:5px;top:4px;min-width:32px;min-height:32px;padding:2px;border:0;background:transparent;color:inherit;font-size:18px}.install-guide[hidden]{display:none}
 @media(max-width:900px){
   .header{flex-direction:column;align-items:flex-start}
@@ -120,9 +123,10 @@ label{font-size:12px;color:var(--muted)}
   details.card>summary{min-height:56px;padding:16px;font-size:18px;display:flex;align-items:center;cursor:pointer}
   details.card>summary::marker{color:var(--muted)}details.card>.details-inner{padding:0 16px 16px}
   .summary{grid-template-columns:1fr 1fr;gap:8px}.stat{border:0;background:var(--fill);border-radius:14px;padding:12px}.k{font-size:11px;line-height:1.35}.v{font-size:17px}
-  .execution-summary{border:0;border-radius:15px;padding:13px}.summary-headline{font-size:15px}.summary-quick{grid-template-columns:1fr 1fr}.quick-stat{background:var(--elevated);padding:10px}.quick-stat .v{font-size:14px}.comparison-title,.execution-title{align-items:flex-start;flex-wrap:wrap}.result-tools{width:100%;justify-content:space-between}.copy-button{min-height:44px;font-size:14px}
+  .execution-summary{border:0;border-radius:15px;padding:13px}.summary-headline{font-size:12px}.summary-quick{grid-template-columns:1fr 1fr}.quick-stat{background:var(--elevated);padding:10px}.quick-stat .v{font-size:14px}.comparison-title,.execution-title{align-items:flex-start;flex-wrap:wrap}.result-tools{width:100%;justify-content:space-between}.copy-button{min-height:44px;font-size:14px}
+  .balance-summary{border:0;padding:11px}.balance-grid{grid-template-columns:1fr 1fr}.balance-stat{background:var(--elevated)}.balance-stat.flow{grid-column:1/-1}.balance-equation{font-size:11px;overflow-wrap:anywhere}
   .statusbox{padding:13px 14px;border-radius:14px}
-  .section-head h2{font-size:20px;margin:0}.fund-grid{gap:8px}.fund-card{padding:12px;border:0;background:var(--fill)}.fund-card-head{padding-bottom:8px}.fund-main{grid-template-columns:minmax(0,1fr) 78px;gap:8px;padding-top:8px}.live-weight{min-width:0}.live-weight span{font-size:10px}.live-weight .curw{font-size:16px;margin:2px 0 1px}.live-weight small{font-size:10px;line-height:1.35}.amount-box{background:var(--elevated)}.amount-box input{font-size:17px;text-align:right}.special-panel>.details-inner{padding:0 13px 14px!important}.fund-extra-card{border:0;background:var(--fill)}.extra-fields{grid-template-columns:1fr 1fr;gap:8px}.metric{background:var(--elevated)}
+  .section-head h2{font-size:20px;margin:0}.fund-grid{gap:8px}.fund-card{padding:12px;border:0;background:var(--fill)}.fund-card-head{padding-bottom:8px}.fund-main{grid-template-columns:minmax(0,1fr) 78px;gap:8px;padding-top:8px}.live-weight{min-width:0}.live-weight span{font-size:10px}.live-weight .curw{font-size:16px;margin:2px 0 1px}.live-weight small{font-size:10px;line-height:1.35}.amount-box{background:var(--elevated)}.amount-box input{font-size:17px;text-align:right}.band-visual{margin-top:11px;padding-top:10px}.band-values{grid-template-columns:.72fr 1.12fr 1.2fr;gap:5px}.band-value{font-size:10px}.band-explanation{font-size:10px}.special-panel>.details-inner{padding:0 13px 14px!important}.fund-extra-card{border:0;background:var(--fill)}.extra-fields{grid-template-columns:1fr 1fr;gap:8px}.metric{background:var(--elevated)}
 
   .table-wrap:has(.result-table),.table-wrap:has(.comparison-table){overflow:visible;border:0;border-radius:0}
   .result-table,.result-table tbody,.comparison-table,.comparison-table tbody{display:block;width:100%;min-width:0}
@@ -140,8 +144,8 @@ label{font-size:12px;color:var(--muted)}
 
   #resultsCard{display:flex;flex-direction:column}
   #resultsCard>h2{order:0}
-  #resultsCard>.result-lead{order:1}
-  #resultsCard>.execution-summary{order:2}
+  #resultsCard>.execution-summary{order:1}
+  #resultsCard>.result-lead{order:2}
   #resultsCard>.block-execution{order:3}
   #resultsCard>.block-comparison{order:4}
   #resultsCard>.result-details{order:5}
@@ -250,17 +254,17 @@ label{font-size:12px;color:var(--muted)}
 
   <div class="card empty" id="resultsCard" tabindex="-1">
     <h2>3. 执行建议</h2>
-    <div class="result-lead"><div id="status" role="status" aria-live="polite"></div></div>
     <div class="empty-results" id="emptyResults">填写 4 项当前持仓后，点击“生成建议”查看执行方案。</div>
     <section class="execution-summary" aria-labelledby="summaryHeadline">
-      <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
       <div class="summary-quick">
-        <div class="quick-stat"><span class="k">资金变动</span><div class="v" id="quickFlow">—</div></div>
-        <div class="quick-stat"><span class="k">基金间转换</span><div class="v" id="quickTurnover">—</div></div>
-        <div class="quick-stat"><span class="k">买入／卖出</span><div class="v" id="quickTrades">—</div></div>
-        <div class="quick-stat"><span class="k">需操作基金</span><div class="v" id="quickCount">—</div></div>
+        <div class="quick-stat"><span class="k">当前总资产</span><div class="v" id="quickTotal">—</div></div>
+        <div class="quick-stat decision"><span class="k">是否需要操作</span><div class="v" id="quickDecision">—</div></div>
+        <div class="quick-stat"><span class="k">当前最大偏离</span><div class="v" id="quickDeviation">—</div><small class="quick-meta" id="quickDeviationMeta"></small></div>
+        <div class="quick-stat"><span class="k">建议操作</span><div class="v" id="quickCount">—</div></div>
       </div>
+      <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
     </section>
+    <div class="result-lead"><div id="status" role="status" aria-live="polite"></div></div>
     <section class="result-block block-comparison">
       <div class="comparison-title"><h3>调整前后</h3><span class="section-note">调整前含在途交易</span></div>
       <div class="table-wrap"><table class="comparison-table">
@@ -271,10 +275,20 @@ label{font-size:12px;color:var(--muted)}
     <section class="result-block block-execution">
       <div class="execution-title"><h3>执行清单</h3><div class="result-tools"><span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span><button class="copy-button" id="copyPlan" type="button" disabled>复制执行方案</button></div></div>
       <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
+      <section class="balance-summary" aria-label="执行方案资金配平汇总">
+        <div class="balance-grid">
+          <div class="balance-stat"><span class="k">买入合计</span><div class="v buy" id="balanceBuy">—</div></div>
+          <div class="balance-stat"><span class="k">卖出合计</span><div class="v sell" id="balanceSell">—</div></div>
+          <div class="balance-stat flow"><span class="k">外部资金流</span><div class="v" id="quickFlow">—</div></div>
+        </div>
+        <div class="balance-equation" id="balanceEquation">买入合计 − 卖出合计 = 外部资金流</div>
+        <div class="balance-secondary">基金间转换：<span id="quickTurnover">—</span></div>
+      </section>
       <div class="table-wrap"><table class="result-table">
         <thead><tr><th>基金</th><th>操作</th><th>调整后金额</th><th>调整后占比</th><th>卖出策略</th><th>原因</th></tr></thead>
         <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
       </table></div>
+      <p class="execution-risk-note" id="executionRiskNote">执行金额仅供参考，未计入相关费用及确认期间的净值变化。</p>
       <div class="exec-note" id="execNote"></div>
     </section>
     <details class="result-details">
@@ -301,7 +315,7 @@ label{font-size:12px;color:var(--muted)}
     </div>
   </details>
   <footer class="footer">
-    <div>© 2026 Zhipeng Zhou · v1.2.3</div>
+    <div>© 2026 Zhipeng Zhou · v1.3.0</div>
     <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span><button class="footer-button" id="refreshVersion" type="button">刷新版本</button></div>
     <div class="install-guide" id="installGuide" role="status" aria-live="polite" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
   </footer>
@@ -625,7 +639,8 @@ function renderFunds(){
   const body=$("fundBody"),extraBody=$("fundExtraBody");body.innerHTML="";extraBody.innerHTML="";
   FUNDS.forEach(f=>{
     const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.category}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
-      <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small><small class="live-deviation">—</small></div></div>`);
+      <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small><small class="live-deviation">—</small></div></div>
+      <div class="band-visual" data-band-state="pending"><div class="band-heading"><span class="band-title">再平衡区间</span><span class="band-status">待填写</span></div><div class="band-track" role="img"><span class="band-safe" aria-hidden="true"></span><span class="band-inner-zone" aria-hidden="true"></span><span class="band-inner band-inner-low" aria-hidden="true"></span><span class="band-target" aria-hidden="true"></span><span class="band-inner band-inner-high" aria-hidden="true"></span><span class="band-current" aria-hidden="true" hidden></span></div><div class="band-values"><span class="band-value target"><b>目标</b><span class="band-target-value">—</span></span><span class="band-value outer"><b>outer band · 免调</b><span class="band-outer-value">—</span></span><span class="band-value inner"><b>inner band · 回调</b><span class="band-inner-value">—</span></span></div><div class="band-explanation">填写完整持仓后显示当前位置。</div></div>`);
     const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.displayName}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>卖出策略<select aria-label="${f.name}卖出策略" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
     body.appendChild(card);extraBody.appendChild(extra);
   });
@@ -635,9 +650,36 @@ function renderFunds(){
 function renderStaticFundInfo(){
   $("targetSummary").textContent=`目标比例：${FUNDS.map(f=>compactNumber(f.targetW*100)+"%").join(" / ")}。`;
 }
+function bandPercent(value){return fmt(value*100,2)+"%"}
+function bandPositionMap({current,target,low,high,innerLow,innerHigh}){
+  const bandWidth=Math.max(high-low,1e-8),points=[low,high,target];if(current!==null)points.push(current);
+  const minimum=Math.min(...points),maximum=Math.max(...points),padding=bandWidth*.55;
+  let domainLow=Math.max(0,minimum-padding),domainHigh=Math.min(1,maximum+padding);
+  if(domainHigh-domainLow<bandWidth*1.1){domainLow=Math.max(0,low-padding);domainHigh=Math.min(1,high+padding)}
+  const span=Math.max(domainHigh-domainLow,1e-8),position=value=>Math.max(0,Math.min(100,(value-domainLow)/span*100));
+  return {current:current===null?null:position(current),target:position(target),low:position(low),high:position(high),innerLow:position(innerLow),innerHigh:position(innerHigh)};
+}
+function renderBand(card,fundIndex,values,state="pending",explanation="填写完整持仓后显示当前位置与是否越界。",cents=null){
+  const visual=card.querySelector(".band-visual"),track=visual.querySelector(".band-track"),positions=bandPositionMap(values);
+  const place=(selector,left,width=null)=>{const node=visual.querySelector(selector);node.style.left=left+"%";if(width!==null)node.style.width=Math.max(0,width)+"%"};
+  place(".band-safe",positions.low,positions.high-positions.low);place(".band-inner-zone",positions.innerLow,positions.innerHigh-positions.innerLow);
+  place(".band-inner-low",positions.innerLow);place(".band-target",positions.target);place(".band-inner-high",positions.innerHigh);
+  const current=visual.querySelector(".band-current");current.hidden=positions.current===null;current.className="band-current"+(state==="pending"?"":" "+state);if(positions.current!==null)current.style.left=positions.current+"%";
+  visual.dataset.bandState=state;visual.querySelector(".band-status").textContent=state==="under"?"低配":state==="over"?"高配":state==="ok"?"正常范围":"待填写";
+  visual.querySelector(".band-target-value").textContent=bandPercent(values.target);
+  visual.querySelector(".band-outer-value").textContent=`${bandPercent(values.low)}～${bandPercent(values.high)}`;
+  visual.querySelector(".band-inner-value").textContent=`${bandPercent(values.innerLow)}／${bandPercent(values.innerHigh)}`;
+  visual.querySelector(".band-explanation").textContent=explanation;
+  track.setAttribute("aria-label",`${FUNDS[fundIndex].displayName}再平衡区间：${positions.current===null?"当前占比待填写":`当前 ${bandPercent(values.current)}，`}目标 ${bandPercent(values.target)}，免调范围 ${bandPercent(values.low)} 至 ${bandPercent(values.high)}，越界后回调位置 ${bandPercent(values.innerLow)} 或 ${bandPercent(values.innerHigh)}，状态${visual.querySelector(".band-status").textContent}`);
+  for(const key of ["outerLowCents","outerHighCents","innerLowCents","innerHighCents","targetCents","currentCents"])delete visual.dataset[key];
+  if(cents)Object.entries(cents).forEach(([key,value])=>visual.dataset[key]=String(value));
+}
 function updateBandLabels(){
   $("bandHelp").innerHTML=FUNDS.map(f=>`<dt>${f.code}</dt><dd>目标 ${compactNumber(f.targetW*100)}%，${compactNumber(f.outerLow*100)}%～${compactNumber(f.outerHigh*100)}% 内不调整。</dd>`).join("");
-  [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>card.querySelector(".target-label").textContent=`目标 ${fmt(FUNDS[i].targetW*100)}%`);
+  [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>{
+    const fund=FUNDS[i];card.querySelector(".target-label").textContent=`目标 ${fmt(fund.targetW*100)}%`;
+    renderBand(card,i,{current:null,target:fund.targetW,low:fund.outerLow,high:fund.outerHigh,innerLow:fund.innerLow,innerHigh:fund.innerHigh});
+  });
   [...$("fundExtraBody").querySelectorAll(".fund-extra-card")].forEach((card,i)=>{
     card.querySelector(".target-amount").textContent=`${fmt(FUNDS[i].targetW*100)}%`;
     card.querySelector(".outer-range").textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
@@ -656,7 +698,7 @@ function refreshLive(state=holdingsState()){
   if(!state.ok){resetLiveCards(cards,extras);return}
   const holdings=state.data,total=sum(holdings.effective),breaches=outerBreaches(holdings.effective),targets=targetCents(total),limits=bounds(total);
   cards.forEach((card,i)=>{
-    const {low,high}=limits[i],amount=holdings.effective[i],extra=extras[i];
+    const {low,high,innerLow,innerHigh}=limits[i],amount=holdings.effective[i],extra=extras[i];
     extra.querySelector(".target-amount").innerHTML=`${wanMoney(targets[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
     extra.querySelector(".outer-range").innerHTML=`${wanMoney(low)} ～ ${wanMoney(high)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
     const currentWeight=amount/total,deviation=(currentWeight-FUNDS[i].targetW)*100;
@@ -667,6 +709,9 @@ function refreshLive(state=holdingsState()){
     else if(amount>high)distance.textContent="高于上限 "+wanMoney(amount-high);
     else distance.textContent=amount-low<=high-amount?"距下限 "+wanMoney(amount-low):"距上限 "+wanMoney(high-amount);
     card.querySelector(".state").innerHTML=breaches[i]?`<span class="tag bad">${amount<low?"低配":"高配"}越界</span>`:'<span class="tag ok">范围内</span>';
+    const bandState=amount<low?"under":amount>high?"over":"ok";
+    const explanation=bandState==="under"?`已低于免调下限；越界后回调至 ${bandPercent(innerLow/total)}，而非目标。`:bandState==="over"?`已高于免调上限；越界后回调至 ${bandPercent(innerHigh/total)}，而非目标。`:"当前位于免调范围内，不调整。";
+    renderBand(card,i,{current:amount/total,target:targets[i]/total,low:low/total,high:high/total,innerLow:innerLow/total,innerHigh:innerHigh/total},bandState,explanation,{outerLowCents:low,outerHighCents:high,innerLowCents:innerLow,innerHighCents:innerHigh,targetCents:targets[i],currentCents:amount});
   });
 }
 
@@ -678,8 +723,9 @@ function emptyRow(bodyId,colspan,message){
 function invalidateResults(message="数据已变化，请重新点击“生成建议”。"){
   emptyRow("comparisonBody",4,message);emptyRow("resultBody",6,message);emptyRow("detailBody",7,message);
   SUMMARY_IDS.forEach(id=>$(id).textContent="—");
-  ["quickFlow","quickTurnover","quickTrades","quickCount"].forEach(id=>$(id).textContent="—");
-  $("summaryHeadline").textContent="生成建议后显示执行摘要";$("status").innerHTML="";$("execNote").textContent="";$("resultsCard").classList.add("empty");$("emptyResults").hidden=false;
+  ["quickTotal","quickDecision","quickDeviation","quickCount","balanceBuy","balanceSell","quickFlow","quickTurnover"].forEach(id=>$(id).textContent="—");
+  $("quickDecision").className="v";$("quickDeviationMeta").textContent="";$("balanceEquation").textContent="买入合计 − 卖出合计 = 外部资金流";$("balanceEquation").closest(".balance-summary").removeAttribute("data-buy-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-sell-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-flow-cents");
+  $("summaryHeadline").textContent="生成建议后显示执行摘要";$("status").innerHTML="";$("execNote").innerHTML="";$("execNote").hidden=true;$("resultsCard").classList.add("empty");$("emptyResults").hidden=false;
   copyPlanText="";$("copyPlan").disabled=true;$("copyPlan").textContent="复制执行方案";$("copyStatus").textContent="";$("manualCopy").value="";$("manualCopy").hidden=true;
 }
 function tradeClass(amount){return amount>0?"buy":amount<0?"sell":"hold"}
@@ -699,16 +745,23 @@ function revealField(field,message){
 }
 function showInputError(error){showStatus("warn",error.message);revealField(error.field,error.message)}
 
+function executionStats(plan){
+  const buys=sum(plan.totalTrades.filter(amount=>amount>0)),sells=-sum(plan.totalTrades.filter(amount=>amount<0)),count=plan.totalTrades.filter(Boolean).length;
+  const deviations=plan.amounts.map((amount,i)=>amount/plan.currentTotal-FUNDS[i].targetW),maxIndex=indices().reduce((best,i)=>Math.abs(deviations[i])>Math.abs(deviations[best])?i:best,0);
+  return {buys,sells,count,deviations,maxIndex,maxDeviation:Math.abs(deviations[maxIndex])*100};
+}
 function renderSummary(plan,breachCount){
+  const stats=executionStats(plan);
   const values={
     sCurrent:money(plan.currentTotal),sAfter:money(plan.afterTotal),sBreach:String(breachCount),sTurnover:money(plan.internalTurnover),
-    sBuy:money(sum(plan.totalTrades.filter(amount=>amount>0))),sSell:money(-sum(plan.totalTrades.filter(amount=>amount<0)))
+    sBuy:money(stats.buys),sSell:money(stats.sells)
   };
   Object.entries(values).forEach(([id,value])=>$(id).textContent=value);
 }
 function externalFlowText(plan){return plan.flow>0?"新增 "+money(plan.flow):plan.flow<0?"取出 "+money(-plan.flow):"无"}
+function signedMoney(amount){return amount>0?"+ "+money(amount):amount<0?"− "+money(-amount):money(0)}
 function renderExecutionSummary(plan){
-  const buys=sum(plan.totalTrades.filter(amount=>amount>0)),sells=-sum(plan.totalTrades.filter(amount=>amount<0)),count=plan.totalTrades.filter(Boolean).length;
+  const stats=executionStats(plan),{buys,sells,count}=stats;
   let headline;
   if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，资金变动与基金间转换均为零。";
   else{
@@ -716,8 +769,12 @@ function renderExecutionSummary(plan){
     parts.push(plan.internalTurnover?`基金间转换 ${money(plan.internalTurnover)}`:"无基金间转换");
     headline=parts.join("，")+"。";
   }
-  $("summaryHeadline").textContent=headline;$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
-  $("quickTrades").textContent=`买 ${money(buys)} · 卖 ${money(sells)}`;$("quickCount").textContent=count+" 只";
+  const deviation=stats.deviations[stats.maxIndex],decision=$("quickDecision");
+  $("summaryHeadline").textContent=headline;$("quickTotal").textContent=money(plan.currentTotal);decision.textContent=count?"需要操作":"无需操作";decision.className="v "+(count?"need":"none");
+  $("quickDeviation").textContent=fmt(stats.maxDeviation,2)+" pp";$("quickDeviationMeta").textContent=stats.maxDeviation<.005?"全部位于目标附近":`${FUNDS[stats.maxIndex].code} ${deviation>0?"高配":"低配"}`;$("quickCount").textContent=count+" 笔";
+  $("balanceBuy").textContent=money(buys);$("balanceSell").textContent=money(sells);$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
+  $("balanceEquation").textContent=`${money(buys)} − ${money(sells)} = ${signedMoney(plan.flow)}`;
+  const balance=$("balanceEquation").closest(".balance-summary");balance.dataset.buyCents=String(buys);balance.dataset.sellCents=String(sells);balance.dataset.flowCents=String(plan.flow);
 }
 function renderComparison(plan){
   $("comparisonBody").innerHTML="";
@@ -768,10 +825,14 @@ function renderPlanRows(plan,holdings,policies){
 }
 function renderExecutionNote(plan){
   const notes=[];
-  if(plan.totalTrades.some(amount=>amount<0))notes.push("卖出前请核对持有期和赎回费率。");
-  if(plan.smallRequired.length)notes.push("低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。");
-  notes.push(`建议金额按 ${compactNumber(CONFIG.roundYuan)} CNY 取整，不含费用及确认期间的净值变化。`);
-  $("execNote").textContent=notes.join("");
+  if(plan.flow>0)notes.push({kind:"inflow",text:"本次新增资金已优先用于拉近当前配置与目标配置的差距。"});
+  if(plan.totalTrades.some(amount=>amount<0))notes.push({kind:"redemption",text:"存在卖出操作，请执行前核对持有期和赎回费。"});
+  if(plan.rawTotalTrades.some((amount,i)=>amount&&!plan.totalTrades[i]))notes.push({kind:"small-merged",text:"部分零碎建议经取整或小额合并后已取消，无需单独下单。"});
+  if(plan.smallRequired.length)notes.push({kind:"small-required",text:"低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。"});
+  if(plan.rounding.some(Boolean))notes.push({kind:"rounding",text:`建议金额已按 ${compactNumber(CONFIG.roundYuan)} CNY 取整。`});
+  const note=$("execNote");note.innerHTML="";note.hidden=!notes.length;if(!notes.length)return;
+  const title=createNode("div","exec-note-title","执行提示"),list=document.createElement("ul");note.appendChild(title);note.appendChild(list);
+  notes.forEach(({kind,text})=>{const item=document.createElement("li");item.dataset.note=kind;item.textContent=text;list.appendChild(item)});
 }
 function buildCopyText(plan){
   const lines=["债基再平衡执行方案",`资金变动：${externalFlowText(plan)}`,`基金间转换：${money(plan.internalTurnover)}`,""];

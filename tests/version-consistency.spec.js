@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("当前发布版本标记保持一致", async ({ page, request }) => {
-  const releaseVersion = "1.2.3";
+  const releaseVersion = "1.3.0";
   await page.goto("/");
   await expect(page.locator("footer.footer")).toContainText(`v${releaseVersion}`);
 
