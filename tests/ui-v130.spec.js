@@ -84,7 +84,7 @@ test.describe("v1.3.0 结果摘要与资金配平", () => {
     await generate(page);
     await expect(page.locator("#quickTotal")).toHaveText("CNY 960,000.00");
     await expect(page.locator("#quickDecision")).toHaveText("无需操作");
-    await expect(page.locator("#quickDeviation")).toHaveText("0.00 pp");
+    await expect(page.locator("#quickDeviation")).toHaveText("0.00 个百分点");
     await expect(page.locator("#quickCount")).toHaveText("0 笔");
   });
 
@@ -93,7 +93,7 @@ test.describe("v1.3.0 结果摘要与资金配平", () => {
     await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
     await generate(page);
     await expect(page.locator("#quickDecision")).toHaveText("需要操作");
-    await expect(page.locator("#quickDeviation")).toHaveText("12.50 pp");
+    await expect(page.locator("#quickDeviation")).toHaveText("12.50 个百分点");
     await expect(page.locator("#quickDeviationMeta")).toHaveText("110017 高配");
     const trades = page.locator("#resultBody .trade-cell:not(.hold)");
     await expect(page.locator("#quickCount")).toHaveText(`${await trades.count()} 笔`);
