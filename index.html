@@ -29,6 +29,17 @@
   --red:#c4323f;--redbg:#fcecef;--amber:#a15c07;--amberbg:#fff4df;
   --shadow:0 1px 2px rgba(16,24,40,.025),0 10px 30px rgba(31,42,68,.05);
   --toolbar-bg:rgba(244,246,250,.88);--sidebar:#101828;--sidebar-text:#d0d5dd;--sidebar-muted:#98a2b3;--dock-bg:rgba(255,255,255,.92);
+  /* ---- v1.6.0 design tokens (新增，不被现有 selector 引用) ---- */
+  /* 语义映射（仅说明）：--card→--surface、--fill→--surface-subtle、--muted→--text-tertiary */
+  --font-sans:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --text-secondary:#45464d;
+  --text-tertiary:#76777d;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-pill:999px;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-7:32px;
+  --shadow-dock:0 -8px 30px rgba(0,0,0,.08);
+  --shadow-dot:0 1px 4px rgba(0,0,0,.24);
 }
 *{box-sizing:border-box}
 html{width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
@@ -167,9 +178,9 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
   .footer{padding-left:0;padding-right:0}.footer-actions{gap:0}.footer-button{min-height:42px;padding:8px}.install-guide{font-size:13px}
 }
 @media(prefers-color-scheme:dark){
-  :root:not([data-theme]),:root[data-theme="system"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
+  :root:not([data-theme]),:root[data-theme="system"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92);--text-secondary:#b3bcc9;--text-tertiary:#98a2b3}
 }
-:root[data-theme="dark"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92);--text-secondary:#b3bcc9;--text-tertiary:#98a2b3}
 :root[data-theme="light"]{color-scheme:light}
 
 /* v1.4 workstation shell */
