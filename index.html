@@ -57,6 +57,7 @@ input,button{-webkit-appearance:none;appearance:none}
 input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:1px;border-color:var(--blue)}
 select{max-width:138px;padding-right:28px;-webkit-appearance:menulist;appearance:auto}
 details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-size:17px;padding:18px;list-style-position:inside}details.card>.details-inner{padding:0 18px 18px}
+details.settings-card{background:var(--fill);box-shadow:none;border-radius:12px;margin:10px 0}details.settings-card>summary{padding:13px 15px;font-size:15px;font-weight:650}
 .setting-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.setting-grid .field{min-width:0}.setting-grid input{width:100%}
 .empty{text-align:center!important;color:var(--muted);padding:24px!important}.section-note{font-size:12px;color:var(--muted);margin:0 0 12px}.role{font-size:12px;color:var(--blue);margin-top:2px}
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head h2{margin-bottom:0}.btn-ghost{min-height:34px;border:0;background:transparent;color:var(--muted);padding:4px 10px;font-size:12px;font-weight:500}.btn-ghost:hover{color:var(--text);background:var(--fill)}
@@ -82,7 +83,7 @@ button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .statusbox.ok{background:var(--greenbg);color:var(--green)}
 .statusbox.bad{background:var(--redbg);color:var(--red)}
 .statusbox.warn{background:var(--amberbg);color:var(--amber)}
-.result-lead{margin:0 0 16px}.empty-results{display:none}.status-verdict{display:block;font-size:16px;font-weight:700;line-height:1.35}.status-detail{display:block;font-size:13px;line-height:1.5;opacity:.92;margin-top:3px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:0 0 12px}.summary-headline{margin-top:10px;color:var(--muted);font-size:13px;font-weight:500;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:15px}.quick-meta{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:500;line-height:1.3}.quick-stat.decision .v.need{color:var(--amber)}.quick-stat.decision .v.none{color:var(--green)}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-details .summary{margin-top:10px}
+.result-lead{margin:0 0 16px}.empty-results{display:none}.status-verdict{display:block;font-size:16px;font-weight:700;line-height:1.35}.status-detail{display:block;font-size:13px;line-height:1.5;opacity:.92;margin-top:3px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:0 0 12px}.summary-headline{margin-top:10px;color:var(--muted);font-size:13px;font-weight:500;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:15px}.quick-meta{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:500;line-height:1.3}.quick-stat.decision .v.need{color:var(--amber)}.quick-stat.decision .v.none{color:var(--green)}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-detail-section{margin-top:10px}.result-detail-section+.result-detail-section{margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}.result-detail-section h4{margin:0 0 9px;font-size:14px;line-height:1.4}.result-detail-section .summary{margin-top:0}
 .balance-summary{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--fill)}.balance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.balance-stat{min-width:0;padding:9px 10px;border-radius:10px;background:var(--card)}.balance-stat .k{display:block}.balance-stat .v{font-size:14px}.balance-equation{margin-top:9px;color:var(--text);font-size:12px;font-weight:650;text-align:center;font-variant-numeric:tabular-nums lining-nums}.balance-secondary{margin-top:4px;color:var(--muted);font-size:11px;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .manual-copy{width:100%;min-height:150px;margin:8px 0 0;resize:vertical;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.manual-copy[hidden]{display:none}
 .buy{color:var(--green);font-weight:700}.sell{color:var(--red);font-weight:700}.hold{color:var(--muted)}
@@ -112,7 +113,7 @@ input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tab
   h1{font-size:24px;line-height:1.16;margin:0}.sub{font-size:12px;line-height:1.4;padding-right:4px}.badge{display:inline-block;padding:5px 8px;font-size:10px}
   .card{width:100%;min-width:0;border:0;border-radius:18px;margin:10px 0;padding:15px;box-shadow:none}
   .card h2{font-size:20px;letter-spacing:-.015em;margin-bottom:11px}
-  .info-card>summary{min-height:58px!important;padding:14px 15px!important;font-size:17px!important}.info-card>summary::after{font-size:22px}.summary-copy small{font-size:11px;line-height:1.35}
+  .info-card>summary{min-height:58px!important;padding:14px 15px!important;font-size:17px!important}.settings-card>summary{min-height:48px!important;padding:12px 15px!important;font-size:15px!important}.info-card>summary::after{font-size:22px}.summary-copy small{font-size:11px;line-height:1.35}
   .guide-step{padding:12px}.help-list{grid-template-columns:1fr;gap:2px}.help-list dd{margin:0 0 8px}.field-help{min-height:0;margin-bottom:3px}
   .rule{border:0;border-radius:13px;padding:12px 13px}.rule small{display:block;line-height:1.45}
   .note,.section-note,.exec-note{font-size:13px;line-height:1.48}
@@ -190,7 +191,7 @@ body{font-size:15px;letter-spacing:.001em}
 #resultsCard.empty{padding:17px!important;text-align:left!important;color:var(--text)}
 #resultsCard.empty .execution-summary,#resultsCard.empty .block-execution,#resultsCard.empty .block-comparison,#resultsCard.empty .result-details{display:none}
 #resultsCard.empty .empty-results:not([hidden]){display:grid;place-items:center;min-height:132px;padding:24px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;background:var(--fill);border:1px dashed var(--line);border-radius:12px}
-.footer{padding-top:22px}.footer-main{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}.footer a{color:var(--blue);text-decoration:none}.footer a:hover{text-decoration:underline}.footer-risk{max-width:760px;margin:7px auto 0;line-height:1.5}
+.footer{padding-top:22px}.footer-main{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}.footer a{color:var(--blue);text-decoration:none}.footer a:hover{text-decoration:underline}
 
 @media(min-width:960px){
   .app-shell{grid-template-columns:204px minmax(0,1fr)}
@@ -304,7 +305,7 @@ body{font-size:15px;letter-spacing:.001em}
     <details class="inline-help"><summary>资金使用顺序</summary><div class="note">新增优先补低配基金；取出优先使用短债和纯债，再考虑固收增强。卖出策略优先于该顺序。</div></details>
   </div>
 
-  <details class="card info-card">
+  <details class="card info-card settings-card">
     <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与小额交易阈值，一般无需修改</small></span></summary>
     <div class="details-inner">
       <div class="setting-grid">
@@ -369,31 +370,33 @@ body{font-size:15px;letter-spacing:.001em}
     </section>
     <details class="result-details">
       <summary>查看计算明细</summary>
-      <div class="summary">
-        <div class="stat"><div class="k">当前总资产</div><div class="v" id="sCurrent">—</div></div>
-        <div class="stat"><div class="k">资金变动后总资产</div><div class="v" id="sAfter">—</div></div>
-        <div class="stat"><div class="k">资金分配后越界</div><div class="v" id="sBreach">—</div></div>
-        <div class="stat"><div class="k">基金间转换</div><div class="v" id="sTurnover">—</div></div>
-        <div class="stat"><div class="k">买入合计</div><div class="v" id="sBuy">—</div></div>
-        <div class="stat"><div class="k">卖出合计</div><div class="v" id="sSell">—</div></div>
-      </div>
-      <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金间转换后的最终操作。</dd></dl>
+      <section class="result-detail-section">
+        <h4>汇总</h4>
+        <div class="summary">
+          <div class="stat"><div class="k">当前总资产</div><div class="v" id="sCurrent">—</div></div>
+          <div class="stat"><div class="k">资金变动后总资产</div><div class="v" id="sAfter">—</div></div>
+          <div class="stat"><div class="k">资金分配后越界</div><div class="v" id="sBreach">—</div></div>
+          <div class="stat"><div class="k">基金间转换</div><div class="v" id="sTurnover">—</div></div>
+          <div class="stat"><div class="k">买入合计</div><div class="v" id="sBuy">—</div></div>
+          <div class="stat"><div class="k">卖出合计</div><div class="v" id="sSell">—</div></div>
+        </div>
+      </section>
+      <section class="result-detail-section">
+        <h4>术语说明</h4>
+        <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金间转换后的最终操作。</dd></dl>
+      </section>
+      <section class="result-detail-section">
+        <h4>逐基金推导</h4>
+        <div class="table-wrap"><table class="detail-table">
+          <thead><tr><th>基金</th><th>当前持仓</th><th>在途交易</th><th>资金变动分配</th><th>基金间转换</th><th>取整调整</th><th>最终操作</th></tr></thead>
+          <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
+        </table></div>
+      </section>
     </details>
   </div>
-
-  <details class="card">
-    <summary>计算过程</summary>
-    <div class="details-inner">
-      <div class="table-wrap"><table class="detail-table">
-        <thead><tr><th>基金</th><th>当前持仓</th><th>在途交易</th><th>资金变动分配</th><th>基金间转换</th><th>取整调整</th><th>最终操作</th></tr></thead>
-        <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
-      </table></div>
-    </div>
-  </details>
   <footer class="footer">
     <div class="footer-main"><span>© 2026 Zhipeng Zhou</span><span aria-hidden="true">·</span><a href="https://github.com/zzpice/rmb-bond-rebalancer" target="_blank" rel="noopener noreferrer">GitHub</a><span aria-hidden="true">·</span><span>v1.4.0</span></div>
     <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span></div>
-    <div class="footer-risk">结果仅供参考，不构成投资建议；执行前请核对费用与确认期间的净值变化。</div>
     <div class="install-guide" id="installGuide" role="status" aria-live="polite" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
   </footer>
 </div>
