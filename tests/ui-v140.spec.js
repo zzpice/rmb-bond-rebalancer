@@ -8,21 +8,45 @@ import { fillPortfolio, generate } from "./helpers.mjs";
 const AT_TARGET = [48, 32, 12, 4];
 const CORE_SHA256 = "502c6d5b560f5544544c93e5b99a37e820187859804522467c1a3682878ce1cc";
 
-test("v1.4.0 核心计算源码与 main 基线逐字节一致", () => {
+test("v1.4.0 核心计算源码与 main 基线实质一致且不受行尾格式影响", () => {
   const html = readFileSync(fileURLToPath(new URL("../index.html", import.meta.url)), "utf8");
   const core = html.match(/\/\/ All holdings[\s\S]*?(?=const SUMMARY_IDS=)/)?.[0];
   expect(core).toBeTruthy();
-  expect(createHash("sha256").update(core).digest("hex")).toBe(CORE_SHA256);
+  const normalizeLineEndings = source => source.replace(/\r\n?/g, "\n");
+  const hash = source => createHash("sha256").update(normalizeLineEndings(source)).digest("hex");
+  expect(hash(core)).toBe(CORE_SHA256);
+  expect(hash(normalizeLineEndings(core).replace(/\n/g, "\r\n"))).toBe(CORE_SHA256);
 });
 
 test.describe("v1.4.0 单页工作台导航", () => {
-  test("桌面端显示紧凑左侧导航，点击和滚动会同步激活区域", async ({ page }) => {
+  test("桌面滚动后 toolbar 与 sidebar 真实粘住，导航 active 同步", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/");
     const sidebar = page.locator(".desktop-sidebar");
+    const toolbar = page.locator(".workspace-toolbar");
     await expect(sidebar).toBeVisible();
     await expect(page.locator(".mobile-tabs")).toBeHidden();
     expect((await sidebar.boundingBox()).width).toBeLessThanOrEqual(220);
+
+    const before = await page.evaluate(() => ({
+      scrollY: window.scrollY,
+      toolbarTop: document.querySelector(".workspace-toolbar").getBoundingClientRect().top,
+      sidebarTop: document.querySelector(".desktop-sidebar").getBoundingClientRect().top
+    }));
+    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop + 120, behavior: "instant" }));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
+    await expect(sidebar.locator('[data-nav-key="cash"]')).toHaveAttribute("aria-current", "step");
+    const after = await page.evaluate(() => ({
+      toolbarTop: document.querySelector(".workspace-toolbar").getBoundingClientRect().top,
+      sidebarTop: document.querySelector(".desktop-sidebar").getBoundingClientRect().top,
+      sidebarBottom: document.querySelector(".desktop-sidebar").getBoundingClientRect().bottom,
+      viewportHeight: window.innerHeight
+    }));
+    expect(before.scrollY).toBe(0);
+    expect(Math.abs(after.toolbarTop)).toBeLessThanOrEqual(1);
+    expect(Math.abs(after.sidebarTop - before.sidebarTop)).toBeLessThanOrEqual(1);
+    expect(Math.abs(after.sidebarBottom - after.viewportHeight)).toBeLessThanOrEqual(1);
+    await expect(toolbar).toBeVisible();
 
     const cash = sidebar.locator('[data-nav-key="cash"]');
     await cash.click();
@@ -33,14 +57,25 @@ test.describe("v1.4.0 单页工作台导航", () => {
     await expect(sidebar.locator('[data-nav-key="results"]')).toHaveAttribute("aria-current", "step");
   });
 
-  test("移动端显示顶部三段 tab，点击定位且不遮挡目标区域", async ({ page }) => {
+  test("移动滚动后 tabs 真实粘在 toolbar 下方，点击与滚动 active 同步", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const tabs = page.locator(".mobile-tabs");
     await expect(tabs).toBeVisible();
     await expect(page.locator(".desktop-sidebar")).toBeHidden();
     await expect(tabs.locator(".workspace-nav-item")).toHaveCount(3);
-    expect(await tabs.evaluate(element => getComputedStyle(element).position)).toBe("sticky");
+
+    await page.evaluate(() => window.scrollTo({ top: document.getElementById("cashFlowSection").offsetTop + 80, behavior: "instant" }));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
+    await expect(tabs.locator('[data-nav-key="cash"]')).toHaveAttribute("aria-current", "step");
+    const stickyGeometry = await page.evaluate(() => {
+      const toolbar = document.querySelector(".workspace-toolbar").getBoundingClientRect();
+      const tabs = document.querySelector(".mobile-tabs").getBoundingClientRect();
+      return { toolbarTop: toolbar.top, toolbarBottom: toolbar.bottom, tabsTop: tabs.top, tabsBottom: tabs.bottom };
+    });
+    expect(Math.abs(stickyGeometry.toolbarTop)).toBeLessThanOrEqual(1);
+    expect(Math.abs(stickyGeometry.tabsTop - stickyGeometry.toolbarBottom)).toBeLessThanOrEqual(1);
+    expect(stickyGeometry.tabsBottom).toBeLessThan(140);
 
     const cashTab = tabs.locator('[data-nav-key="cash"]');
     await cashTab.click();
@@ -93,6 +128,32 @@ test.describe("v1.4.0 结果层级与中文表达", () => {
     await expect(labels).not.toContainText("outer band");
     await expect(labels).not.toContainText("inner band");
     await expect(page.locator("#fundBody .band-track").first()).toHaveAttribute("aria-label", /目标.*免调范围.*回调位置/);
+  });
+
+  test("360–430px 核心结论保持单行且不缩小", async ({ page }) => {
+    for (const scenario of [
+      { holdings: [40, 44, 8, 4], expected: "需要操作" },
+      { holdings: AT_TARGET, expected: "无需操作" }
+    ]) {
+      await page.setViewportSize({ width: 430, height: 900 });
+      await page.goto("/");
+      await fillPortfolio(page, { holdings: scenario.holdings, flow: 0 });
+      await generate(page);
+      for (const width of [360, 375, 390, 412, 430]) {
+        await page.setViewportSize({ width, height: 900 });
+        const verdict = await page.locator("#quickDecision").evaluate(element => {
+          const range = document.createRange();range.selectNodeContents(element);
+          const lineTops = new Set([...range.getClientRects()].map(rect => Math.round(rect.top)));
+          const style = getComputedStyle(element);
+          return { lines: lineTops.size, fontSize: parseFloat(style.fontSize), right: element.getBoundingClientRect().right, viewport: window.innerWidth };
+        });
+        expect(verdict.lines, `${scenario.expected} at ${width}px`).toBe(1);
+        expect(verdict.fontSize, `${width}px verdict font size`).toBeGreaterThanOrEqual(29);
+        expect(verdict.right, `${width}px verdict right edge`).toBeLessThanOrEqual(verdict.viewport + .5);
+        expect(await page.locator("#quickDecision").textContent()).toBe(scenario.expected);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      }
+    }
   });
 });
 
