@@ -1,4 +1,4 @@
-const VERSION = "2.0.1";
+const VERSION = "2.1.0";
 const CACHE_PREFIX = "rmb-rebalancer-";
 const LEGACY_CACHE_PREFIX = "bond-rebalancer-";
 const CACHE_NAME = `${CACHE_PREFIX}v${VERSION}`;

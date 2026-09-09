@@ -9,20 +9,31 @@ import {
 const TARGET_MILLION = [500_000, 333_300, 125_000, 41_700];
 
 function minimumRequiredTurnover(plan) {
-  const highExcess = sum(plan.postFlow.map((amount, index) => (
-    Math.max(0, amount - plan.bands[index].high)
+  if (!plan.breaches.some(Boolean)) return 0;
+  const sellNeed = sum(plan.postFlow.map((amount, index) => (
+    Math.max(0, amount - plan.bands[index].reentryHigh)
   )));
-  const lowDeficit = sum(plan.postFlow.map((amount, index) => (
-    Math.max(0, plan.bands[index].low - amount)
+  const buyNeed = sum(plan.postFlow.map((amount, index) => (
+    Math.max(0, plan.bands[index].reentryLow - amount)
   )));
-  return Math.max(highExcess, lowDeficit);
+  return Math.max(sellNeed, buyNeed);
 }
 
-test("目标组合且无资金变动时不产生交易", () => {
-  const plan = createRebalancePlan({ holdings: TARGET_MILLION, flow: 0 });
-  assert.equal(plan.mode, "none");
-  assert.deepEqual(plan.trades, [0, 0, 0, 0]);
-  assert.deepEqual(plan.final, TARGET_MILLION);
+test("外层区间内不交易；只有严格越界才进入 80% 回调区间", () => {
+  const targetPlan = createRebalancePlan({ holdings: TARGET_MILLION, flow: 0 });
+  assert.equal(targetPlan.mode, "none");
+  assert.deepEqual(targetPlan.trades, [0, 0, 0, 0]);
+  assert.deepEqual(targetPlan.final, TARGET_MILLION);
+
+  const hysteresisPlan = createRebalancePlan({
+    holdings: [545_000, 288_300, 125_000, 41_700],
+    flow: 0
+  });
+  assert.equal(hysteresisPlan.breaches.some(Boolean), false);
+  assert.deepEqual(hysteresisPlan.trades, [0, 0, 0, 0]);
+  assert.deepEqual(hysteresisPlan.final, hysteresisPlan.postFlow);
+  assert.ok(hysteresisPlan.final[0] > hysteresisPlan.bands[0].reentryHigh);
+  assert.ok(hysteresisPlan.final[1] < hysteresisPlan.bands[1].reentryLow);
 });
 
 test("新增资金只用于补足目标缺口且不制造内部转换", () => {
@@ -74,32 +85,37 @@ test("取出资金按已有高配、短债、纯债、增强债顺序分配且�
   }
 });
 
-test("只越界 1 CNY 时内部转换也只需 1 CNY", () => {
+test("刚越过外层 1 CNY 时进入 80% 回调区间并保持最小换手", () => {
   const plan = createRebalancePlan({
     holdings: [550_001, 283_300, 124_999, 41_700],
     flow: 0
   });
   assert.deepEqual(plan.breaches, [true, false, false, false]);
-  assert.equal(plan.internalTurnover, 1);
+  assert.equal(plan.internalTurnover, 10_001);
   assert.equal(plan.internalTurnover, minimumRequiredTurnover(plan));
-  assert.equal(plan.final[0], plan.bands[0].high);
+  assert.deepEqual(plan.final, [540_000, 293_301, 124_999, 41_700]);
+  plan.final.forEach((amount, index) => {
+    assert.ok(amount >= plan.bands[index].reentryLow);
+    assert.ok(amount <= plan.bands[index].reentryHigh);
+  });
   assert.equal(sum(plan.trades), 0);
 });
 
-test("真实持仓场景只在两只越界基金之间转换，不动区间内基金", () => {
+test("触发后所有资产进入 80% 回调区间，并以最小内部换手配平", () => {
   const plan = createRebalancePlan({
     holdings: [653_665, 353_380, 37_559, 155_396],
     flow: 0
   });
 
   assert.deepEqual(plan.breaches, [false, false, true, true]);
-  assert.deepEqual(plan.trades, [0, 0, 92_846, -92_846]);
-  assert.equal(plan.tradeCount, 2);
-  assert.equal(plan.internalTurnover, 92_846);
+  assert.deepEqual(plan.trades, [-5_665, 0, 101_013, -95_348]);
+  assert.equal(plan.tradeCount, 3);
+  assert.equal(plan.internalTurnover, 101_013);
   assert.equal(plan.internalTurnover, minimumRequiredTurnover(plan));
-  assert.equal(plan.final[3], plan.bands[3].high);
-  assert.ok(plan.final[2] >= plan.bands[2].low);
-  assert.ok(plan.final[2] <= plan.bands[2].target);
+  plan.final.forEach((amount, index) => {
+    assert.ok(amount >= plan.bands[index].reentryLow);
+    assert.ok(amount <= plan.bands[index].reentryHigh);
+  });
 });
 
 test("极端资金流仍保持守恒与非负；取现不追加内部转换", () => {
@@ -123,6 +139,10 @@ test("极端资金流仍保持守恒与非负；取现不追加内部转换", ()
       assert.equal(plan.internalTurnover, minimumRequiredTurnover(plan));
       plan.final.forEach((amount, index) => {
         assert.ok(amount >= plan.bands[index].low && amount <= plan.bands[index].high);
+        if (plan.breaches.some(Boolean)) {
+          assert.ok(amount >= plan.bands[index].reentryLow);
+          assert.ok(amount <= plan.bands[index].reentryHigh);
+        }
       });
     }
   }
@@ -135,7 +155,7 @@ test("比例分配使用整数金额且稳定处理尾差", () => {
   assert.throws(() => allocateProportionally([1, 0], 2), /不足/);
 });
 
-test("随机场景始终满足金额守恒、非负与各资金流路径的不变量", () => {
+test("随机场景始终满足金额守恒、回调最小换手与各资金流路径不变量", () => {
   let seed = 0x2a4f91c3;
   const random = () => {
     seed ^= seed << 13;
@@ -171,6 +191,9 @@ test("随机场景始终满足金额守恒、非负与各资金流路径的不�
       plan.final.forEach((value, index) => {
         const band = plan.bands[index];
         assert.ok(value >= band.low && value <= band.high);
+        if (plan.breaches.some(Boolean)) {
+          assert.ok(value >= band.reentryLow && value <= band.reentryHigh);
+        }
       });
       if (flow > 0) assert.ok(plan.flowTrades.every(value => value >= 0));
       if (!plan.breaches.some(Boolean)) assert.deepEqual(plan.final, plan.postFlow);

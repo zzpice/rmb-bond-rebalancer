@@ -1,4 +1,4 @@
-export const VERSION = "2.0.1";
+export const VERSION = "2.1.0";
 export const YUAN_PER_WAN = 10_000;
 export const WEIGHT_SCALE = 10_000;
 
@@ -39,7 +39,8 @@ export const FUNDS = Object.freeze([
 
 export const REBALANCE_RULE = Object.freeze({
   absoluteBand: 0.05,
-  relativeBand: 0.25
+  relativeBand: 0.25,
+  reentryRatio: 0.8
 });
 
 export class InputError extends Error {
@@ -108,16 +109,22 @@ export function buildBands(total, targets = allocateTargets(total)) {
       REBALANCE_RULE.absoluteBand,
       targetWeight * REBALANCE_RULE.relativeBand
     );
+    const reentryTolerance = tolerance * REBALANCE_RULE.reentryRatio;
     const target = targets[index];
 
     return {
       target,
       targetWeight,
       tolerance,
+      reentryTolerance,
       lowWeight: targetWeight - tolerance,
       highWeight: targetWeight + tolerance,
+      reentryLowWeight: targetWeight - reentryTolerance,
+      reentryHighWeight: targetWeight + reentryTolerance,
       low: Math.min(target, Math.max(0, Math.ceil(total * (targetWeight - tolerance) - 1e-9))),
-      high: Math.max(target, Math.floor(total * (targetWeight + tolerance) + 1e-9))
+      high: Math.max(target, Math.floor(total * (targetWeight + tolerance) + 1e-9)),
+      reentryLow: Math.min(target, Math.max(0, Math.ceil(total * (targetWeight - reentryTolerance) - 1e-9))),
+      reentryHigh: Math.max(target, Math.floor(total * (targetWeight + reentryTolerance) + 1e-9))
     };
   });
 }

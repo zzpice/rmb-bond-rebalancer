@@ -20,7 +20,7 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   const final = flow < 0
     ? postFlow.slice()
     : breaches.some(Boolean)
-      ? rebalanceBreaches(postFlow, bands, breaches)
+      ? rebalanceToReentry(postFlow, bands)
       : postFlow.slice();
 
   const internalTrades = final.map((amount, index) => amount - postFlow[index]);
@@ -149,12 +149,12 @@ export function allocateProportionally(capacities, budget) {
   return rows.map(row => row.amount);
 }
 
-function rebalanceBreaches(values, bands, breaches) {
+function rebalanceToReentry(values, bands) {
   const final = values.slice();
 
   values.forEach((amount, index) => {
-    if (amount < bands[index].low) final[index] = bands[index].low;
-    else if (amount > bands[index].high) final[index] = bands[index].high;
+    if (amount < bands[index].reentryLow) final[index] = bands[index].reentryLow;
+    else if (amount > bands[index].reentryHigh) final[index] = bands[index].reentryHigh;
   });
 
   let gap = sum(values) - sum(final);
@@ -162,9 +162,9 @@ function rebalanceBreaches(values, bands, breaches) {
   if (!direction) return final;
 
   const order = values.map((_, index) => index).sort((a, b) => {
-    if (Number(breaches[a]) !== Number(breaches[b])) {
-      return Number(breaches[b]) - Number(breaches[a]);
-    }
+    const adjustedA = Number(final[a] !== values[a]);
+    const adjustedB = Number(final[b] !== values[b]);
+    if (adjustedA !== adjustedB) return adjustedB - adjustedA;
     const capacityA = Math.max(0, direction * (bands[a].target - final[a]));
     const capacityB = Math.max(0, direction * (bands[b].target - final[b]));
     return capacityB - capacityA || a - b;
@@ -184,7 +184,7 @@ function rebalanceBreaches(values, bands, breaches) {
 
 function assertPlan(plan) {
   const {
-    holdings, flow, finalTotal, bands, postFlow,
+    holdings, flow, finalTotal, bands, breaches, postFlow,
     internalTrades, trades, final
   } = plan;
 
@@ -197,7 +197,14 @@ function assertPlan(plan) {
     if (amount < 0) throw new Error(`${FUNDS[index].code} 出现负持仓。`);
     if (holdings[index] + trades[index] !== amount) throw new Error("持仓与交易不一致。");
     if (flow >= 0 && (amount < bands[index].low || amount > bands[index].high)) {
-      throw new Error(`${FUNDS[index].code} 未回到要求区间。`);
+      throw new Error(`${FUNDS[index].code} 未回到触发区间。`);
+    }
+    if (
+      flow >= 0
+      && breaches.some(Boolean)
+      && (amount < bands[index].reentryLow || amount > bands[index].reentryHigh)
+    ) {
+      throw new Error(`${FUNDS[index].code} 未进入 80% 回调区间。`);
     }
   });
 
