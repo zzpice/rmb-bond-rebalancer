@@ -2,7 +2,8 @@
   "id": "./",
   "name": "债基再平衡助手",
   "short_name": "再平衡助手",
-  "description": "按目标比例和免调整范围生成债券基金再平衡建议。",
+  "description": "输入当前持仓和资金变动，生成清晰、可靠、容易执行的人民币债券基金再平衡方案。",
+  "version": "2.0.0",
   "lang": "zh-CN",
   "dir": "ltr",
   "start_url": "./",
@@ -10,11 +11,17 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#f4f6fa",
-  "theme_color": "#2463eb",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f172a",
   "categories": ["finance", "utilities"],
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "./icons/icon-192.png",
       "sizes": "192x192",

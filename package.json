@@ -1,15 +1,17 @@
 {
-  "name": "rmb-bond-rebalancer-tests",
-  "version": "1.5.0",
+  "name": "rmb-bond-rebalancer",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Automated regression tests for the RMB bond fund rebalancer. The v1.0.1 algorithm behavior remains the protected baseline.",
+  "description": "A lightweight, local-first RMB bond fund rebalancing dashboard.",
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "golden:generate": "node tests/golden/generate.mjs"
+    "dev": "node tests/server.mjs",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.1"
+    "@playwright/test": "^1.55.0"
   }
 }

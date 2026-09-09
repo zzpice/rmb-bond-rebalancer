@@ -1,1124 +1,226 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" id="themeColor" content="#f4f6fa">
-<meta name="application-name" content="再平衡助手">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="再平衡助手">
-<meta name="format-detection" content="telephone=no">
-<meta name="description" content="轻量级人民币债券基金再平衡工具，根据当前持仓、资金变动、目标比例和免调范围生成尽量减少换手的调整建议。">
-<meta property="og:title" content="债基再平衡助手 · CNY">
-<meta property="og:description" content="根据当前持仓、资金变动、目标比例和免调范围，生成尽量减少换手的债券基金调整建议。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://zzpice.github.io/rmb-bond-rebalancer/">
-<link rel="canonical" href="https://zzpice.github.io/rmb-bond-rebalancer/">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-<title>债基再平衡助手 · CNY</title>
-<style>
-:root{
-  color-scheme:light;
-  --bg:#f4f6fa;--card:#fff;--elevated:#fff;--text:#182033;--muted:#667085;
-  --line:#e0e5ee;--fill:#f3f5f9;--surface-strong:#e9eef8;
-  --blue:#2463eb;--blue-strong:#1749b8;--bluebg:#eaf1ff;--green:#18794e;--greenbg:#e8f6ef;
-  --red:#c4323f;--redbg:#fcecef;--amber:#a15c07;--amberbg:#fff4df;
-  --shadow:0 1px 2px rgba(16,24,40,.025),0 10px 30px rgba(31,42,68,.05);
-  --toolbar-bg:rgba(244,246,250,.88);--sidebar:#101828;--sidebar-text:#d0d5dd;--sidebar-muted:#98a2b3;--dock-bg:rgba(255,255,255,.92);
-}
-*{box-sizing:border-box}
-html{width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
-body{width:100%;min-width:0;margin:0;overflow-x:clip;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-tap-highlight-color:transparent}
-.wrap{max-width:1180px;margin:auto;padding:26px 18px 42px}
-.header{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:18px}
-h1{font-size:25px;letter-spacing:-.02em;margin:0 0 5px}.sub{color:var(--muted)}
-.badge{background:var(--bluebg);color:var(--blue);font-weight:700;padding:7px 11px;border-radius:999px;white-space:nowrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}
-.card h2{font-size:17px;margin:0 0 13px}.card h3{font-size:14px;margin:18px 0 10px}
-.info-card>summary{display:flex!important;align-items:center;justify-content:space-between;gap:14px;list-style:none}
-.info-card>summary::-webkit-details-marker{display:none}.info-card>summary::after{content:"›";flex:0 0 auto;color:var(--muted);font-size:24px;font-weight:400;line-height:1;transform:rotate(90deg);transition:transform .18s ease}
-.info-card[open]>summary::after{transform:rotate(-90deg)}.summary-copy{display:flex;flex-direction:column;gap:2px;min-width:0}.summary-copy small{color:var(--muted);font-size:12px;font-weight:400}
-.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.rule{background:var(--fill);border:1px solid var(--line);border-radius:11px;padding:13px 14px}
-.rule b{display:block;margin-bottom:3px}.rule small{color:var(--muted)}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}
-table{width:100%;border-collapse:collapse;min-width:1040px}
-th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
-th{font-size:12px;color:var(--muted);background:var(--fill)}
-th:first-child,td:first-child{text-align:left}
-tr:last-child td{border-bottom:0}
-.fund{font-weight:650}.fund-link{color:inherit;text-decoration:none}.fund-link:hover{color:var(--blue)}.fund-link:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:2px;border-radius:4px}.external{color:var(--blue);font-size:.85em;margin-left:3px}.code{font-size:12px;color:var(--muted)}
-input,select,button{min-width:0;max-width:100%;border:1px solid var(--line);background:var(--elevated);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;min-height:42px}
-input,button{-webkit-appearance:none;appearance:none}
-input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid rgba(0,122,255,.25);outline-offset:1px;border-color:var(--blue)}
-select{max-width:138px;padding-right:28px;-webkit-appearance:menulist;appearance:auto}
-details.card{padding:0}details.card>summary{cursor:pointer;font-weight:700;font-size:17px;padding:18px;list-style-position:inside}details.card>.details-inner{padding:0 18px 18px}
-details.settings-card{background:var(--fill);box-shadow:none;border-radius:12px;margin:10px 0}details.settings-card>summary{padding:13px 15px;font-size:15px;font-weight:650}
-.setting-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.setting-grid .field{min-width:0}.setting-grid input{width:100%}
-.empty{text-align:center!important;color:var(--muted);padding:24px!important}.section-note{font-size:12px;color:var(--muted);margin:0 0 12px}.role{font-size:12px;color:var(--blue);margin-top:2px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head h2{margin-bottom:0}.btn-ghost{min-height:34px;border:0;background:transparent;color:var(--muted);padding:4px 10px;font-size:12px;font-weight:500}.btn-ghost:hover{color:var(--text);background:var(--fill)}
-.guide-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.guide-step{display:flex;gap:11px;align-items:flex-start;background:var(--fill);border-radius:13px;padding:13px}.step-num{display:grid;place-items:center;flex:0 0 26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-weight:750}.guide-step b{display:block;margin-bottom:2px}.guide-step small{color:var(--muted)}
-.plain-tip{margin-top:11px;padding:11px 13px;border-radius:12px;background:var(--bluebg);color:var(--blue);font-size:13px}
-.inline-help{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.inline-help summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:38px;display:flex;align-items:center}.help-list{display:grid;grid-template-columns:max-content 1fr;gap:7px 14px;margin:5px 0 2px}.help-list dt{font-weight:650}.help-list dd{margin:0;color:var(--muted)}
-.fund-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px}.fund-card{min-width:0;border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--elevated)}.fund-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:11px;border-bottom:1px solid var(--line)}.fund-meta{min-width:0}.fund-meta .fund{overflow-wrap:anywhere}.fund-line{display:flex;flex-wrap:wrap;gap:5px 8px;align-items:center;margin-top:3px}.fund-line .role{margin:0;padding:1px 6px;border-radius:999px;background:var(--bluebg);font-size:11px;line-height:1.45}.fund-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:13px;align-items:end;padding-top:12px}.amount-label{display:block}.amount-box{display:flex;align-items:center;margin-top:5px;border:1px solid var(--line);border-radius:11px;background:var(--card);overflow:hidden}.amount-box:focus-within{outline:3px solid rgba(0,122,255,.25);border-color:var(--blue)}.amount-box input{width:100%;border:0;border-radius:0;text-align:right;background:transparent;outline:0!important}.amount-unit{flex:0 0 auto;padding-right:10px;color:var(--muted);font-size:12px;white-space:nowrap}.live-weight{text-align:right;min-width:104px}.live-weight span{display:block;color:var(--muted);font-size:11px}.live-weight .curw{display:block;font-size:19px;line-height:1.2;margin:4px 0 2px}.live-weight small{display:block;color:var(--muted);line-height:1.4}.live-deviation{margin-top:2px}
-.band-visual{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums lining-nums}.band-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.band-title{font-size:12px;font-weight:650}.band-status{font-size:11px;font-weight:700;color:var(--muted)}.band-visual[data-band-state="ok"] .band-status{color:var(--green)}.band-visual[data-band-state="under"] .band-status,.band-visual[data-band-state="over"] .band-status{color:var(--red)}.band-track{position:relative;height:14px;margin:0 6px}.band-track::before{content:"";position:absolute;left:0;right:0;top:5px;height:4px;border-radius:999px;background:var(--fill)}.band-safe,.band-inner-zone{position:absolute;top:3px;height:8px;border-radius:999px}.band-safe{background:var(--bluebg)}.band-inner-zone{top:4px;height:6px;background:var(--greenbg)}.band-target,.band-inner{position:absolute;top:1px;width:2px;height:12px;border-radius:2px;transform:translateX(-50%)}.band-target{background:var(--blue);z-index:2}.band-inner{top:3px;width:1px;height:8px;background:var(--green);opacity:.85}.band-current{position:absolute;top:7px;width:11px;height:11px;border:2px solid var(--card);border-radius:50%;background:var(--muted);box-shadow:0 1px 4px rgba(0,0,0,.24);transform:translate(-50%,-50%);z-index:3}.band-current[hidden]{display:none}.band-current.ok{background:var(--green)}.band-current.under,.band-current.over{background:var(--red)}.band-values{display:grid;grid-template-columns:.8fr 1.15fr 1.2fr;gap:8px;margin-top:9px}.band-value{min-width:0;font-size:11px;line-height:1.35;color:var(--text);overflow-wrap:anywhere}.band-value b{display:block;margin-bottom:1px;color:var(--muted);font-size:10px;font-weight:500}.band-value b::before{content:"";display:inline-block;width:8px;height:5px;margin-right:4px;border-radius:2px;vertical-align:1px;background:var(--fill)}.band-value.target b::before{width:2px;height:8px;border-radius:1px;background:var(--blue)}.band-value.outer b::before{background:var(--bluebg)}.band-value.inner b::before{background:var(--green)}.band-explanation{margin-top:8px;color:var(--muted);font-size:11px;line-height:1.42}
-.special-panel{margin-top:12px}.special-panel>.details-inner{padding:2px 0 0}.fund-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.fund-extra-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--fill);min-width:0}.extra-head{font-weight:650;margin-bottom:10px}.extra-head .code{display:inline;margin-left:6px}.extra-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extra-fields label{display:block}.extra-fields input,.extra-fields select{width:100%;max-width:none;margin-top:5px}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.metric{min-width:0;border-radius:10px;background:var(--card);padding:9px}.metric.distance-metric{grid-column:1/-1}.metric-label{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.metric-value{display:block;overflow-wrap:anywhere}.metric-value .code{margin-top:2px}
-.field-help{font-size:11px;color:var(--muted);line-height:1.35;min-height:30px}
-button{cursor:pointer;font-weight:650;touch-action:manipulation;transition:transform .12s ease,opacity .12s ease}
-button:active{transform:scale(.975);opacity:.78}
-button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-.actions #check{font-size:16px;font-weight:700;padding:12px 30px}
-.actions .force-wrap{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}
-.actions #force{background:transparent;border-color:var(--line);color:var(--muted);font-weight:500}
-.force-hint{font-size:11px;color:var(--muted);line-height:1.3}
-.actions{display:flex;gap:10px;flex-wrap:wrap}.settings-actions{margin-top:12px}
-.summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.stat{border:1px solid var(--line);border-radius:10px;padding:12px}
-.k{font-size:12px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:3px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums lining-nums}
-.statusbox{border-radius:12px;padding:14px 15px;margin-top:12px}
-.statusbox.ok{background:var(--greenbg);color:var(--green)}
-.statusbox.bad{background:var(--redbg);color:var(--red)}
-.statusbox.warn{background:var(--amberbg);color:var(--amber)}
-.result-lead{margin:0 0 16px}.empty-results{display:none}.status-verdict{display:block;font-size:16px;font-weight:700;line-height:1.35}.status-detail{display:block;font-size:13px;line-height:1.5;opacity:.92;margin-top:3px}.execution-summary{border:1px solid var(--line);border-radius:14px;background:var(--fill);padding:14px;margin:0 0 12px}.summary-headline{margin-top:10px;color:var(--muted);font-size:13px;font-weight:500;line-height:1.45}.summary-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.quick-stat{min-width:0;background:var(--card);border-radius:10px;padding:10px}.quick-stat .k{display:block}.quick-stat .v{font-size:15px}.quick-meta{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:500;line-height:1.3}.quick-stat.decision .v.need{color:var(--amber)}.quick-stat.decision .v.none{color:var(--green)}.comparison-title,.execution-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 9px}.comparison-title h3,.execution-title h3{font-size:17px;margin:0}.comparison-table{min-width:620px}.comparison-table .before-weight,.comparison-table .target-weight,.comparison-table .after-weight{text-align:right}.result-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.copy-status{color:var(--muted);font-size:12px;min-width:3em;text-align:right}.copy-button{min-height:36px;padding:6px 10px;color:var(--blue)}.reason-cell{min-width:230px;white-space:normal;line-height:1.45}.post-band-panel{margin:0 0 13px;padding:8px 12px;border:1px solid var(--line);border-radius:12px}.post-band-panel h4{margin:0 0 5px;font-size:14px;line-height:1.4}.post-band-row{display:grid;grid-template-columns:132px minmax(0,1fr) 132px;gap:12px;align-items:center;min-height:25px;font-size:12px;font-variant-numeric:tabular-nums lining-nums}.pb-fund{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pb-numbers{text-align:right;white-space:nowrap}.post-band{position:relative;min-width:0;height:14px;margin:0 7px}.post-band::before{content:"";position:absolute;left:0;right:0;top:5px;height:4px;border-radius:999px;background:var(--fill)}.pb-safe{position:absolute;top:1px;height:12px;border:.5px solid var(--line);border-radius:999px;background:var(--bluebg);z-index:1}.pb-target{position:absolute;top:1px;width:2px;height:12px;border-radius:2px;background:var(--blue);transform:translateX(-50%);z-index:2}.pb-before,.pb-after{position:absolute;top:7px;border-radius:50%;transform:translate(-50%,-50%)}.pb-before{width:12px;height:12px;border:1.5px solid var(--muted);background:var(--card);z-index:3}.pb-after{width:9px;height:9px;border:1.5px solid var(--card);background:var(--green);z-index:4}.post-band-row[data-band-state="under"] .pb-after,.post-band-row[data-band-state="over"] .pb-after{background:var(--red)}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.result-details{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}.result-details>summary{cursor:pointer;color:var(--blue);font-weight:650;min-height:40px;display:flex;align-items:center}.result-detail-section{margin-top:10px}.result-detail-section+.result-detail-section{margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}.result-detail-section h4{margin:0 0 9px;font-size:14px;line-height:1.4}.result-detail-section .summary{margin-top:0}
-.balance-summary{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--fill)}.balance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.balance-stat{min-width:0;padding:9px 10px;border-radius:10px;background:var(--card)}.balance-stat .k{display:block}.balance-stat .v{font-size:14px}.balance-equation{margin-top:9px;color:var(--text);font-size:12px;font-weight:650;text-align:center;font-variant-numeric:tabular-nums lining-nums}.balance-secondary{margin-top:4px;color:var(--muted);font-size:11px;text-align:center;font-variant-numeric:tabular-nums lining-nums}
-.manual-copy{width:100%;min-height:150px;margin:8px 0 0;resize:vertical;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.manual-copy[hidden]{display:none}
-.buy{color:var(--green);font-weight:700}.sell{color:var(--red);font-weight:700}.hold{color:var(--muted)}
-.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:650}
-.tag.ok{background:var(--greenbg);color:var(--green)}
-.tag.bad{background:var(--redbg);color:var(--red)}
-.tag.neutral{background:var(--fill);color:var(--muted)}
-.note{font-size:12px;color:var(--muted);margin-top:9px}
-.flowline{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
-.field{display:flex;flex-direction:column;gap:5px;min-width:210px}
-label{font-size:12px;color:var(--muted)}
-.execution-risk-note{margin:9px 1px 0;color:var(--muted);font-size:12px;line-height:1.45}.exec-note{margin-top:10px;padding:11px 12px;border-radius:11px;background:var(--bluebg);color:var(--text);font-size:12px}.exec-note[hidden]{display:none}.exec-note-title{color:var(--blue);font-weight:700}.exec-note ul{margin:6px 0 0;padding-left:18px}.exec-note li+li{margin-top:4px}
-input,.curw,.target-label,.live-deviation,.metric-value{font-variant-numeric:tabular-nums lining-nums}
-.footer{padding:18px 8px 6px;text-align:center;color:var(--muted);font-size:12px}.footer-actions{display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap}.footer-button{min-height:0;border:0;background:transparent;color:var(--blue);padding:4px 6px;font-size:inherit}.footer-button:disabled{cursor:default;color:var(--muted)}.footer-separator{color:var(--line)}.install-guide{max-width:520px;margin:10px auto 0;padding:12px 34px 12px 13px;position:relative;text-align:left;border-radius:12px;background:var(--bluebg);color:var(--blue);line-height:1.5}.install-guide button{position:absolute;right:5px;top:4px;min-width:32px;min-height:32px;padding:2px;border:0;background:transparent;color:inherit;font-size:18px}.install-guide[hidden]{display:none}
-@media(max-width:900px){
-  .header{flex-direction:column;align-items:flex-start}
-  .rules,.guide-steps{grid-template-columns:1fr}
-  .fund-grid,.fund-extra-grid{grid-template-columns:1fr}
-  .summary{grid-template-columns:repeat(2,1fr)}
-  .setting-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:640px){
-  body{font-size:15px;overscroll-behavior-x:none;overscroll-behavior-y:auto}
-  .wrap{width:100%;max-width:100%;padding:calc(14px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom))}
-  body.dock-ready .wrap{padding-bottom:calc(108px + env(safe-area-inset-bottom))}
-  .header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;margin:0 4px 12px;gap:8px}
-  h1{font-size:24px;line-height:1.16;margin:0}.sub{font-size:12px;line-height:1.4;padding-right:4px}.badge{display:inline-block;padding:5px 8px;font-size:10px}
-  .card{width:100%;min-width:0;border:0;border-radius:18px;margin:10px 0;padding:15px;box-shadow:none}
-  .card h2{font-size:20px;letter-spacing:-.015em;margin-bottom:11px}
-  .info-card>summary{min-height:58px!important;padding:14px 15px!important;font-size:17px!important}.settings-card>summary{min-height:48px!important;padding:12px 15px!important;font-size:15px!important}.info-card>summary::after{font-size:22px}.summary-copy small{font-size:11px;line-height:1.35}
-  .guide-step{padding:12px}.help-list{grid-template-columns:1fr;gap:2px}.help-list dd{margin:0 0 8px}.field-help{min-height:0;margin-bottom:3px}
-  .rule{border:0;border-radius:13px;padding:12px 13px}.rule small{display:block;line-height:1.45}
-  .note,.section-note,.exec-note{font-size:13px;line-height:1.48}
-  input,select,button{min-height:48px;font-size:16px;border-radius:12px}
-  input.pending,select{width:100%;max-width:none;text-align:left}
-  .field{min-width:100%;width:100%}.flowline{display:block}.flowline .note{margin-top:9px}
-  .setting-grid{grid-template-columns:1fr}.setting-grid .field{min-width:0}
-  details.card>summary{min-height:56px;padding:16px;font-size:18px;display:flex;align-items:center;cursor:pointer}
-  details.card>summary::marker{color:var(--muted)}details.card>.details-inner{padding:0 16px 16px}
-  .summary{grid-template-columns:1fr 1fr;gap:8px}.stat{border:0;background:var(--fill);border-radius:14px;padding:12px}.k{font-size:11px;line-height:1.35}.v{font-size:17px}
-  .execution-summary{border:0;border-radius:15px;padding:13px}.summary-headline{font-size:12px}.summary-quick{grid-template-columns:1fr 1fr}.quick-stat{background:var(--elevated);padding:10px}.quick-stat .v{font-size:14px}.comparison-title,.execution-title{align-items:flex-start;flex-wrap:wrap}.result-tools{width:100%;justify-content:space-between}.copy-button{min-height:44px;font-size:14px}
-  .post-band-panel{padding:9px 10px 7px}.post-band-row{grid-template-columns:minmax(0,1fr) max-content;grid-template-areas:"fund numbers" "band band";gap:3px 8px;min-height:0;padding:6px 0}.post-band-row+.post-band-row{border-top:1px solid var(--line)}.pb-fund{grid-area:fund}.pb-numbers{grid-area:numbers}.post-band{grid-area:band;width:auto;margin:0 6px}
-  .balance-summary{border:0;padding:11px}.balance-grid{grid-template-columns:1fr 1fr}.balance-stat{background:var(--elevated)}.balance-stat.flow{grid-column:1/-1}.balance-equation{font-size:11px;overflow-wrap:anywhere}
-  .statusbox{padding:13px 14px;border-radius:14px}
-  .section-head h2{font-size:20px;margin:0}.fund-grid{gap:8px}.fund-card{padding:12px;border:0;background:var(--fill)}.fund-card-head{padding-bottom:8px}.fund-main{grid-template-columns:minmax(0,1fr) 78px;gap:8px;padding-top:8px}.live-weight{min-width:0}.live-weight span{font-size:10px}.live-weight .curw{font-size:16px;margin:2px 0 1px}.live-weight small{font-size:10px;line-height:1.35}.amount-box{background:var(--elevated)}.amount-box input{font-size:17px;text-align:right}.band-visual{margin-top:11px;padding-top:10px}.band-values{grid-template-columns:.72fr 1.12fr 1.2fr;gap:5px}.band-value{font-size:10px}.band-explanation{font-size:10px}.special-panel>.details-inner{padding:0 13px 14px!important}.fund-extra-card{border:0;background:var(--fill)}.extra-fields{grid-template-columns:1fr 1fr;gap:8px}.metric{background:var(--elevated)}
-
-  .table-wrap:has(.result-table),.table-wrap:has(.comparison-table){overflow:visible;border:0;border-radius:0}
-  .result-table,.result-table tbody,.comparison-table,.comparison-table tbody{display:block;width:100%;min-width:0}
-  .result-table thead,.comparison-table thead{display:none}
-  .result-table tr,.comparison-table tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px;width:100%;margin:0 0 10px;padding:13px;background:var(--fill);border-radius:15px}
-  .result-table tr:last-child,.comparison-table tr:last-child{margin-bottom:0}
-  .result-table td,.comparison-table td{display:block;min-width:0;padding:9px 0;border:0;text-align:left!important;white-space:normal}
-  .result-table td::before,.comparison-table td::before{content:attr(data-label);display:block;margin-bottom:5px;color:var(--muted);font-size:11px;font-weight:500;line-height:1.3}
-  .result-table .fund-cell{grid-column:1/-1;padding:0 0 9px;margin-bottom:2px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
-  .result-table .fund-cell::before{display:none}
-  .result-table .trade-cell{grid-column:1/-1;font-size:19px;padding:12px 0 9px}
-  .result-table .reason-cell{grid-column:1/-1;min-width:0;padding-bottom:0}.result-table .policy-result{grid-column:1/-1;padding-bottom:0}
-  .comparison-table .comparison-fund{grid-column:1/-1;padding:0 0 9px;margin-bottom:2px;border-bottom:1px solid var(--line);font-weight:650}.comparison-table .comparison-fund::before{display:none}.comparison-table .after-weight{grid-column:1/-1;color:var(--blue);font-size:17px}
-  .empty{grid-column:1/-1!important;margin:0!important;background:transparent!important;padding:22px 6px!important}
-
-  #resultsCard{display:flex;flex-direction:column}
-  #resultsCard>h2{order:0}
-  #resultsCard>.execution-summary{order:1}
-  #resultsCard>.result-lead{order:2}
-  #resultsCard>.block-execution{order:3}
-  #resultsCard>.block-comparison{order:4}
-  #resultsCard>.result-details{order:5}
-  #resultsCard.empty .execution-summary,#resultsCard.empty .block-execution,#resultsCard.empty .block-comparison,#resultsCard.empty .result-details{display:none}
-  #resultsCard.empty .empty-results:not([hidden]){display:block;padding:24px 16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6;background:var(--fill);border-radius:14px}
-
-  body.dock-ready .action-dock{position:fixed;z-index:30;left:0;right:0;bottom:0;width:auto;margin:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;background:rgba(249,249,249,.92);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(0,0,0,.08);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);transition:transform .2s ease,opacity .2s ease}
-  .action-dock .actions{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px;align-items:stretch}
-  .action-dock button{min-width:0;padding:7px 6px;font-size:13px;line-height:1.2;border-radius:12px;white-space:normal}
-  .action-dock button.primary{font-size:16px;font-weight:700}
-  .action-dock .actions #check{font-size:16px;padding:7px 6px}
-  .action-dock .force-wrap{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
-  .action-dock #force{background:transparent;border-color:var(--line);color:var(--muted);font-weight:500}
-  .action-dock .force-hint{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
-  body.dock-ready .action-dock .force-hint{display:none}
-  body.dock-ready.keyboard-open .action-dock{transform:translateY(calc(100% + env(safe-area-inset-bottom)));opacity:0;pointer-events:none}
-  .footer{padding-left:0;padding-right:0}.footer-actions{gap:0}.footer-button{min-height:42px;padding:8px}.install-guide{font-size:13px}
-}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme]),:root[data-theme="system"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
-}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#0d111a;--card:#151b27;--elevated:#1b2332;--text:#f4f7fb;--muted:#98a2b3;--line:#2b3445;--fill:#202939;--surface-strong:#28344a;--blue:#6ea0ff;--blue-strong:#9abaff;--bluebg:#1b3158;--green:#5bd09b;--greenbg:#16382d;--red:#ff7a86;--redbg:#432229;--amber:#f3ba63;--amberbg:#412f19;--shadow:none;--toolbar-bg:rgba(13,17,26,.9);--sidebar:#090d15;--sidebar-text:#d0d5dd;--sidebar-muted:#7e899b;--dock-bg:rgba(21,27,39,.92)}
-:root[data-theme="light"]{color-scheme:light}
-
-/* v1.4 workstation shell */
-body{font-size:15px;letter-spacing:.001em}
-.app-shell{display:grid;min-height:100svh;grid-template-columns:minmax(0,1fr)}
-.desktop-sidebar{display:none}
-.workspace{min-width:0}
-.workspace-toolbar{position:sticky;top:0;z-index:28;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:58px;padding:8px 18px;border-bottom:1px solid var(--line);background:var(--toolbar-bg);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px)}
-.toolbar-context{display:flex;align-items:center;gap:10px;min-width:0}.toolbar-brand{display:flex;align-items:center;gap:9px;min-width:0}.toolbar-brand img{width:30px;height:30px;border-radius:8px}.toolbar-copy{min-width:0}.toolbar-title{display:block;font-size:14px;font-weight:750;line-height:1.2;white-space:nowrap}.toolbar-meta{display:block;margin-top:2px;color:var(--muted);font-size:11px;line-height:1.2;white-space:nowrap}
-.toolbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.toolbar-button,.theme-control{min-height:36px;border-color:var(--line);background:var(--card);font-size:12px}.toolbar-button{padding:6px 10px;color:var(--blue);white-space:nowrap}.theme-field{display:flex;align-items:center;gap:7px}.theme-field label{white-space:nowrap}.theme-control{width:auto;max-width:114px;padding:6px 25px 6px 9px}
-.mobile-tabs{position:sticky;top:58px;z-index:27;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:6px 10px;border-bottom:1px solid var(--line);background:var(--toolbar-bg);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px)}
-.workspace-nav-item{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;min-height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);padding:7px 8px;text-decoration:none;font-size:12px;font-weight:650;white-space:nowrap}.workspace-nav-item svg{flex:0 0 auto;width:17px;height:17px;stroke:currentColor}.workspace-nav-item:hover{background:var(--fill);color:var(--text)}.workspace-nav-item.active{background:var(--bluebg);color:var(--blue-strong);font-weight:750}.workspace-nav-item[aria-current="step"]{box-shadow:inset 0 -2px 0 var(--blue)}
-.wrap{max-width:1180px;padding:23px 18px 36px}.header{align-items:center;margin-bottom:14px}.header h1{font-size:25px}.badge{border:1px solid rgba(36,99,235,.15);padding:5px 9px;font-size:11px;letter-spacing:.02em}
-.card{border-radius:13px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}.card h2{letter-spacing:-.01em}.card[id]{scroll-margin-top:122px}
-.section-head h2,.card>h2{position:relative;padding-left:11px}.section-head h2::before,.card>h2::before{content:"";position:absolute;left:0;top:.2em;bottom:.2em;width:3px;border-radius:2px;background:var(--blue)}
-.fund-card{border-radius:12px}.fund-card-head{padding-bottom:9px}.fund-main{padding-top:10px}.role,.tag{letter-spacing:.01em}.band-safe{background:rgba(36,99,235,.18)}.band-inner-zone{background:rgba(24,121,78,.17)}
-.result-block{min-width:0}.execution-summary{position:relative;border-radius:13px;background:transparent;padding:0;border:0;margin:0 0 12px}.summary-layout{display:grid;grid-template-columns:minmax(0,1.7fr) repeat(2,minmax(0,1fr));gap:10px}.verdict-kpi,.secondary-kpi{min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px}.verdict-kpi{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label meta" "value meta" "headline headline";gap:2px 16px;padding-left:18px;overflow:hidden}.verdict-kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}.verdict-kpi.needs-action::before{background:var(--amber)}.verdict-kpi.no-action::before{background:var(--green)}.verdict-kpi .k{grid-area:label}.verdict-kpi .v{grid-area:value;font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:4px 0}.verdict-side{grid-area:meta;text-align:right;align-self:start}.verdict-side .v{font-size:19px;margin:2px 0}.summary-headline{grid-area:headline;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px}.secondary-kpi{display:flex;flex-direction:column;justify-content:space-between;min-height:111px}.secondary-kpi .v{font-size:21px;line-height:1.25;margin-top:8px}.secondary-kpi .quick-meta{font-size:11px}.statusbox{border:1px solid transparent;margin-top:10px}.statusbox.ok{border-color:rgba(24,121,78,.16)}.statusbox.warn{border-color:rgba(161,92,7,.16)}.statusbox.bad{border-color:rgba(196,50,63,.16)}
-.action-pills{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}.action-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--fill);font-size:12px;font-weight:650;font-variant-numeric:tabular-nums}.action-pill.buy{background:var(--greenbg);border-color:transparent}.action-pill.sell{background:var(--redbg);border-color:transparent}.action-pill.hold{display:none}
-.comparison-title,.execution-title{margin-top:15px}.comparison-title h3,.execution-title h3{letter-spacing:-.01em}.balance-summary{border-radius:12px}.result-details{margin-top:15px}
-#resultsCard.empty{padding:17px!important;text-align:left!important;color:var(--text)}
-#resultsCard.empty .execution-summary,#resultsCard.empty .block-execution,#resultsCard.empty .block-comparison,#resultsCard.empty .result-details{display:none}
-#resultsCard.empty .empty-results:not([hidden]){display:grid;place-items:center;min-height:132px;padding:24px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;background:var(--fill);border:1px dashed var(--line);border-radius:12px}
-.footer{padding-top:22px}.footer-main{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}.footer a{color:var(--blue);text-decoration:none}.footer a:hover{text-decoration:underline}
-
-@media(min-width:960px){
-  .app-shell{grid-template-columns:204px minmax(0,1fr)}
-  .desktop-sidebar{position:sticky;top:0;display:flex;flex-direction:column;height:100svh;padding:18px 12px 15px;background:var(--sidebar);color:var(--sidebar-text)}
-  .sidebar-brand{display:flex;align-items:center;gap:10px;padding:3px 5px 18px;border-bottom:1px solid rgba(255,255,255,.09)}.sidebar-brand img{width:34px;height:34px;border-radius:9px}.sidebar-brand strong{display:block;color:#fff;font-size:13px;line-height:1.25}.sidebar-brand small{display:block;color:var(--sidebar-muted);font-size:10px;margin-top:2px}
-  .sidebar-nav{display:flex;flex-direction:column;gap:5px;margin-top:17px}.desktop-sidebar .workspace-nav-item{justify-content:flex-start;min-height:42px;color:var(--sidebar-text);padding:9px 11px}.desktop-sidebar .workspace-nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.desktop-sidebar .workspace-nav-item.active{background:#2358c9;color:#fff}.desktop-sidebar .workspace-nav-item[aria-current="step"]{box-shadow:inset 3px 0 0 #8db2ff}
-  .sidebar-meta{margin-top:auto;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.09);color:var(--sidebar-muted);font-size:10px;line-height:1.55}
-  .mobile-tabs{display:none}.workspace-toolbar{top:0}.toolbar-brand img{display:none}.toolbar-title{font-size:15px}.card[id]{scroll-margin-top:74px}
-}
-@media(max-width:959px){
-  .toolbar-context{max-width:50%}.toolbar-meta{display:none}.theme-field label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.workspace-toolbar{padding-top:max(8px,env(safe-area-inset-top));min-height:calc(58px + env(safe-area-inset-top))}.mobile-tabs{top:calc(58px + env(safe-area-inset-top))}
-}
-@media(max-width:640px){
-  .wrap{padding:13px 10px calc(24px + env(safe-area-inset-bottom))}.header{margin:0 3px 10px}.header h1{font-size:22px}.header .sub{margin-top:4px}.badge{align-self:start}
-  .card[id]{scroll-margin-top:calc(116px + env(safe-area-inset-top))}.card{border:1px solid var(--line);border-radius:13px;padding:14px}.fund-card{border:1px solid var(--line);background:var(--card)}#resultsCard.empty{padding:14px!important}
-  .summary-layout{grid-template-columns:1fr 1fr}.verdict-kpi{grid-column:1/-1;grid-template-columns:minmax(0,1fr);grid-template-areas:"label" "value" "meta" "headline";min-height:145px}.verdict-kpi>.v{font-size:29px;white-space:nowrap}.verdict-side{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 9px;margin-top:7px;text-align:left}.verdict-side .k{grid-column:1/-1}.verdict-side .v{font-size:18px;white-space:nowrap}.verdict-side .quick-meta{align-self:center}.secondary-kpi{min-height:100px}.secondary-kpi .v{font-size:18px}.result-lead{margin-bottom:13px}
-  .mobile-tabs{padding-left:8px;padding-right:8px}.workspace-nav-item{font-size:11px;gap:5px;padding-left:5px;padding-right:5px}.toolbar-actions{gap:5px}.toolbar-button{width:36px;overflow:hidden;padding:6px;font-size:0}.toolbar-button::before{content:"↻";font-size:17px}.theme-control{max-width:88px;padding-left:7px;padding-right:19px}.toolbar-brand img{width:28px;height:28px}.toolbar-title{font-size:13px}
-  body.dock-ready .action-dock{background:var(--dock-bg)}
-  body.keyboard-open .mobile-tabs{position:relative;top:auto}
-}
-@media(max-width:374px){.toolbar-title{max-width:110px;overflow:hidden;text-overflow:ellipsis}.theme-control{max-width:82px}.workspace-nav-item svg{width:16px;height:16px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
-</style>
-</head>
-<body>
-<div class="app-shell">
-<aside class="desktop-sidebar" aria-label="任务导航">
-  <div class="sidebar-brand">
-    <img src="./icons/icon-192.png" alt="">
-    <div><strong>债基再平衡助手</strong><small>v1.5.0 · CNY</small></div>
-  </div>
-  <nav class="sidebar-nav">
-    <a class="workspace-nav-item active" href="#holdingsSection" data-target="holdingsSection" data-nav-key="holdings" aria-current="step"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7M2 19h20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>持仓</span></a>
-    <a class="workspace-nav-item" href="#cashFlowSection" data-target="cashFlowSection" data-nav-key="cash"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7.5h18v11H3zM16 11h5v4h-5a2 2 0 0 1 0-4ZM6 7.5V5h11v2.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>资金</span></a>
-    <a class="workspace-nav-item" href="#resultsCard" data-target="resultsCard" data-nav-key="results"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6M4 20h16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>执行建议</span></a>
-  </nav>
-  <div class="sidebar-meta">数据仅在当前页面处理<br>单页任务流 · 不保存持仓</div>
-</aside>
-<main class="workspace">
-  <header class="workspace-toolbar">
-    <div class="toolbar-context">
-      <div class="toolbar-brand"><img src="./icons/icon-192.png" alt=""><span class="toolbar-copy"><span class="toolbar-title">再平衡工作台</span><span class="toolbar-meta">人民币债基 · 本地计算</span></span></div>
-    </div>
-    <div class="toolbar-actions">
-      <button class="toolbar-button" id="refreshVersion" type="button">刷新版本</button>
-      <div class="theme-field"><label for="themeMode">外观</label><select class="theme-control" id="themeMode" aria-label="外观模式"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></div>
-    </div>
-  </header>
-  <nav class="mobile-tabs" aria-label="任务导航">
-    <a class="workspace-nav-item active" href="#holdingsSection" data-target="holdingsSection" data-nav-key="holdings" aria-current="step"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7M2 19h20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>持仓</span></a>
-    <a class="workspace-nav-item" href="#cashFlowSection" data-target="cashFlowSection" data-nav-key="cash"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7.5h18v11H3zM16 11h5v4h-5a2 2 0 0 1 0-4ZM6 7.5V5h11v2.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>资金</span></a>
-    <a class="workspace-nav-item" href="#resultsCard" data-target="resultsCard" data-nav-key="results"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6M4 20h16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>建议</span></a>
-  </nav>
-<div class="wrap">
-  <div class="header">
-    <div>
-      <h1>债基再平衡助手</h1>
-      <div class="sub" id="targetSummary"></div>
-    </div>
-    <div class="badge">CNY · 最小换手</div>
-  </div>
-
-  <details class="card info-card">
-    <summary><span class="summary-copy">使用说明<small>三步操作、调整规则与免调范围</small></span></summary>
-    <div class="details-inner">
-      <h3>日常使用只需三步</h3>
-      <div class="guide-steps">
-        <div class="guide-step"><span class="step-num">1</span><div><b>录入持仓</b><small>填写四只基金已确认的最新市值。</small></div></div>
-        <div class="guide-step"><span class="step-num">2</span><div><b>录入资金变动</b><small>无变动保持 0；有在途订单再单独录入。</small></div></div>
-        <div class="guide-step"><span class="step-num">3</span><div><b>生成建议</b><small>最终只需按执行清单操作。</small></div></div>
-      </div>
-      <h3>何时触发调整</h3>
-      <div class="rules">
-        <div class="rule">
-          <b id="outerRule">免调范围：5 / 25 规则</b>
-          <small>大仓位最多偏离 5 个百分点，小仓位最多偏离目标的 25%，取更严格的一项。</small>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" id="themeColor" content="#f5f7fb" />
+    <meta name="description" content="输入当前持仓和资金变动，生成清晰、可靠、容易执行的人民币债券基金再平衡方案。" />
+    <meta name="application-name" content="债基再平衡助手" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="再平衡助手" />
+    <title>债基再平衡助手</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./styles/app.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-nav" aria-label="主导航">
+        <div class="brand" aria-label="债基再平衡助手">
+          <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
+          <span class="brand-copy">
+            <strong>债基再平衡</strong>
+            <small>Version 2.0</small>
+          </span>
         </div>
-        <div class="rule">
-          <b id="innerRule">越界后：回调偏差的 50%</b>
-          <small>只回调到安全区，不强求精确归位，减少重复交易。</small>
+
+        <nav class="nav-list">
+          <button class="nav-button is-active" type="button" data-view-nav="workspace">
+            <span class="nav-icon" aria-hidden="true">▦</span><span>组合工作台</span>
+          </button>
+          <button class="nav-button" type="button" data-view-nav="plan">
+            <span class="nav-icon" aria-hidden="true">↗</span><span>执行方案</span>
+          </button>
+          <button class="nav-button" type="button" data-view-nav="rules">
+            <span class="nav-icon" aria-hidden="true">◎</span><span>再平衡规则</span>
+          </button>
+        </nav>
+
+        <div class="side-spacer"></div>
+        <div class="side-actions">
+          <button class="nav-button nav-action" data-refresh-version type="button">
+            <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
+          </button>
         </div>
-        <div class="rule">
-          <b>优先使用资金变动纠偏</b>
-          <small>优先用新增或取出资金纠偏，再考虑基金间转换。</small>
+        <div class="side-meta">本地计算 · 不保存持仓<br />v2.0.0</div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="mobile-bar">
+          <div class="mobile-bar-main">
+            <div class="brand">
+              <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
+              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.0</small></span>
+            </div>
+            <div class="mobile-actions">
+              <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
+              <button class="icon-button" type="button" data-theme-toggle aria-label="切换深浅色外观">◐</button>
+            </div>
+          </div>
+          <nav class="mobile-tabs" aria-label="移动端导航">
+            <button class="mobile-tab is-active" type="button" data-view-nav="workspace">工作台</button>
+            <button class="mobile-tab" type="button" data-view-nav="plan">方案</button>
+            <button class="mobile-tab" type="button" data-view-nav="rules">规则</button>
+          </nav>
+        </header>
+
+        <header class="app-bar">
+          <strong id="appBarTitle">组合工作台</strong>
+          <div class="app-bar-actions">
+            <span class="local-badge"><i aria-hidden="true"></i>数据仅在本机处理</span>
+            <button class="icon-button" type="button" data-theme-toggle aria-label="切换深浅色外观">◐</button>
+          </div>
+        </header>
+
+        <div class="dashboard-content">
+          <section data-view-panel="workspace">
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">CNY PORTFOLIO</p>
+                <h1>人民币债券基金再平衡</h1>
+                <p>输入当前持仓与本次资金变动，系统会先用资金流纠偏，必要时再安排基金间转换。</p>
+              </div>
+              <span class="rule-chip">5 / 25 触发规则</span>
+            </div>
+
+            <div class="status-banner" id="statusBanner" role="status" aria-live="polite" hidden></div>
+
+            <section class="kpi-grid" aria-label="组合概览">
+              <article class="kpi-card">
+                <span class="kpi-label">当前总资产</span>
+                <strong class="kpi-value" id="currentTotal">—</strong>
+                <small>4 只基金合计</small>
+              </article>
+              <article class="kpi-card">
+                <span class="kpi-label">资金变动后</span>
+                <strong class="kpi-value" id="afterTotal">—</strong>
+                <small id="flowSummary">等待输入</small>
+              </article>
+              <article class="kpi-card">
+                <span class="kpi-label">当前最大偏离</span>
+                <strong class="kpi-value" id="maxDeviation">—</strong>
+                <small id="deviationFund">相对目标比例</small>
+              </article>
+              <article class="kpi-card is-featured">
+                <span class="kpi-label">组合状态</span>
+                <strong class="kpi-value kpi-status" id="portfolioStatus">等待输入</strong>
+                <small id="statusDetail">填写全部持仓后判断</small>
+              </article>
+            </section>
+
+            <section class="grid-12 input-grid" aria-label="再平衡输入">
+              <article class="table-card span-8">
+                <header class="card-header">
+                  <div><h2>当前持仓</h2><p>金额单位为万 CNY，最多保留 4 位小数。</p></div>
+                  <span class="pill">目标 100%</span>
+                </header>
+                <div class="table-scroll">
+                  <table class="holdings-table">
+                    <thead><tr><th>基金</th><th class="numeric">目标</th><th class="numeric">当前持仓（万）</th><th class="numeric">当前比例</th><th>状态</th></tr></thead>
+                    <tbody id="holdingsBody"></tbody>
+                  </table>
+                </div>
+              </article>
+
+              <article class="dashboard-card span-4 control-card">
+                <header class="card-header">
+                  <div><h2>本次资金变动</h2><p>新增填正数，取出填负数，无变动填 0。</p></div>
+                  <button class="button button-secondary" data-clear-inputs type="button">清空</button>
+                </header>
+                <label class="field" for="cashFlowInput">
+                  <span>新增 / 取出（万 CNY）</span>
+                  <div class="input-shell"><input id="cashFlowInput" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="cashFlowHelp" /><b>万</b></div>
+                  <small id="cashFlowHelp">例如新增 5 万填 5，取出 5 万填 -5。</small>
+                </label>
+                <div class="strategy-summary">
+                  <span class="section-label">执行逻辑</span>
+                  <ol>
+                    <li><b>先纠偏</b><span>资金按目标缺口或超额比例分配</span></li>
+                    <li><b>再判断</b><span>全部回到触发区间则停止</span></li>
+                    <li><b>少转换</b><span>只修正越界部分，优先由越界项配平</span></li>
+                  </ol>
+                </div>
+                <button class="button button-primary button-large" id="generateButton" type="button">生成再平衡方案</button>
+                <p class="privacy-note">无需登录；持仓不会上传或保存在浏览器中。</p>
+              </article>
+            </section>
+          </section>
+
+          <section data-view-panel="plan" aria-labelledby="planHeading" hidden>
+            <div class="section-heading">
+              <div><p class="eyebrow">EXECUTION</p><h2 id="planHeading">执行方案</h2><p>只保留本次需要执行的动作与必要说明。</p></div>
+              <button class="button button-secondary" id="copyButton" type="button" disabled>复制方案</button>
+            </div>
+            <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
+
+            <div class="empty-panel" id="planEmpty">
+              <span class="empty-icon" aria-hidden="true">↗</span>
+              <div><strong>还没有生成方案</strong><p>请先在工作台填写当前持仓与资金变动。</p></div>
+            </div>
+
+            <div id="planContent" hidden>
+              <article class="decision-card" id="decisionCard">
+                <div><span class="section-label">本次结论</span><h3 id="decisionTitle">—</h3><p id="decisionText">—</p></div>
+                <span class="decision-badge" id="decisionBadge">—</span>
+              </article>
+
+              <div class="kpi-grid result-kpis">
+                <article class="kpi-card"><span class="kpi-label">买入合计</span><strong class="kpi-value positive" id="buyTotal">—</strong><small>所有正向操作</small></article>
+                <article class="kpi-card"><span class="kpi-label">卖出合计</span><strong class="kpi-value negative" id="sellTotal">—</strong><small>所有负向操作</small></article>
+                <article class="kpi-card"><span class="kpi-label">基金间转换</span><strong class="kpi-value" id="internalTurnover">—</strong><small>不含外部资金流</small></article>
+                <article class="kpi-card"><span class="kpi-label">调整后最大偏离</span><strong class="kpi-value" id="finalDeviation">—</strong><small>相对目标比例</small></article>
+              </div>
+
+              <article class="table-card execution-card">
+                <header class="table-header"><h3>执行清单</h3><span class="pill" id="tradeCount">0 笔操作</span></header>
+                <div class="table-scroll">
+                  <table><thead><tr><th>基金</th><th>操作</th><th class="numeric">执行金额</th><th class="numeric">调整后持仓</th><th class="numeric">调整后比例</th><th>依据</th></tr></thead><tbody id="executionBody"></tbody></table>
+                </div>
+                <p class="risk-note">执行金额按 1 CNY 配平，仅供参考；未计入相关费用及确认期间的净值变化。</p>
+              </article>
+
+              <section class="grid-12 result-grid">
+                <article class="dashboard-card span-7">
+                  <header class="card-header"><div><h3>调整前后</h3><p>每行标记目标比例，并对比调整前与调整后。</p></div><span class="pill">占组合比例</span></header>
+                  <div class="comparison-list" id="comparisonList"></div>
+                </article>
+                <article class="dashboard-card span-5">
+                  <header class="card-header"><div><h3>计算说明</h3><p>本次方案如何形成。</p></div></header>
+                  <dl class="calculation-list" id="calculationList"></dl>
+                </article>
+              </section>
+            </div>
+          </section>
+
+          <section data-view-panel="rules" aria-labelledby="rulesHeading" hidden>
+            <div class="section-heading"><div><p class="eyebrow">POLICY</p><h2 id="rulesHeading">再平衡规则</h2><p>固定规则单独展示，不占用日常工作台。</p></div><span class="pill">固定规则</span></div>
+            <div class="grid-12">
+              <article class="dashboard-card span-7">
+                <header class="card-header"><div><h3>触发区间</h3><p>采用 5 / 25 规则，边界计入安全区间。</p></div></header>
+                <div class="bands-list" id="bandsList"></div>
+              </article>
+              <article class="dashboard-card span-5 rule-copy">
+                <header class="card-header"><div><h3>统一决策路径</h3><p>v2 只保留一条可解释的执行策略。</p></div></header>
+                <ol>
+                  <li><span>01</span><div><b>计算目标与触发区间</b><p>阈值取“5 个百分点”与“目标比例的 25%”中较小者。</p></div></li>
+                  <li><span>02</span><div><b>优先使用外部资金</b><p>新增补目标缺口，取出来自目标超额；按缺口比例分配。</p></div></li>
+                  <li><span>03</span><div><b>仅在仍越界时转换</b><p>只修正超出触发区间的部分，剩余金额优先在越界项之间向目标方向配平；只有必要时才调整其他基金。</p></div></li>
+                </ol>
+              </article>
+            </div>
+          </section>
+
+          <footer class="footer">
+            <div>
+              <div>本工具仅用于资产配置计算，不构成投资建议。</div>
+              <div>© 2026 Zhipeng Zhou</div>
+            </div>
+          </footer>
         </div>
-      </div>
-      <details class="inline-help"><summary>查看各基金免调范围</summary><dl class="help-list" id="bandHelp"></dl></details>
-      <div class="plain-tip">建议按季度检查；发生较大申购或赎回时可额外检查。</div>
+      </main>
     </div>
-  </details>
-
-  <div class="card" id="holdingsSection">
-    <div class="section-head"><h2>1. 当前持仓</h2><button class="btn-ghost" id="clear" type="button">清空输入</button></div>
-    <div class="section-note">单位：万 CNY。录入四只基金已确认的最新市值；其他内容按需展开。</div>
-    <div class="fund-grid" id="fundBody"></div>
-    <details class="inline-help special-panel">
-      <summary>在途交易与卖出设置</summary>
-      <div class="details-inner">
-        <div class="fund-extra-grid" id="fundExtraBody"></div>
-        <div class="note">在途买入填正数，在途卖出填负数。卖出策略为“尽量不卖”时会降低卖出优先级，“禁止卖出”则完全不卖。</div>
-      </div>
-    </details>
-  </div>
-
-  <div class="card" id="cashFlowSection">
-    <h2>2. 本次资金变动</h2>
-    <div class="flowline">
-      <div class="field"><label for="cashFlow">新增 / 取出资金（万 CNY）</label><input id="cashFlow" type="number" inputmode="decimal" enterkeyhint="done" autocomplete="off" step="0.0001" value="0"></div>
-      <div class="note">无变动填 0；新增为正，取出为负。</div>
-    </div>
-    <details class="inline-help"><summary>资金使用顺序</summary><div class="note">新增优先补低配基金；取出优先使用短债和纯债，再考虑固收增强。卖出策略优先于该顺序。</div></details>
-  </div>
-
-  <details class="card info-card settings-card">
-    <summary><span class="summary-copy">高级设置<small>触发阈值、取整单位与小额交易阈值，一般无需修改</small></span></summary>
-    <div class="details-inner">
-      <div class="setting-grid">
-        <div class="field"><label for="absoluteBandPP">大仓位最多偏离（百分点）</label><div class="field-help">控制大仓位的免调范围。</div><input class="setting" id="absoluteBandPP" type="number"></div>
-        <div class="field"><label for="relativeBandPct">小仓位最多偏离目标（%）</label><div class="field-help">避免小仓位的允许范围过宽。</div><input class="setting" id="relativeBandPct" type="number"></div>
-        <div class="field"><label for="landingPct">越界后回调比例（%）</label><div class="field-help">50% 表示回调到目标与边界的中间位置。</div><input class="setting" id="landingPct" type="number"></div>
-        <div class="field"><label for="roundYuan">取整单位（CNY）</label><div class="field-help">让建议更方便下单。</div><input class="setting" id="roundYuan" type="number"></div>
-        <div class="field"><label for="minTradeYuan">小额交易阈值（CNY）</label><div class="field-help">合并不必要的零碎操作。</div><input class="setting" id="minTradeYuan" type="number"></div>
-      </div>
-      <div class="actions settings-actions"><button id="restoreDefaults">恢复默认设置</button></div>
-      <div class="note">推荐值适合低频、低换手使用。为保证配平或不越界，必要的小额交易仍会保留。</div>
-    </div>
-  </details>
-
-  <div class="card action-dock"><div class="actions">
-    <button class="primary" id="check">生成建议</button>
-    <div class="force-wrap"><button id="force" aria-describedby="forceHint">按目标比例调整</button><div class="force-hint" id="forceHint">忽略免调范围，直接回到目标附近</div></div>
-  </div></div>
-
-  <div class="card empty" id="resultsCard" tabindex="-1">
-    <h2>3. 执行建议</h2>
-    <div class="empty-results" id="emptyResults">填写 4 项当前持仓后，点击“生成建议”查看执行方案。</div>
-    <section class="execution-summary" aria-labelledby="summaryHeadline">
-      <div class="summary-layout">
-        <div class="verdict-kpi" id="verdictKpi">
-          <span class="k">再平衡结论</span>
-          <div class="v" id="quickDecision">—</div>
-          <div class="verdict-side"><span class="k">当前最大偏离</span><div class="v" id="quickDeviation">—</div><small class="quick-meta" id="quickDeviationMeta"></small></div>
-          <div class="summary-headline" id="summaryHeadline">生成建议后显示执行摘要</div>
-        </div>
-        <div class="secondary-kpi"><span class="k">当前总资产</span><div class="v" id="quickTotal">—</div><small class="quick-meta">含已录入的在途交易</small></div>
-        <div class="secondary-kpi"><span class="k">建议操作</span><div class="v" id="quickCount">—</div><small class="quick-meta">按执行单位取整后</small></div>
-      </div>
-    </section>
-    <div class="result-lead"><div id="status" role="status" aria-live="polite"></div></div>
-    <section class="result-block block-execution">
-      <div class="execution-title"><h3>执行清单</h3><div class="result-tools"><span class="copy-status" id="copyStatus" role="status" aria-live="polite"></span><button class="copy-button" id="copyPlan" type="button" disabled>复制执行方案</button></div></div>
-      <div class="action-pills" id="actionPills" aria-label="操作摘要"></div>
-      <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
-      <section class="balance-summary" aria-label="执行方案资金配平汇总">
-        <div class="balance-grid">
-          <div class="balance-stat"><span class="k">买入合计</span><div class="v buy" id="balanceBuy">—</div></div>
-          <div class="balance-stat"><span class="k">卖出合计</span><div class="v sell" id="balanceSell">—</div></div>
-          <div class="balance-stat flow"><span class="k">外部资金流</span><div class="v" id="quickFlow">—</div></div>
-        </div>
-        <div class="balance-equation" id="balanceEquation">买入合计 − 卖出合计 = 外部资金流</div>
-        <div class="balance-secondary">基金间转换：<span id="quickTurnover">—</span></div>
-      </section>
-      <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>基金</th><th>操作</th><th>调整后金额</th><th>调整后占比</th><th>卖出策略</th><th>原因</th></tr></thead>
-        <tbody id="resultBody"><tr><td colspan="6" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
-      </table></div>
-      <p class="execution-risk-note" id="executionRiskNote">执行金额仅供参考，未计入相关费用及确认期间的净值变化。</p>
-      <div class="exec-note" id="execNote"></div>
-    </section>
-    <section class="result-block block-comparison">
-      <div class="comparison-title"><h3>调整前后</h3><span class="section-note">调整前含在途交易</span></div>
-      <section class="post-band-panel" aria-labelledby="postBandTitle">
-        <h4 id="postBandTitle">调整后区间</h4>
-        <div id="postBandBody"></div>
-      </section>
-      <div class="table-wrap"><table class="comparison-table">
-        <thead><tr><th>基金</th><th>调整前</th><th>目标</th><th>调整后</th></tr></thead>
-        <tbody id="comparisonBody"><tr><td colspan="4" class="empty">生成建议后显示调整前后</td></tr></tbody>
-      </table></div>
-    </section>
-    <details class="result-details">
-      <summary>查看计算明细</summary>
-      <section class="result-detail-section">
-        <h4>汇总</h4>
-        <div class="summary">
-          <div class="stat"><div class="k">当前总资产</div><div class="v" id="sCurrent">—</div></div>
-          <div class="stat"><div class="k">资金变动后总资产</div><div class="v" id="sAfter">—</div></div>
-          <div class="stat"><div class="k">资金分配后越界</div><div class="v" id="sBreach">—</div></div>
-          <div class="stat"><div class="k">基金间转换</div><div class="v" id="sTurnover">—</div></div>
-          <div class="stat"><div class="k">买入合计</div><div class="v" id="sBuy">—</div></div>
-          <div class="stat"><div class="k">卖出合计</div><div class="v" id="sSell">—</div></div>
-        </div>
-      </section>
-      <section class="result-detail-section">
-        <h4>术语说明</h4>
-        <dl class="help-list"><dt>资金分配后越界</dt><dd>先分配新增或取出资金后，还有几只基金超出免调范围。</dd><dt>基金间转换</dt><dd>卖出一只再买入另一只的单边金额，不重复计算买入和卖出。</dd><dt>买入／卖出合计</dt><dd>包含资金变动和基金间转换后的最终操作。</dd></dl>
-      </section>
-      <section class="result-detail-section">
-        <h4>逐基金推导</h4>
-        <div class="table-wrap"><table class="detail-table">
-          <thead><tr><th>基金</th><th>当前持仓</th><th>在途交易</th><th>资金变动分配</th><th>基金间转换</th><th>取整调整</th><th>最终操作</th></tr></thead>
-          <tbody id="detailBody"><tr><td colspan="7" class="empty">填写 4 项当前持仓后点击“生成建议”</td></tr></tbody>
-        </table></div>
-      </section>
-    </details>
-  </div>
-  <footer class="footer">
-    <div class="footer-main"><span>© 2026 Zhipeng Zhou</span><span aria-hidden="true">·</span><a href="https://github.com/zzpice/rmb-bond-rebalancer" target="_blank" rel="noopener noreferrer">GitHub</a><span aria-hidden="true">·</span><span>v1.5.0</span></div>
-    <div class="footer-actions"><button class="footer-button" id="installApp" type="button" aria-controls="installGuide" aria-expanded="false" hidden>安装应用</button><span class="footer-separator" id="installSeparator" hidden>·</span></div>
-    <div class="install-guide" id="installGuide" role="status" aria-live="polite" hidden>在 Safari 中点击底部“分享”按钮，再选择“添加到主屏幕”。<button id="closeInstallGuide" type="button" aria-label="关闭安装提示">×</button></div>
-  </footer>
-</div>
-</main>
-</div>
-
-<script>
-// All holdings and trades use integer cents. Inputs are in ten-thousand CNY.
-const DEN=960,CENTS_PER_WAN=1000000,INPUT_UNITS_PER_WAN=10000;
-const SETTING_DEFINITIONS=[
-  {id:"absoluteBandPP",defaultValue:5,min:0.01,max:20,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=20,error:"绝对触发阈值须大于 0 且不超过 20 个百分点。"},
-  {id:"relativeBandPct",defaultValue:25,min:0.01,max:100,step:0.01,inputMode:"decimal",isValid:value=>value>0&&value<=100,error:"相对触发阈值须大于 0% 且不超过 100%。"},
-  {id:"landingPct",defaultValue:50,min:10,max:90,step:1,inputMode:"decimal",isValid:value=>value>=10&&value<=90,error:"越界后回调比例须为允许偏差的 10%～90%。"},
-  {id:"roundYuan",defaultValue:100,min:1,max:10000,step:1,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=1&&value<=10000,error:"取整单位须为 1～10,000 CNY 的整数。"},
-  {id:"minTradeYuan",defaultValue:5000,min:0,max:100000,step:100,inputMode:"numeric",isValid:value=>Number.isInteger(value)&&value>=0&&value<=100000,error:"小额交易阈值须为 0～100,000 CNY 的整数。"}
-];
-const DEFAULTS=Object.fromEntries(SETTING_DEFINITIONS.map(({id,defaultValue})=>[id,defaultValue]));
-let CONFIG={...DEFAULTS};
-const FUNDS=[
-  {name:"景顺长城景盛双息收益债券A",displayName:"景顺长城景盛双息 A",code:"002065",url:"https://www.morningstar.cn/fund/002065.html",targetW:1/2,category:"固收增强",withdrawRank:2},
-  {name:"易方达增强回报债券A",displayName:"易方达增强回报 A",code:"110017",url:"https://www.morningstar.cn/fund/110017.html",targetW:1/3,category:"固收增强",withdrawRank:2},
-  {name:"广发纯债债券A",displayName:"广发纯债 A",code:"270048",url:"https://www.morningstar.cn/fund/270048.html",targetW:1/8,category:"纯债",withdrawRank:1},
-  {name:"长城短债债券A",displayName:"长城短债 A",code:"007194",url:"https://www.morningstar.cn/fund/007194.html",targetW:1/24,category:"短债",withdrawRank:0}
-];
-const SELL_POLICIES={
-  normal:{optionLabel:"正常卖出",resultLabel:"正常",tagClass:"ok",sellPriority:0},
-  avoid:{optionLabel:"尽量不卖",resultLabel:"尽量不卖",tagClass:"neutral",sellPriority:1},
-  forbid:{optionLabel:"禁止卖出",resultLabel:"禁止卖出",tagClass:"bad",sellPriority:null}
-};
-const SELL_PRIORITY=Object.entries(SELL_POLICIES).filter(([,policy])=>policy.sellPriority!==null).sort((a,b)=>a[1].sellPriority-b[1].sellPriority).map(([name])=>name);
-const sum=a=>a.reduce((s,x)=>s+x,0);
-const indices=()=>FUNDS.map((_,i)=>i);
-const $=id=>document.getElementById(id);
-const $$=selector=>[...document.querySelectorAll(selector)];
-const fmt=(x,d=2)=>Number(x).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
-const compactNumber=x=>fmt(x,2).replace(/\.00$/,'');
-const money=x=>"CNY "+fmt((x||0)/100,2);
-const wanMoney=x=>fmt((x||0)/CENTS_PER_WAN,2)+" 万 CNY";
-const fundLink=f=>`<a class="fund-link" href="${f.url}" target="_blank" rel="noopener noreferrer" title="${f.name}" aria-label="${f.displayName}（晨星详情，新窗口打开）">${f.displayName}<span class="external" aria-hidden="true">↗</span></a>`;
-
-function updateBands(){
-  FUNDS.forEach(f=>{
-    f.units=Math.round(f.targetW*DEN);
-    f.outerBand=Math.min(CONFIG.absoluteBandPP/100,f.targetW*CONFIG.relativeBandPct/100);
-    f.innerBand=f.outerBand*CONFIG.landingPct/100;
-    f.outerLow=f.targetW-f.outerBand;f.outerHigh=f.targetW+f.outerBand;
-    f.innerLow=f.targetW-f.innerBand;f.innerHigh=f.targetW+f.innerBand;
-  });
-}
-updateBands();
-
-function toCents(value){
-  const n=Number(value),inputUnits=n*INPUT_UNITS_PER_WAN;
-  if(!Number.isFinite(n)||!Number.isSafeInteger(Math.round(inputUnits))||Math.abs(inputUnits-Math.round(inputUnits))>1e-7)
-    throw new Error("金额须为有效数字，最多保留 4 位小数（万 CNY）。");
-  const cents=Math.round(inputUnits)*100;
-  if(!Number.isSafeInteger(cents))throw new Error("金额超出精确计算范围。");
-  return cents;
-}
-function targetCents(total){
-  const numer=FUNDS.map(f=>total*f.units),t=numer.map(x=>Math.floor(x/DEN));
-  const order=indices().sort((a,b)=>(numer[b]%DEN)-(numer[a]%DEN)||a-b);
-  for(let n=total-sum(t),j=0;j<n;j++)t[order[j]]++;
-  return t;
-}
-function bounds(total){
-  return FUNDS.map(f=>({
-    low:Math.ceil(total*f.outerLow-1e-7),
-    high:Math.floor(total*f.outerHigh+1e-7),
-    innerLow:Math.ceil(total*f.innerLow-1e-7),
-    innerHigh:Math.floor(total*f.innerHigh+1e-7)
-  }));
-}
-function outerBreaches(a){const b=bounds(sum(a));return a.map((x,i)=>x<b[i].low||x>b[i].high)}
-function normalizePolicies(policies){
-  if(!Array.isArray(policies)||policies.length!==FUNDS.length)return FUNDS.map(()=>"normal");
-  return policies.map(policy=>Object.prototype.hasOwnProperty.call(SELL_POLICIES,policy)?policy:"normal");
-}
-
-function allocateCents(capacity,budget){
-  const total=sum(capacity);
-  if(budget<0||budget>total)throw new Error("资金分配容量校验失败。");
-  if(!budget)return capacity.map(()=>0);
-  const ideals=capacity.map(x=>budget*(x/total));
-  const out=ideals.map((x,i)=>Math.min(capacity[i],Math.floor(x)));
-  let left=budget-sum(out);
-  const order=indices().sort((a,b)=>(ideals[b]-out[b])-(ideals[a]-out[a])||a-b);
-  for(const i of order){if(left&&out[i]<capacity[i]){out[i]++;left--;}}
-  if(left)throw new Error("金额尾差分配失败。");
-  return out;
-}
-function allocateByPolicy(capacity,budget,direction,policies){
-  if(direction>0)return allocateCents(capacity,budget);
-  const out=capacity.map(()=>0);let left=budget;
-  for(const policy of SELL_PRIORITY){
-    const caps=capacity.map((x,i)=>policies[i]===policy?x:0);
-    const take=Math.min(left,sum(caps)),part=allocateCents(caps,take);
-    part.forEach((x,i)=>out[i]+=x);left-=take;
-  }
-  if(left)throw new Error("可卖出金额不足，请调整卖出策略或减少取出资金。");
-  return out;
-}
-
-function minimalInternalRebalance(post,policies){
-  policies=normalizePolicies(policies);
-  const total=sum(post),t=targetCents(total),b=bounds(total),breach=outerBreaches(post),final=[...post];
-  for(let i=0;i<post.length;i++){
-    if(post[i]<b[i].low)final[i]=b[i].innerLow;
-    else if(post[i]>b[i].high){
-      if(policies[i]==='forbid')throw new Error(`${FUNDS[i].code} 已高配越界，但被设为禁止卖出。请等待新增资金稀释或解除限制。`);
-      final[i]=b[i].innerHigh;
-    }
-  }
-  let gap=total-sum(final),direction=Math.sign(gap);
-  const policyRank=i=>policies[i]==='normal'?0:policies[i]==='avoid'?1:2;
-  const order=indices().filter(i=>direction>0||policies[i]!=='forbid').sort((a,c)=>{
-    if(direction<0&&policyRank(a)!==policyRank(c))return policyRank(a)-policyRank(c);
-    if(Number(breach[c])!==Number(breach[a]))return Number(breach[c])-Number(breach[a]);
-    return direction*(t[c]-final[c])-direction*(t[a]-final[a])||a-c;
-  });
-  for(const i of order){
-    const take=Math.min(Math.abs(gap),Math.max(0,direction*(t[i]-final[i])));
-    final[i]+=direction*take;gap-=direction*take;
-  }
-  if(gap)throw new Error(gap<0?"卖出策略导致内部卖出资金不足。":"内部再平衡资金未配平。");
-  for(let i=0;i<final.length;i++){
-    const lo=breach[i]?b[i].innerLow:b[i].low,hi=breach[i]?b[i].innerHigh:b[i].high;
-    if(final[i]<lo||final[i]>hi)throw new Error("交易后金额未满足调整区间。");
-  }
-  return {final,breach,z:final.map((x,i)=>x-post[i])};
-}
-
-function lexLess(a,b){for(let i=0;i<a.length;i++){if(a[i]<b[i]-1e-10)return true;if(a[i]>b[i]+1e-10)return false}return false}
-function flowCorrection(amounts,flow,policies){
-  policies=normalizePolicies(policies);
-  const afterTotal=sum(amounts)+flow,targets=targetCents(afterTotal),b=bounds(afterTotal);
-  const direction=Math.sign(flow),budget=Math.abs(flow);
-  if(!direction){const r=minimalInternalRebalance(amounts,policies);return {afterTotal,targets,trades:amounts.map(()=>0),post:[...amounts],r}}
-  const preferred=amounts.map((x,i)=>Math.max(0,direction*(targets[i]-x)));
-  const caps=amounts.map((x,i)=>{
-    if(direction>0)return preferred[i];
-    // A withdrawal may take a sellable holding below target when another
-    // holding is protected, but never below its outer safe boundary.
-    return policies[i]==='forbid'?0:Math.max(0,x-b[i].low);
-  });
-  if(sum(caps)<budget)throw new Error("可用资金容量不足，请调整卖出策略或资金变动金额。");
-  const correctable=indices().filter(i=>caps[i]>0&&(direction>0?amounts[i]<b[i].low:amounts[i]>b[i].high));
-  let best=null,lastError=null;
-  for(let mask=0;mask<(1<<correctable.length);mask++){
-    try{
-      const healed=new Set(correctable.filter((_,j)=>mask&(1<<j))),unhealed=new Set(correctable.filter(i=>!healed.has(i)));
-      const allocation=amounts.map(()=>0),limits=[...caps];
-      for(const i of correctable){
-        const escape=direction>0?b[i].low-amounts[i]:amounts[i]-b[i].high;
-        if(healed.has(i))allocation[i]=escape;else limits[i]=Math.min(limits[i],escape-1);
-      }
-      if(allocation.some((x,i)=>x>limits[i])||sum(allocation)>budget||sum(limits)<budget)continue;
-      let left=budget-sum(allocation);
-      function fill(capacity){
-        const take=Math.min(left,sum(capacity));let extra;
-        if(direction>0)extra=allocateCents(capacity,take);
-        else{
-          extra=capacity.map(()=>0);let remaining=take;
-          // Exhaust normal holdings before touching an "avoid" holding. Within
-          // each policy, sell toward target before using the wider safe band.
-          for(const policy of SELL_PRIORITY){
-            const towardTarget=capacity.map((x,i)=>policies[i]===policy?Math.min(x,Math.max(0,preferred[i]-allocation[i])):0);
-            let part=allocateCents(towardTarget,Math.min(remaining,sum(towardTarget)));
-            part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
-            const widerBand=capacity.map((x,i)=>policies[i]===policy?x-extra[i]:0);
-            part=allocateCents(widerBand,Math.min(remaining,sum(widerBand)));
-            part.forEach((x,i)=>extra[i]+=x);remaining-=sum(part);
-          }
-          if(remaining)throw new Error("可卖出金额不足，请调整卖出策略或减少取出资金。");
-        }
-        extra.forEach((x,i)=>allocation[i]+=x);left-=take;
-      }
-      fill(limits.map((x,i)=>unhealed.has(i)?x-allocation[i]:0));
-      fill(limits.map((x,i)=>{
-        const inner=direction>0?b[i].innerLow-amounts[i]:amounts[i]-b[i].innerHigh;
-        return healed.has(i)?Math.max(0,Math.min(x,inner)-allocation[i]):0;
-      }));
-      fill(limits.map((x,i)=>x-allocation[i]));
-      if(left)throw new Error("外部资金未分配完整。");
-      const trades=allocation.map(x=>direction*x),post=amounts.map((x,i)=>x+trades[i]);
-      const r=minimalInternalRebalance(post,policies),turnover=sum(r.z.filter(x=>x>0));
-      const avoidSell=sum(trades.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0))+sum(r.z.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0));
-      const deviation=sum(r.final.map((x,i)=>Math.pow((x-targets[i])/Math.max(1,targets[i]),2))),count=r.final.filter((x,i)=>x!==amounts[i]).length;
-      const score=[turnover,avoidSell,deviation,count];if(!best||lexLess(score,best.score))best={afterTotal,targets,trades,post,r,score};
-    }catch(e){lastError=e}
-  }
-  if(!best)throw lastError||new Error("找不到满足区间、资金及赎回限制的方案。");
-  return best;
-}
-
-function candidateValues(raw,amount,lo,hi,quantum,policy,target){
-  const vals=new Set([0]);
-  const addNear=x=>{vals.add(Math.floor(x/quantum)*quantum);vals.add(Math.ceil(x/quantum)*quantum);vals.add(Math.round(x/quantum)*quantum)};
-  addNear(raw);addNear(lo-amount);addNear(hi-amount);addNear(target-amount);
-  return [...vals].filter(x=>Number.isSafeInteger(x)&&amount+x>=0&&!(policy==='forbid'&&x<0));
-}
-function practicalizePlan(p,policies,quantum,minTrade){
-  policies=normalizePolicies(policies);quantum=Math.max(1,quantum);minTrade=Math.max(0,minTrade);
-  const b=bounds(p.afterTotal),target=targetCents(p.afterTotal);
-  const required=p.amounts.map((_,i)=>p.force
-    ?{lo:Math.max(0,target[i]-quantum),hi:target[i]+quantum}
-    :{lo:p.postFlowBreaches[i]?b[i].innerLow:b[i].low,hi:p.postFlowBreaches[i]?b[i].innerHigh:b[i].high});
-  const sets=p.amounts.map((amount,i)=>candidateValues(p.totalTrades[i],amount,required[i].lo,required[i].hi,quantum,policies[i],target[i]));
-  let best=null;
-  for(const residual of indices()){
-    const others=indices().filter(i=>i!==residual);
-    for(const a of sets[others[0]])for(const c of sets[others[1]])for(const d of sets[others[2]]){
-      const trades=p.amounts.map(()=>0);trades[others[0]]=a;trades[others[1]]=c;trades[others[2]]=d;trades[residual]=p.flow-a-c-d;
-      if(!Number.isSafeInteger(trades[residual])||p.amounts[residual]+trades[residual]<0)continue;
-      if(policies[residual]==='forbid'&&trades[residual]<0)continue;
-      const final=p.amounts.map((x,i)=>x+trades[i]);if(final.some((x,i)=>x<required[i].lo||x>required[i].hi))continue;
-      const internal=(sum(trades.map(Math.abs))-Math.abs(p.flow))/2;
-      const avoidSell=sum(trades.map((x,i)=>policies[i]==='avoid'?Math.max(0,-x):0));
-      const optionalSmall=trades.filter((x,i)=>x&&Math.abs(x)<minTrade&&p.amounts[i]>=b[i].low&&p.amounts[i]<=b[i].high&&Math.abs(p.flow)>=minTrade).length;
-      // For withdrawals that are otherwise equally efficient, use the short
-      // bond liquidity sleeve first, then pure bonds, then enhanced bonds.
-      const withdrawalPenalty=p.flow<0?sum(trades.map((x,i)=>Math.max(0,-x)*FUNDS[i].withdrawRank)):0;
-      const tradeCount=trades.filter(Boolean).length;
-      const deviation=sum(trades.map((x,i)=>Math.pow((x-p.totalTrades[i])/Math.max(quantum,Math.abs(p.totalTrades[i]),1),2)));
-      const score=[internal,avoidSell,optionalSmall,withdrawalPenalty,deviation,tradeCount];
-      if(!best||lexLess(score,best.score))best={trades,final,score,optionalSmall};
-    }
-  }
-  if(!best)throw new Error("当前取整单位无法生成满足区间的执行方案，请调小取整单位。");
-  best.rounding=best.trades.map((x,i)=>x-p.totalTrades[i]);
-  best.smallRequired=best.trades.map((x,i)=>x&&Math.abs(x)<minTrade?i:-1).filter(i=>i>=0);
-  return best;
-}
-
-function computePlan(input,flowInput,force=false,options={}){
-  if(input.length!==FUNDS.length)throw new Error("请填写全部 4 只基金。");
-  const amounts=input.map(toCents),flow=toCents(flowInput),policies=normalizePolicies(options.sellPolicies);
-  const currentTotal=sum(amounts),afterTotal=currentTotal+flow;
-  if(amounts.some(x=>x<0)||currentTotal<=0)throw new Error("持仓须非负，预计当前总资产须大于 0。");
-  if(afterTotal<=0)throw new Error("资金变动后的组合总资产必须大于 0。");
-  if(!Number.isSafeInteger(Math.max(currentTotal,afterTotal)*DEN))throw new Error("金额超出精确计算范围。");
-  const t=targetCents(afterTotal),b=bounds(afterTotal);
-  if(b.some((x,i)=>x.low>x.high||t[i]<x.innerLow||t[i]>x.innerHigh))throw new Error("金额过小，无法在分精度内满足现有比例区间。");
-  let fc;
-  if(force){
-    const direction=Math.sign(flow),caps=amounts.map((x,i)=>{
-      const cap=Math.max(0,direction*(t[i]-x));
-      return direction<0&&policies[i]==='forbid'?0:cap;
-    });
-    const allocation=direction?allocateByPolicy(caps,Math.abs(flow),direction,policies):amounts.map(()=>0);
-    const trades=allocation.map(x=>direction*x),post=amounts.map((x,i)=>x+trades[i]);
-    fc={trades,post,r:{final:t,z:t.map((x,i)=>x-post[i])}};
-  }
-  else fc=flowCorrection(amounts,flow,policies);
-  const exactFinal=force?t:fc.r.final,internal=exactFinal.map((x,i)=>x-fc.post[i]),totalTrades=exactFinal.map((x,i)=>x-amounts[i]);
-  if(totalTrades.some((x,i)=>x<0&&policies[i]==='forbid'))throw new Error("强制目标需要卖出已设为禁止卖出的基金，请先解除限制。");
-  if(sum(totalTrades)!==flow||sum(exactFinal)!==afterTotal||sum(internal)!==0||exactFinal.some(x=>x<0))throw new Error("金额配平校验失败。");
-  const exact={force,amounts,currentTotal,afterTotal,flow,flowTrades:fc.trades,postFlow:fc.post,postFlowBreaches:outerBreaches(fc.post),internal,totalTrades,final:exactFinal,internalTurnover:sum(internal.filter(x=>x>0))};
-  const quantum=Math.round((options.roundYuan??CONFIG.roundYuan)*100),minTrade=Math.round((options.minTradeYuan??CONFIG.minTradeYuan)*100);
-  const practical=practicalizePlan(exact,policies,quantum,minTrade);
-  return {...exact,rawFinal:exactFinal,rawTotalTrades:totalTrades,totalTrades:practical.trades,final:practical.final,rounding:practical.rounding,smallRequired:practical.smallRequired,internalTurnover:(sum(practical.trades.map(Math.abs))-Math.abs(flow))/2};
-}
-
-const SUMMARY_IDS=["sCurrent","sAfter","sBreach","sTurnover","sBuy","sSell"];
-const POLICY_OPTIONS=Object.entries(SELL_POLICIES).map(([value,{optionLabel}])=>`<option value="${value}">${optionLabel}</option>`).join("");
-const THEME_STORAGE_KEY="rebalancer-theme";
-const NAV_SECTIONS=[
-  {key:"holdings",id:"holdingsSection"},
-  {key:"cash",id:"cashFlowSection"},
-  {key:"results",id:"resultsCard"}
-];
-
-function preferredDark(){return typeof window!=="undefined"&&typeof window.matchMedia==="function"&&window.matchMedia("(prefers-color-scheme: dark)").matches}
-function syncThemeColor(mode){const dark=mode==="dark"||(mode==="system"&&preferredDark());$("themeColor").content=dark?"#0d111a":"#f4f6fa"}
-function applyTheme(mode,persist=false){
-  if(!["system","light","dark"].includes(mode))mode="system";
-  document.documentElement.dataset.theme=mode;$('themeMode').value=mode;syncThemeColor(mode);
-  if(persist){try{localStorage.setItem(THEME_STORAGE_KEY,mode)}catch{}}
-}
-function bindThemeControl(){
-  const field=$("themeMode");let initial="system";try{initial=localStorage.getItem(THEME_STORAGE_KEY)||"system"}catch{}applyTheme(initial);field.addEventListener("change",()=>applyTheme(field.value,true));
-  if(typeof window.matchMedia==="function"){
-    const media=window.matchMedia("(prefers-color-scheme: dark)"),listener=()=>{if(document.documentElement.dataset.theme==="system")syncThemeColor("system")};
-    if(typeof media.addEventListener==="function")media.addEventListener("change",listener);else if(typeof media.addListener==="function")media.addListener(listener);
-  }
-}
-function setActiveSection(key){
-  $$('[data-nav-key]').forEach(item=>{const active=item.dataset.navKey===key;item.classList.toggle("active",active);if(active)item.setAttribute("aria-current","step");else item.removeAttribute("aria-current")});
-}
-function navigationOffset(){
-  const toolbar=document.querySelector(".workspace-toolbar"),tabs=document.querySelector(".mobile-tabs");
-  return (toolbar?.offsetHeight||0)+(window.innerWidth<960?(tabs?.offsetHeight||0):0)+18;
-}
-let navigationFrame=0;
-function syncActiveSection(){
-  navigationFrame=0;let active=NAV_SECTIONS[0].key,marker=navigationOffset();
-  for(const section of NAV_SECTIONS){const node=$(section.id);if(node&&node.getBoundingClientRect().top<=marker)active=section.key}
-  if(window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-3)active=NAV_SECTIONS[NAV_SECTIONS.length-1].key;
-  setActiveSection(active);
-}
-function requestNavigationSync(){if(navigationFrame)return;navigationFrame=requestAnimationFrame(syncActiveSection)}
-function bindWorkspaceNavigation(){
-  $$('[data-target]').forEach(item=>item.addEventListener("click",event=>{event.preventDefault();setActiveSection(item.dataset.navKey);scrollElementIntoView($(item.dataset.target))}));
-  window.addEventListener("scroll",requestNavigationSync,{passive:true});window.addEventListener("resize",requestNavigationSync,{passive:true});syncActiveSection();
-}
-
-function fieldValue(field){return String(field.value).trim()}
-function clearFieldValidity(field){if(typeof field?.setCustomValidity==="function")field.setCustomValidity("")}
-function fieldError(field,message){const error=new Error(message);error.field=field;throw error}
-function centsFromField(field,emptyAsZero=false){
-  try{return toCents(fieldValue(field)||(emptyAsZero?0:""))}
-  catch(error){error.field=field;throw error}
-}
-function readPolicies(){return $$(".sell-policy").map(field=>field.value)}
-function readHoldings(){
-  const amountFields=$$(".amount"),pendingFields=$$(".pending");
-  const blankIndex=amountFields.findIndex(field=>fieldValue(field)==="");
-  if(blankIndex>=0)fieldError(amountFields[blankIndex],"请把 4 只基金的当前金额全部填写完整。");
-
-  const confirmed=amountFields.map(field=>centsFromField(field));
-  const pending=pendingFields.map(field=>centsFromField(field,true));
-  const effective=confirmed.map((amount,i)=>amount+pending[i]);
-  const total=sum(effective);
-  const negativeIndex=confirmed.findIndex(amount=>amount<0);
-  if(negativeIndex>=0)fieldError(amountFields[negativeIndex],"当前持仓不能为负数。");
-  const overdrawnIndex=effective.findIndex(amount=>amount<0);
-  if(overdrawnIndex>=0)fieldError(pendingFields[overdrawnIndex],"在途卖出不能超过对应基金的当前持仓。");
-  if(total<=0)fieldError(amountFields[0],"预计当前总资产必须大于 0。");
-  if(!Number.isSafeInteger(total*DEN))fieldError(amountFields[0],"金额超出精确计算范围。");
-  return {confirmed,pending,effective,values:effective.map(amount=>amount/CENTS_PER_WAN)};
-}
-function holdingsState(){
-  try{return {ok:true,data:readHoldings()}}
-  catch(error){return {ok:false,error}}
-}
-
-function initializeSettingFields(){
-  for(const definition of SETTING_DEFINITIONS){
-    const field=$(definition.id);
-    field.min=definition.min;field.max=definition.max;field.step=definition.step;field.inputMode=definition.inputMode;
-  }
-  writeSettingValues(DEFAULTS);
-}
-function writeSettingValues(values){
-  for(const {id} of SETTING_DEFINITIONS){const field=$(id);field.value=values[id];clearFieldValidity(field)}
-}
-function readSettings(){
-  const values={};
-  for(const definition of SETTING_DEFINITIONS){
-    const field=$(definition.id),raw=fieldValue(field);
-    if(raw==="")fieldError(field,"请填写全部高级设置。");
-    const value=Number(raw);
-    if(!definition.isValid(value))fieldError(field,definition.error);
-    values[definition.id]=value;
-  }
-  return values;
-}
-function applySettings(values,state){CONFIG={...values};updateBands();updateBandLabels();refreshLive(state)}
-
-function createNode(tag,className,html){const node=document.createElement(tag);node.className=className;node.innerHTML=html;return node}
-function renderFunds(){
-  const body=$("fundBody"),extraBody=$("fundExtraBody");body.innerHTML="";extraBody.innerHTML="";
-  FUNDS.forEach(f=>{
-    const card=createNode("article","fund-card",`<div class="fund-card-head"><div class="fund-meta"><div class="fund">${fundLink(f)}</div><div class="fund-line"><span class="code">${f.code}</span><span class="role">${f.category}</span></div></div><div class="state"><span class="tag neutral">待填写</span></div></div>
-      <div class="fund-main"><label class="amount-label"><span>当前持仓</span><span class="amount-box"><input aria-label="${f.name}当前持仓（万 CNY）" class="amount" type="number" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="0.0001" placeholder="填写金额"><span class="amount-unit">万 CNY</span></span></label><div class="live-weight"><span>当前占比</span><strong class="curw">—</strong><small class="target-label"></small><small class="live-deviation">—</small></div></div>
-      <div class="band-visual" data-band-state="pending"><div class="band-heading"><span class="band-title">再平衡区间</span><span class="band-status">待填写</span></div><div class="band-track" role="img"><span class="band-safe" aria-hidden="true"></span><span class="band-inner-zone" aria-hidden="true"></span><span class="band-inner band-inner-low" aria-hidden="true"></span><span class="band-target" aria-hidden="true"></span><span class="band-inner band-inner-high" aria-hidden="true"></span><span class="band-current" aria-hidden="true" hidden></span></div><div class="band-values"><span class="band-value target"><b>目标比例</b><span class="band-target-value">—</span></span><span class="band-value outer"><b>免调区间</b><span class="band-outer-value">—</span></span><span class="band-value inner"><b>回调位置</b><span class="band-inner-value">—</span></span></div><div class="band-explanation">填写完整持仓后显示当前位置。</div></div>`);
-    const extra=createNode("div","fund-extra-card",`<div class="extra-head">${f.displayName}<span class="code">${f.code}</span></div><div class="extra-fields"><label>在途交易（万 CNY）<input aria-label="${f.name}在途交易（万 CNY）" class="pending" type="number" inputmode="decimal" autocomplete="off" step="0.0001" value="0"></label><label>卖出策略<select aria-label="${f.name}卖出策略" class="sell-policy">${POLICY_OPTIONS}</select></label></div><div class="metric-grid"><div class="metric"><span class="metric-label">目标金额</span><span class="metric-value target-amount"></span></div><div class="metric"><span class="metric-label">免调范围</span><span class="metric-value outer-range"></span></div><div class="metric distance-metric"><span class="metric-label">距边界</span><span class="metric-value distance">—</span></div></div>`);
-    body.appendChild(card);extraBody.appendChild(extra);
-  });
-  renderStaticFundInfo();
-  updateBandLabels();
-}
-function renderStaticFundInfo(){
-  $("targetSummary").textContent=`目标比例：${FUNDS.map(f=>compactNumber(f.targetW*100)+"%").join(" / ")}。`;
-}
-function bandPercent(value){return fmt(value*100,2)+"%"}
-function bandPositionMap({current,target,low,high,innerLow,innerHigh}){
-  const bandWidth=Math.max(high-low,1e-8),points=[low,high,target];if(current!==null)points.push(current);
-  const minimum=Math.min(...points),maximum=Math.max(...points),padding=bandWidth*.55;
-  let domainLow=Math.max(0,minimum-padding),domainHigh=Math.min(1,maximum+padding);
-  if(domainHigh-domainLow<bandWidth*1.1){domainLow=Math.max(0,low-padding);domainHigh=Math.min(1,high+padding)}
-  const span=Math.max(domainHigh-domainLow,1e-8),position=value=>Math.max(0,Math.min(100,(value-domainLow)/span*100));
-  return {current:current===null?null:position(current),target:position(target),low:position(low),high:position(high),innerLow:position(innerLow),innerHigh:position(innerHigh)};
-}
-function renderBand(card,fundIndex,values,state="pending",explanation="填写完整持仓后显示当前位置与是否越界。",cents=null){
-  const visual=card.querySelector(".band-visual"),track=visual.querySelector(".band-track"),positions=bandPositionMap(values);
-  const place=(selector,left,width=null)=>{const node=visual.querySelector(selector);node.style.left=left+"%";if(width!==null)node.style.width=Math.max(0,width)+"%"};
-  place(".band-safe",positions.low,positions.high-positions.low);place(".band-inner-zone",positions.innerLow,positions.innerHigh-positions.innerLow);
-  place(".band-inner-low",positions.innerLow);place(".band-target",positions.target);place(".band-inner-high",positions.innerHigh);
-  const current=visual.querySelector(".band-current");current.hidden=positions.current===null;current.className="band-current"+(state==="pending"?"":" "+state);if(positions.current!==null)current.style.left=positions.current+"%";
-  visual.dataset.bandState=state;visual.querySelector(".band-status").textContent=state==="under"?"低配":state==="over"?"高配":state==="ok"?"正常范围":"待填写";
-  visual.querySelector(".band-target-value").textContent=bandPercent(values.target);
-  visual.querySelector(".band-outer-value").textContent=`${bandPercent(values.low)}～${bandPercent(values.high)}`;
-  visual.querySelector(".band-inner-value").textContent=`${bandPercent(values.innerLow)}／${bandPercent(values.innerHigh)}`;
-  visual.querySelector(".band-explanation").textContent=explanation;
-  track.setAttribute("aria-label",`${FUNDS[fundIndex].displayName}再平衡区间：${positions.current===null?"当前占比待填写":`当前 ${bandPercent(values.current)}，`}目标 ${bandPercent(values.target)}，免调范围 ${bandPercent(values.low)} 至 ${bandPercent(values.high)}，越界后回调位置 ${bandPercent(values.innerLow)} 或 ${bandPercent(values.innerHigh)}，状态${visual.querySelector(".band-status").textContent}`);
-  for(const key of ["outerLowCents","outerHighCents","innerLowCents","innerHighCents","targetCents","currentCents"])delete visual.dataset[key];
-  if(cents)Object.entries(cents).forEach(([key,value])=>visual.dataset[key]=String(value));
-}
-function updateBandLabels(){
-  $("bandHelp").innerHTML=FUNDS.map(f=>`<dt>${f.code}</dt><dd>目标 ${compactNumber(f.targetW*100)}%，${compactNumber(f.outerLow*100)}%～${compactNumber(f.outerHigh*100)}% 内不调整。</dd>`).join("");
-  [...$("fundBody").querySelectorAll(".fund-card")].forEach((card,i)=>{
-    const fund=FUNDS[i];card.querySelector(".target-label").textContent=`目标 ${fmt(fund.targetW*100)}%`;
-    renderBand(card,i,{current:null,target:fund.targetW,low:fund.outerLow,high:fund.outerHigh,innerLow:fund.innerLow,innerHigh:fund.innerHigh});
-  });
-  [...$("fundExtraBody").querySelectorAll(".fund-extra-card")].forEach((card,i)=>{
-    card.querySelector(".target-amount").textContent=`${fmt(FUNDS[i].targetW*100)}%`;
-    card.querySelector(".outer-range").textContent=`${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%`;
-  });
-  $("outerRule").textContent=`免调范围：${compactNumber(CONFIG.absoluteBandPP)} / ${compactNumber(CONFIG.relativeBandPct)} 规则`;
-  $("innerRule").textContent=`越界后：回调偏差的 ${compactNumber(CONFIG.landingPct)}%`;
-}
-function resetLiveCards(cards,extras){
-  updateBandLabels();
-  cards.forEach(card=>{card.querySelector(".curw").textContent="—";card.querySelector(".live-deviation").textContent="—";card.querySelector(".state").innerHTML='<span class="tag neutral">待填写</span>'});
-  extras.forEach(card=>card.querySelector(".distance").textContent="—");
-}
-function refreshLive(state=holdingsState()){
-  document.body.classList.toggle("dock-ready",state.ok);
-  const cards=[...$("fundBody").querySelectorAll(".fund-card")],extras=[...$("fundExtraBody").querySelectorAll(".fund-extra-card")];
-  if(!state.ok){resetLiveCards(cards,extras);return}
-  const holdings=state.data,total=sum(holdings.effective),breaches=outerBreaches(holdings.effective),targets=targetCents(total),limits=bounds(total);
-  cards.forEach((card,i)=>{
-    const {low,high,innerLow,innerHigh}=limits[i],amount=holdings.effective[i],extra=extras[i];
-    extra.querySelector(".target-amount").innerHTML=`${wanMoney(targets[i])}<div class="code">${fmt(FUNDS[i].targetW*100)}%</div>`;
-    extra.querySelector(".outer-range").innerHTML=`${wanMoney(low)} ～ ${wanMoney(high)}<div class="code">${fmt(FUNDS[i].outerLow*100)}% ～ ${fmt(FUNDS[i].outerHigh*100)}%</div>`;
-    const currentWeight=amount/total,deviation=(currentWeight-FUNDS[i].targetW)*100;
-    card.querySelector(".curw").textContent=fmt(currentWeight*100)+"%";
-    card.querySelector(".live-deviation").textContent=Math.abs(deviation)<.005?"偏离 0.00 个百分点":`${deviation>0?"高配":"低配"} ${fmt(Math.abs(deviation))} 个百分点`;
-    const distance=extra.querySelector(".distance");
-    if(amount<low)distance.textContent="低于下限 "+wanMoney(low-amount);
-    else if(amount>high)distance.textContent="高于上限 "+wanMoney(amount-high);
-    else distance.textContent=amount-low<=high-amount?"距下限 "+wanMoney(amount-low):"距上限 "+wanMoney(high-amount);
-    card.querySelector(".state").innerHTML=breaches[i]?`<span class="tag bad">${amount<low?"低配":"高配"}越界</span>`:'<span class="tag ok">范围内</span>';
-    const bandState=amount<low?"under":amount>high?"over":"ok";
-    const explanation=bandState==="under"?`已低于免调下限；越界后回调至 ${bandPercent(innerLow/total)}，而非目标。`:bandState==="over"?`已高于免调上限；越界后回调至 ${bandPercent(innerHigh/total)}，而非目标。`:"当前位于免调范围内，不调整。";
-    renderBand(card,i,{current:amount/total,target:targets[i]/total,low:low/total,high:high/total,innerLow:innerLow/total,innerHigh:innerHigh/total},bandState,explanation,{outerLowCents:low,outerHighCents:high,innerLowCents:innerLow,innerHighCents:innerHigh,targetCents:targets[i],currentCents:amount});
-  });
-}
-
-function emptyRow(bodyId,colspan,message){
-  const body=$(bodyId);body.innerHTML="";
-  const row=document.createElement("tr"),cell=document.createElement("td");
-  cell.colSpan=colspan;cell.className="empty";cell.textContent=message;row.appendChild(cell);body.appendChild(row);
-}
-function invalidateResults(message="数据已变化，请重新点击“生成建议”。"){
-  emptyRow("comparisonBody",4,message);emptyRow("resultBody",6,message);emptyRow("detailBody",7,message);$("postBandBody").innerHTML="";
-  SUMMARY_IDS.forEach(id=>$(id).textContent="—");
-  ["quickTotal","quickDecision","quickDeviation","quickCount","balanceBuy","balanceSell","quickFlow","quickTurnover"].forEach(id=>$(id).textContent="—");
-  $("quickDecision").className="v";$("verdictKpi").className="verdict-kpi";$("quickDeviationMeta").textContent="";$("actionPills").innerHTML="";$("balanceEquation").textContent="买入合计 − 卖出合计 = 外部资金流";$("balanceEquation").closest(".balance-summary").removeAttribute("data-buy-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-sell-cents");$("balanceEquation").closest(".balance-summary").removeAttribute("data-flow-cents");
-  $("summaryHeadline").textContent="生成建议后显示执行摘要";$("status").innerHTML="";$("execNote").innerHTML="";$("execNote").hidden=true;$("resultsCard").classList.add("empty");$("emptyResults").hidden=false;
-  copyPlanText="";$("copyPlan").disabled=true;$("copyPlan").textContent="复制执行方案";$("copyStatus").textContent="";$("manualCopy").value="";$("manualCopy").hidden=true;
-}
-function tradeClass(amount){return amount>0?"buy":amount<0?"sell":"hold"}
-function tradeText(amount){return amount>0?"买入 "+money(amount):amount<0?"卖出 "+money(-amount):"不操作"}
-function appendRow(bodyId,html){const row=document.createElement("tr");row.innerHTML=html;$(bodyId).appendChild(row)}
-function showStatus(type,text){const box=document.createElement("div");box.className="statusbox "+type;box.textContent=text;$("status").appendChild(box);$("emptyResults").hidden=true}
-function scrollElementIntoView(element){
-  if(!element||typeof element.scrollIntoView!=="function")return;
-  const reduced=typeof window!=="undefined"&&typeof window.matchMedia==="function"&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  element.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
-}
-function revealField(field,message){
-  if(!field)return;
-  const parent=typeof field.closest==="function"?field.closest("details"):null;if(parent)parent.open=true;
-  if(typeof field.setCustomValidity==="function"){field.setCustomValidity(message);if(typeof field.reportValidity==="function")field.reportValidity()}
-  if(typeof field.focus==="function")field.focus({preventScroll:true});scrollElementIntoView(field);
-}
-function showInputError(error){showStatus("warn",error.message);revealField(error.field,error.message)}
-
-function executionStats(plan){
-  const buys=sum(plan.totalTrades.filter(amount=>amount>0)),sells=-sum(plan.totalTrades.filter(amount=>amount<0)),count=plan.totalTrades.filter(Boolean).length;
-  const deviations=plan.amounts.map((amount,i)=>amount/plan.currentTotal-FUNDS[i].targetW),maxIndex=indices().reduce((best,i)=>Math.abs(deviations[i])>Math.abs(deviations[best])?i:best,0);
-  return {buys,sells,count,deviations,maxIndex,maxDeviation:Math.abs(deviations[maxIndex])*100};
-}
-function renderSummary(plan,breachCount){
-  const stats=executionStats(plan);
-  const values={
-    sCurrent:money(plan.currentTotal),sAfter:money(plan.afterTotal),sBreach:String(breachCount),sTurnover:money(plan.internalTurnover),
-    sBuy:money(stats.buys),sSell:money(stats.sells)
-  };
-  Object.entries(values).forEach(([id,value])=>$(id).textContent=value);
-}
-function externalFlowText(plan){return plan.flow>0?"新增 "+money(plan.flow):plan.flow<0?"取出 "+money(-plan.flow):"无"}
-function signedMoney(amount){return amount>0?"+ "+money(amount):amount<0?"− "+money(-amount):money(0)}
-function renderExecutionSummary(plan){
-  const stats=executionStats(plan),{buys,sells,count}=stats;
-  let headline;
-  if(!plan.flow&&!plan.internalTurnover&&!count)headline="无需买卖，资金变动与基金间转换均为零。";
-  else{
-    const parts=[plan.flow>0?`新增 ${money(plan.flow)}`:plan.flow<0?`取出 ${money(-plan.flow)}`:"无资金变动"];
-    parts.push(plan.internalTurnover?`基金间转换 ${money(plan.internalTurnover)}`:"无基金间转换");
-    headline=parts.join("，")+"。";
-  }
-  const deviation=stats.deviations[stats.maxIndex],decision=$("quickDecision");
-  $("summaryHeadline").textContent=headline;$("quickTotal").textContent=money(plan.currentTotal);decision.textContent=count?"需要操作":"无需操作";decision.className="v "+(count?"need":"none");$("verdictKpi").className="verdict-kpi "+(count?"needs-action":"no-action");
-  $("quickDeviation").textContent=fmt(stats.maxDeviation,2)+" 个百分点";$("quickDeviationMeta").textContent=stats.maxDeviation<.005?"全部位于目标附近":`${FUNDS[stats.maxIndex].code} ${deviation>0?"高配":"低配"}`;$("quickCount").textContent=count+" 笔";
-  $("balanceBuy").textContent=money(buys);$("balanceSell").textContent=money(sells);$("quickFlow").textContent=externalFlowText(plan);$("quickTurnover").textContent=money(plan.internalTurnover);
-  $("balanceEquation").textContent=`${money(buys)} − ${money(sells)} = ${signedMoney(plan.flow)}`;
-  const balance=$("balanceEquation").closest(".balance-summary");balance.dataset.buyCents=String(buys);balance.dataset.sellCents=String(sells);balance.dataset.flowCents=String(plan.flow);
-}
-function postBandPositionMap({before,after,target,low,high}){
-  const bandWidth=high-low,points=[low,high,target,before,after],padding=bandWidth*.55;
-  let domainLow=Math.max(0,Math.min(...points)-padding),domainHigh=Math.min(1,Math.max(...points)+padding);
-  const span=Math.max(domainHigh-domainLow,1e-8),position=value=>Math.max(0,Math.min(100,(value-domainLow)/span*100));
-  return {before:position(before),after:position(after),target:position(target),low:position(low),high:position(high)};
-}
-function renderPostBands(plan){
-  const body=$("postBandBody"),limits=bounds(plan.afterTotal);body.innerHTML="";
-  FUNDS.forEach((fund,i)=>{
-    const before=plan.amounts[i]/plan.currentTotal,after=plan.final[i]/plan.afterTotal,low=limits[i].low/plan.afterTotal,high=limits[i].high/plan.afterTotal;
-    const positions=postBandPositionMap({before,after,target:fund.targetW,low,high});
-    const state=plan.final[i]<limits[i].low?"under":plan.final[i]>limits[i].high?"over":"ok";
-    const stateText=state==="under"?"，低于免调区间":state==="over"?"，高于免调区间":"，位于免调区间内";
-    const row=createNode("div","post-band-row",`<span class="pb-fund">${fund.displayName}</span><div class="post-band" aria-hidden="true"><span class="pb-safe" aria-hidden="true"></span><span class="pb-target" aria-hidden="true"></span><span class="pb-before" aria-hidden="true"></span><span class="pb-after" aria-hidden="true"></span></div><span class="pb-numbers"><span class="pb-values">${fmt(before*100,2)}% → ${fmt(after*100,2)}%</span><span class="sr-only">${stateText}</span></span>`);
-    row.dataset.bandState=state;row.dataset.finalCents=String(plan.final[i]);row.dataset.lowCents=String(limits[i].low);row.dataset.highCents=String(limits[i].high);
-    const place=(selector,left,width=null)=>{const node=row.querySelector(selector);node.style.left=left+"%";if(width!==null)node.style.width=Math.max(0,width)+"%"};
-    place(".pb-safe",positions.low,positions.high-positions.low);place(".pb-target",positions.target);place(".pb-before",positions.before);place(".pb-after",positions.after);
-    body.appendChild(row);
-  });
-}
-function renderComparison(plan){
-  $("comparisonBody").innerHTML="";renderPostBands(plan);
-  FUNDS.forEach((fund,i)=>appendRow("comparisonBody",`<td class="comparison-fund"><div>${fund.displayName}</div><div class="code">${fund.code}</div></td><td class="before-weight" data-label="调整前">${fmt(plan.amounts[i]/plan.currentTotal*100,2)}%</td><td class="target-weight" data-label="目标">${fmt(fund.targetW*100,2)}%</td><td class="after-weight" data-label="调整后">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td>`));
-}
-function renderActionPills(plan){
-  const container=$("actionPills");container.innerHTML="";
-  plan.totalTrades.forEach((trade,i)=>{
-    if(!trade)return;
-    const pill=document.createElement("span");pill.className="action-pill "+tradeClass(trade);
-    const code=document.createElement("strong");code.textContent=FUNDS[i].code;const action=document.createElement("span");action.textContent=tradeText(trade);
-    pill.appendChild(code);pill.appendChild(action);container.appendChild(pill);
-  });
-}
-// Explanations consume only decisions already returned by computePlan; they do
-// not reproduce threshold, allocation, or rounding rules in the UI layer.
-function adjustmentReason(plan,i){
-  const trade=plan.totalTrades[i],flowPart=plan.flowTrades[i],internalPart=plan.internal[i],rounding=plan.rounding[i];
-  if(plan.force)return trade?`按目标比例调整，${trade>0?"买入":"卖出"}至目标附近。`:"已在目标附近，无需操作。";
-  if(!trade){
-    if(plan.rawTotalTrades[i])return"建议金额经取整与小额合并后无需下单。";
-    if(flowPart||internalPart)return"资金分配与基金间转换相抵，最终无需操作。";
-    return plan.flow?"资金分配后位于免调范围内，无需操作。":"当前位于免调范围内，无需操作。";
-  }
-  const reasons=[];
-  if(flowPart)reasons.push(plan.flow>0?"新增资金分配买入":"取出资金分配卖出");
-  if(internalPart){
-    const action=internalPart>0?"买入":"卖出";
-    reasons.push(plan.postFlowBreaches[i]?`资金分配后仍越界，参与基金间转换${action}`:`为配平越界基金，参与基金间转换${action}`);
-  }
-  if(!flowPart&&!internalPart)reasons.push(`取整配平产生${trade>0?"买入":"卖出"}`);
-  if(rounding)reasons.push("最终金额已按执行单位取整");
-  return reasons.join("；")+"。";
-}
-function renderPlanStatus(plan,force,breachCount){
-  let type,verdict,detail;
-  if(force){type="warn";verdict="已按目标比例调整";detail="本次忽略免调范围，已按执行单位取整并调整到目标附近。";}
-  else if(!breachCount){
-    type="ok";verdict="无需调整";
-    detail=plan.flow?"本次资金已完成纠偏，无需基金间转换。":"当前持仓均在免调范围内，无需调整。";
-  }else{
-    type="warn";verdict="需要调整";
-    detail="资金分配后仍有基金越界："+FUNDS.filter((_,i)=>plan.postFlowBreaches[i]).map(f=>f.code).join("、")+"，已按最小换手原则调整至安全区间。";
-  }
-  const box=document.createElement("div");box.className="statusbox "+type;
-  box.innerHTML=`<strong class="status-verdict">${verdict}</strong><span class="status-detail">${detail}</span>`;
-  $("status").appendChild(box);
-}
-function renderPlanRows(plan,holdings,policies){
-  $("resultBody").innerHTML="";$("detailBody").innerHTML="";
-  FUNDS.forEach((fund,i)=>{
-    const policy=SELL_POLICIES[policies[i]],trade=plan.totalTrades[i];
-    appendRow("resultBody",`<td class="fund-cell"><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td data-label="操作" class="trade-cell ${tradeClass(trade)}">${tradeText(trade)}</td><td data-label="调整后金额">${money(plan.final[i])}</td><td data-label="调整后占比">${fmt(plan.final[i]/plan.afterTotal*100,2)}%</td><td class="policy-result" data-label="卖出策略"><span class="tag ${policy.tagClass}">${policy.resultLabel}</span></td><td class="reason-cell" data-label="原因">${adjustmentReason(plan,i)}</td>`);
-    const rounding=plan.rounding[i]?((plan.rounding[i]>0?"增加 ":"减少 ")+money(Math.abs(plan.rounding[i]))):"无";
-    appendRow("detailBody",`<td><div class="fund">${fundLink(fund)}</div><div class="code">${fund.code}</div></td><td>${money(holdings.confirmed[i])}</td><td class="${tradeClass(holdings.pending[i])}">${tradeText(holdings.pending[i])}</td><td class="${tradeClass(plan.flowTrades[i])}">${tradeText(plan.flowTrades[i])}</td><td class="${tradeClass(plan.internal[i])}">${tradeText(plan.internal[i])}</td><td class="${tradeClass(plan.rounding[i])}">${rounding}</td><td class="${tradeClass(trade)}">${tradeText(trade)}</td>`);
-  });
-}
-function renderExecutionNote(plan){
-  const notes=[];
-  if(plan.flow>0)notes.push({kind:"inflow",text:"本次新增资金已优先用于拉近当前配置与目标配置的差距。"});
-  if(plan.totalTrades.some(amount=>amount<0))notes.push({kind:"redemption",text:"存在卖出操作，请执行前核对持有期和赎回费。"});
-  if(plan.rawTotalTrades.some((amount,i)=>amount&&!plan.totalTrades[i]))notes.push({kind:"small-merged",text:"部分零碎建议经取整或小额合并后已取消，无需单独下单。"});
-  if(plan.smallRequired.length)notes.push({kind:"small-required",text:"低于小额交易阈值的必要交易会保留，以处理尾差或防止越界。"});
-  if(plan.rounding.some(Boolean))notes.push({kind:"rounding",text:`建议金额已按 ${compactNumber(CONFIG.roundYuan)} CNY 取整。`});
-  const note=$("execNote");note.innerHTML="";note.hidden=!notes.length;if(!notes.length)return;
-  const title=createNode("div","exec-note-title","执行提示"),list=document.createElement("ul");note.appendChild(title);note.appendChild(list);
-  notes.forEach(({kind,text})=>{const item=document.createElement("li");item.dataset.note=kind;item.textContent=text;list.appendChild(item)});
-}
-function buildCopyText(plan){
-  const lines=["债基再平衡执行方案",`资金变动：${externalFlowText(plan)}`,`基金间转换：${money(plan.internalTurnover)}`,""];
-  FUNDS.forEach((fund,i)=>lines.push(`${fund.code} ${fund.displayName}：${tradeText(plan.totalTrades[i])}`));
-  lines.push("","调整前后（调整前 / 目标 / 调整后）");
-  FUNDS.forEach((fund,i)=>lines.push(`${fund.code}：${fmt(plan.amounts[i]/plan.currentTotal*100,2)}% / ${fmt(fund.targetW*100,2)}% / ${fmt(plan.final[i]/plan.afterTotal*100,2)}%`));
-  return lines.join("\n");
-}
-let copyPlanText="",copyResetTimer;
-async function writeClipboard(text){
-  if(typeof navigator!=="undefined"&&navigator.clipboard?.writeText){try{await navigator.clipboard.writeText(text);return}catch{}}
-  const field=document.createElement("textarea");field.value=text;field.setAttribute("readonly","");field.style.position="fixed";field.style.left="-9999px";field.style.top="0";document.body.appendChild(field);field.focus();field.select();field.setSelectionRange(0,field.value.length);
-  const copied=document.execCommand&&document.execCommand("copy");field.remove();if(!copied)throw new Error("copy failed");
-}
-function revealManualCopy(text){const field=$("manualCopy");field.value=text;field.hidden=false;field.focus();field.select();field.setSelectionRange(0,field.value.length)}
-async function copyPlan(){
-  if(!copyPlanText)return;
-  const button=$("copyPlan");clearTimeout(copyResetTimer);
-  try{await writeClipboard(copyPlanText);button.textContent="已复制";$("copyStatus").textContent="已复制到剪贴板"}
-  catch{revealManualCopy(copyPlanText);button.textContent="已选中方案";$("copyStatus").textContent="自动复制失败，请复制下方内容"}
-  copyResetTimer=setTimeout(()=>{button.textContent="复制执行方案";$("copyStatus").textContent=""},1800);
-}
-
-function evaluate(force=false){
-  invalidateResults("尚未生成有效建议，请检查输入后重新计算。");
-  const state=holdingsState();if(!state.ok){showInputError(state.error);return}
-  try{applySettings(readSettings(),state)}catch(error){showInputError(error);return}
-  const cash=$("cashFlow");if(cash.validity?.badInput){const message="资金变动请输入有效数字。";showStatus("warn",message);revealField(cash,message);return}
-
-  const holdings=state.data,policies=normalizePolicies(readPolicies());let plan;
-  try{plan=computePlan(holdings.values,fieldValue(cash)||0,force,{sellPolicies:policies})}
-  catch(error){showStatus("bad","计算检查未通过："+error.message);scrollElementIntoView($("resultsCard"));return}
-
-  const breachCount=plan.postFlowBreaches.filter(Boolean).length;
-  renderSummary(plan,breachCount);renderExecutionSummary(plan);renderPlanStatus(plan,force,breachCount);renderActionPills(plan);renderComparison(plan);
-  renderPlanRows(plan,holdings,policies);renderExecutionNote(plan);copyPlanText=buildCopyText(plan);$("copyPlan").disabled=false;$("resultsCard").classList.remove("empty");scrollElementIntoView($("resultsCard"));
-}
-
-function setFieldValues(selector,value){$$(selector).forEach(field=>{field.value=value;clearFieldValidity(field)})}
-function clearAll(){
-  if(typeof confirm==="function"&&!confirm("确定清空当前输入吗？"))return;
-  setFieldValues(".amount","");setFieldValues(".pending",0);setFieldValues(".sell-policy","normal");$("cashFlow").value=0;clearFieldValidity($("cashFlow"));
-  invalidateResults("填写 4 项当前持仓后点击“生成建议”。");refreshLive();
-  const first=$$(".amount")[0];if(first&&typeof first.focus==="function")first.focus();
-}
-function restoreDefaults(){writeSettingValues(DEFAULTS);applySettings(readSettings());invalidateResults("参数已恢复默认值，请重新点击“生成建议”。")}
-
-function bindMainInputFlow(){
-  const sequence=[...$$(".amount"),$("cashFlow")];
-  sequence.forEach((field,i)=>field.addEventListener("keydown",event=>{
-    if(event.key!=="Enter")return;if(typeof event.preventDefault==="function")event.preventDefault();
-    if(i<sequence.length-1&&typeof sequence[i+1].focus==="function")sequence[i+1].focus();else{if(typeof field.blur==="function")field.blur();evaluate(false)}
-  }));
-}
-function bindEvents(){
-  $$(".amount,.pending").forEach(field=>field.addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults();refreshLive()}));
-  $$(".sell-policy").forEach(field=>field.addEventListener("change",()=>invalidateResults()));
-  $$(".setting").forEach(field=>field.addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults();try{applySettings(readSettings())}catch{}}));
-  $("cashFlow").addEventListener("input",event=>{clearFieldValidity(event.currentTarget||event.target);invalidateResults()});
-  $("check").addEventListener("click",()=>evaluate(false));$("force").addEventListener("click",()=>evaluate(true));$("copyPlan").addEventListener("click",copyPlan);
-  $("clear").addEventListener("click",clearAll);$("restoreDefaults").addEventListener("click",restoreDefaults);
-  $("refreshVersion").addEventListener("click",refreshVersion);
-  bindMainInputFlow();
-}
-
-let viewportBaseline=typeof window!=="undefined"&&window.visualViewport?window.visualViewport.height:0;
-function syncKeyboardState(){
-  if(typeof window==="undefined"||!window.visualViewport||!document.body)return;
-  const focused=typeof document.activeElement?.matches==="function"&&document.activeElement.matches("input,select");
-  if(!focused)viewportBaseline=window.visualViewport.height;
-  document.body.classList.toggle("keyboard-open",focused&&window.visualViewport.height<viewportBaseline-120);
-}
-function bindViewportEvents(){
-  if(typeof window==="undefined"||!window.visualViewport||typeof document.addEventListener!=="function")return;
-  window.visualViewport.addEventListener("resize",syncKeyboardState);window.visualViewport.addEventListener("scroll",syncKeyboardState);
-  document.addEventListener("focusin",syncKeyboardState);document.addEventListener("focusout",()=>setTimeout(syncKeyboardState,0));
-}
-function registerServiceWorker(){
-  if(typeof window!=="undefined"&&typeof navigator!=="undefined"&&"serviceWorker" in navigator)
-    window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{}));
-}
-let deferredInstallPrompt=null;
-function isStandalone(){return (typeof window!=="undefined"&&typeof window.matchMedia==="function"&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true}
-function isIOSDevice(){return /iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)}
-function closeInstallGuide(){$("installGuide").hidden=true;$("installApp").setAttribute("aria-expanded","false")}
-function hideInstallEntry(){deferredInstallPrompt=null;$("installApp").hidden=true;$("installSeparator").hidden=true;closeInstallGuide()}
-function showInstallEntry(label){const button=$("installApp");button.textContent=label;button.hidden=false;$("installSeparator").hidden=false}
-async function installApp(){
-  if(isStandalone()){hideInstallEntry();return}
-  if(deferredInstallPrompt){
-    const prompt=deferredInstallPrompt;deferredInstallPrompt=null;
-    try{await prompt.prompt();await prompt.userChoice}catch{}
-    hideInstallEntry();
-    return;
-  }
-  if(isIOSDevice()){const guide=$("installGuide");guide.hidden=false;$("installApp").setAttribute("aria-expanded","true")}
-}
-function bindInstallExperience(){
-  if(isStandalone()){hideInstallEntry();return}
-  if(isIOSDevice())showInstallEntry("添加到桌面");
-  window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredInstallPrompt=event;showInstallEntry("安装应用")});
-  window.addEventListener("appinstalled",hideInstallEntry);$("installApp").addEventListener("click",installApp);$("closeInstallGuide").addEventListener("click",closeInstallGuide);
-}
-function setRefreshButton(text,disabled=false){const button=$("refreshVersion");button.textContent=text;button.disabled=disabled}
-function restoreRefreshButton(){setTimeout(()=>setRefreshButton("刷新版本"),1600)}
-function waitForServiceWorker(worker){
-  if(!worker||worker.state==="activated"||worker.state==="redundant")return Promise.resolve();
-  return new Promise(resolve=>{
-    const finish=()=>{clearTimeout(timeout);worker.removeEventListener("statechange",onStateChange);resolve()};
-    const onStateChange=()=>{
-      if(worker.state==="installed")worker.postMessage({type:"SKIP_WAITING"});
-      if(worker.state==="activated"||worker.state==="redundant")finish();
-    };
-    const timeout=setTimeout(finish,8000);worker.addEventListener("statechange",onStateChange);onStateChange();
-  });
-}
-async function refreshVersion(){
-  if(typeof navigator==="undefined"||!("serviceWorker" in navigator)){window.location.reload();return}
-  if(navigator.onLine===false){setRefreshButton("当前离线",true);restoreRefreshButton();return}
-  setRefreshButton("正在刷新…",true);
-  try{
-    let registration=await navigator.serviceWorker.getRegistration("./");
-    if(registration)await registration.update();
-    else registration=await navigator.serviceWorker.register("./service-worker.js",{scope:"./"});
-    await waitForServiceWorker(registration.installing||registration.waiting);
-    window.location.reload();
-  }catch{setRefreshButton("刷新失败",true);restoreRefreshButton()}
-}
-
-initializeSettingFields();renderFunds();bindThemeControl();bindWorkspaceNavigation();bindEvents();bindViewportEvents();bindInstallExperience();refreshLive();registerServiceWorker();
-</script>
-</body>
+    <script type="module" src="./src/app.js"></script>
+  </body>
 </html>
