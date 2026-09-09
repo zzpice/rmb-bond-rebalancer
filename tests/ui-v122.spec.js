@@ -23,20 +23,20 @@ test.describe("v1.2.2 文案与基金命名", () => {
 
   test("核心操作与结果区使用精简后的措辞", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("#clear")).toHaveText("清空输入");
-    await expect(page.locator("#force")).toHaveText("按目标比例调整");
-    await expect(page.locator(".force-hint")).toHaveText("忽略免调范围，直接回到目标附近");
-    await expect(page.locator("#resultsCard > h2")).toHaveText("3. 执行建议");
-    await expect(page.locator(".comparison-title h3")).toHaveText("调整前后");
+    await expect(page.locator("#clear")).toHaveText("清空");
+    await expect(page.locator("#force")).toHaveText("按目标调整");
+    await expect(page.locator(".force-hint")).toBeHidden();
+    await expect(page.locator("#resultsCard .table-header h2")).toHaveText("结果");
+    await expect(page.locator(".comparison-title h3")).toHaveText("配置");
   });
 
   test("卖出设置与高级设置使用更准确的名称", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator(".special-panel > summary")).toHaveText("在途交易与卖出设置");
+    await expect(page.locator(".special-panel > summary")).toHaveText("在途与卖出");
     await page.locator(".special-panel > summary").click();
     await expect(page.locator(".sell-policy").first()).toHaveAccessibleName(/卖出策略/);
     await page.locator("details.card > summary", { hasText: "高级设置" }).click();
-    await expect(page.locator("label[for='landingPct']")).toHaveText("越界后回调比例（%）");
-    await expect(page.locator("label[for='minTradeYuan']")).toHaveText("小额交易阈值（CNY）");
+    await expect(page.locator("label[for='landingPct']")).toHaveText("回调比例（%）");
+    await expect(page.locator("label[for='minTradeYuan']")).toHaveText("小额阈值（CNY）");
   });
 });

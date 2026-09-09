@@ -239,7 +239,8 @@ test("手机端结果卡片不造成整页横向滚动", async ({ page }) => {
   expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.viewport);
   expect(dimensions.bodyWidth).toBeLessThanOrEqual(dimensions.viewport);
   await expect(page.locator("#comparisonBody tr").first()).toBeVisible();
-  await expect(page.locator("#resultBody .reason-cell").first()).toBeVisible();
+  await expect(page.locator("#resultBody .reason-cell").first()).toBeHidden();
+  await expect(page.locator("#resultBody .trade-cell").first()).toBeVisible();
   expect((await page.locator("#copyPlan").boundingBox()).height).toBeGreaterThanOrEqual(44);
 });
 

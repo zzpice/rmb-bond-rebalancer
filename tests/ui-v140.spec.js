@@ -26,7 +26,8 @@ test.describe("v1.4.0 单页工作台导航", () => {
     const toolbar = page.locator(".workspace-toolbar");
     await expect(sidebar).toBeVisible();
     await expect(page.locator(".mobile-tabs")).toBeHidden();
-    expect((await sidebar.boundingBox()).width).toBeLessThanOrEqual(220);
+    expect((await sidebar.boundingBox()).width).toBeGreaterThanOrEqual(260);
+    expect((await sidebar.boundingBox()).width).toBeLessThanOrEqual(266);
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0 });
     await generate(page);
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
@@ -170,7 +171,7 @@ test.describe("v1.4.0 外观偏好", () => {
     await page.goto("/");
     await page.locator("#themeMode").selectOption("dark");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#0d111a");
+    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#111827");
     await page.locator(".amount").first().fill("48");
     await page.reload();
     await expect(page.locator("#themeMode")).toHaveValue("dark");
@@ -178,7 +179,7 @@ test.describe("v1.4.0 外观偏好", () => {
 
     await page.locator("#themeMode").selectOption("light");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#f4f6fa");
+    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#f8f9ff");
   });
 
   test("跟随系统模式继续响应系统深色设置", async ({ page }) => {
@@ -186,9 +187,9 @@ test.describe("v1.4.0 外观偏好", () => {
     await page.goto("/");
     await page.locator("#themeMode").selectOption("system");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "system");
-    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#0d111a");
+    await expect(page.locator("#themeColor")).toHaveAttribute("content", "#111827");
     const background = await page.locator("body").evaluate(element => getComputedStyle(element).backgroundColor);
-    expect(background).toBe("rgb(13, 17, 26)");
+    expect(background).toBe("rgb(17, 24, 39)");
   });
 });
 

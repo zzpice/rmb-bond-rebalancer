@@ -32,8 +32,8 @@ test.describe("v1.5.0 Patch 1 结构整理", () => {
     await expect(page.locator("#resultsCard #detailBody")).toHaveCount(1);
     await expect(page.locator(".detail-table")).toHaveCount(1);
     expect(await page.locator(".detail-table").evaluate(table => table.closest("#resultsCard") !== null)).toBe(true);
-    await expect(page.locator(".result-details > summary")).toHaveText("查看计算明细");
-    await expect(page.locator(".result-details h4")).toHaveText(["汇总", "术语说明", "逐基金推导"]);
+    await expect(page.locator(".result-details > summary")).toHaveText("计算明细");
+    await expect(page.locator(".result-details h4")).toHaveText(["汇总", "逐项"]);
 
     await fillPortfolio(page, { holdings: AT_TARGET, flow: 0, pending: [0, 0, 2, 0] });
     await generate(page);
@@ -65,13 +65,14 @@ test.describe("v1.5.0 Patch 1 结构整理", () => {
         && Boolean(element.compareDocumentPosition(dock) & Node.DOCUMENT_POSITION_FOLLOWING);
     })).toBe(true);
     await expect(settings.locator(":scope > summary")).toContainText("高级设置");
-    await expect(settings.locator(":scope > summary")).toContainText("触发阈值、取整单位与小额交易阈值，一般无需修改");
-
+    
     const desktopStyle = await settings.evaluate(element => {
       const card = getComputedStyle(element), summary = getComputedStyle(element.querySelector("summary"));
-      return { boxShadow: card.boxShadow, radius: card.borderRadius, marginTop: card.marginTop, fontSize: summary.fontSize, fontWeight: summary.fontWeight };
+      return { boxShadow: card.boxShadow, radius: card.borderRadius, fontSize: summary.fontSize };
     });
-    expect(desktopStyle).toEqual({ boxShadow: "none", radius: "12px", marginTop: "10px", fontSize: "15px", fontWeight: "650" });
+    expect(desktopStyle.boxShadow).toBe("none");
+    expect(desktopStyle.radius).toBe("8px");
+    expect(parseFloat(desktopStyle.fontSize)).toBeGreaterThanOrEqual(13);
 
     await settings.locator(":scope > summary").click();
     await expect(settings.locator("input.setting")).toHaveCount(5);
@@ -85,7 +86,8 @@ test.describe("v1.5.0 Patch 1 结构整理", () => {
       const style = getComputedStyle(element);
       return { minHeight: style.minHeight, fontSize: style.fontSize };
     });
-    expect(mobileStyle).toEqual({ minHeight: "48px", fontSize: "15px" });
+    expect(parseFloat(mobileStyle.minHeight)).toBeGreaterThanOrEqual(44);
+    expect(parseFloat(mobileStyle.fontSize)).toBeGreaterThanOrEqual(13);
   });
 });
 

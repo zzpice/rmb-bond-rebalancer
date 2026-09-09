@@ -27,11 +27,11 @@ test.describe("v1.2.0 操作层级", () => {
   test("清空输入为低权重次级按钮，不再使用红色危险样式", async ({ page }) => {
     await page.goto("/");
     const clear = page.locator("#clear");
-    await expect(clear).toHaveClass(/btn-ghost/);
+    await expect(clear).toHaveClass(/quiet-action/);
     await expect(clear).not.toHaveClass(/text-danger/);
     const color = await clear.evaluate(el => getComputedStyle(el).color);
     expect(color).not.toBe("rgb(215, 0, 21)");
-    await expect(clear).toHaveText("清空输入");
+    await expect(clear).toHaveText("清空");
   });
 });
 
@@ -72,7 +72,7 @@ test.describe("v1.2.0 结果结论与摘要合并", () => {
     await expect(page.locator("#conclusion")).toHaveCount(0);
     await expect(page.locator("#roleSummary")).toHaveCount(0);
     await expect(page.locator("#status .statusbox")).toHaveCount(1);
-    await expect(page.locator("#summaryHeadline")).toBeVisible();
+    await expect(page.locator("#summaryHeadline")).toBeHidden();
   });
 });
 
@@ -95,7 +95,6 @@ test.describe("v1.2.0 百分比与说明", () => {
     await page.goto("/");
     const summary = page.locator("details.card > summary", { hasText: "高级设置" });
     await expect(summary).toContainText("高级设置");
-    await expect(summary).toContainText("触发阈值");
     await expect(page.locator("details.card", { hasText: "高级设置" })).not.toHaveAttribute("open", "");
   });
 
@@ -185,14 +184,11 @@ test.describe("v1.2.0 手机端密度", () => {
 });
 
 test.describe("v1.2.0 手机端 sticky 说明收口", () => {
-  test("sticky 状态只保留两个按钮并隐藏说明，静态状态保留说明", async ({ page }) => {
+  test("手机端操作栏只保留两个按钮，不展示辅助说明", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const hint = page.locator(".action-dock .force-hint");
-    await expect(hint).toHaveText("忽略免调范围，直接回到目标附近");
-    // 未填完四项：静态状态，说明可见
-    await expect(hint).toBeVisible();
-    // 填完四项：进入 sticky 状态，说明隐藏，只保留两个按钮
+    await expect(hint).toBeHidden();
     await fillPortfolio(page, { holdings: [40, 44, 8, 4], flow: 0 });
     await expect(hint).toBeHidden();
     await expect(page.locator(".action-dock #check")).toBeVisible();
@@ -206,8 +202,7 @@ test.describe("v1.2.0 手机端未生成空状态", () => {
     await page.goto("/");
     const empty = page.locator("#emptyResults");
     await expect(empty).toBeVisible();
-    await expect(empty).toContainText("填写 4 项当前持仓后");
-    await expect(empty).toContainText("生成建议");
+    await expect(empty).toHaveText("填写持仓后生成建议");
     await expect(page.locator("#resultsCard .execution-summary")).toBeHidden();
     await expect(page.locator("#resultsCard .block-comparison")).toBeHidden();
     await expect(page.locator("#resultsCard .block-execution")).toBeHidden();
