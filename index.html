@@ -22,7 +22,7 @@
           <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
           <span class="brand-copy">
             <strong>债基再平衡</strong>
-            <small>Version 2.1.0</small>
+            <small>Version 2.1.1</small>
           </span>
         </div>
 
@@ -44,7 +44,7 @@
             <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
           </button>
         </div>
-        <div class="side-meta">本地计算 · 不保存持仓<br />v2.1.0</div>
+        <div class="side-meta">本地计算 · 不保存持仓<br />v2.1.1</div>
       </aside>
 
       <main class="dashboard-main">
@@ -52,7 +52,7 @@
           <div class="mobile-bar-main">
             <div class="brand">
               <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
-              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.1.0</small></span>
+              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.1.1</small></span>
             </div>
             <div class="mobile-actions">
               <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
@@ -202,9 +202,9 @@
                 <div class="bands-list" id="bandsList"></div>
               </article>
               <article class="dashboard-card span-5 rule-copy">
-                <header class="card-header"><div><h3>决策规则</h3><p>v2.1.0 保持统一公式、无状态与最小必要交易。</p></div></header>
+                <header class="card-header"><div><h3>决策规则</h3><p>v2.1.1 保持统一公式、无状态与最小必要交易。</p></div></header>
                 <ol>
-                  <li><span>01</span><div><b>普通再平衡</b><p>外层内不动；任一基金严格越过 5 / 25 外层后，全部基金进入 80% 回调区间，并选择金额守恒下的最小内部换手方案。</p></div></li>
+                  <li><span>01</span><div><b>普通再平衡</b><p>外层内不动；任一基金严格越过 5 / 25 外层后，全部基金进入 80% 回调区间。内部换手取最小值；若最小解不唯一，剩余配平按目标缺口比例分配。</p></div></li>
                   <li><span>02</span><div><b>新增资金</b><p>优先按目标缺口补低配；只有资金流后仍越过外层时，才进入同一 80% 回调区间。</p></div></li>
                   <li><span>03</span><div><b>取出资金</b><p>先利用提款纠正提款前已有高配，再按短债、纯债、固收增强顺序取出；本次不追加内部转换。</p></div></li>
                 </ol>

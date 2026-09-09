@@ -3,7 +3,7 @@
   "name": "债基再平衡助手",
   "short_name": "再平衡助手",
   "description": "输入当前持仓和资金变动，生成清晰、可靠、容易执行的人民币债券基金再平衡方案。",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "lang": "zh-CN",
   "dir": "ltr",
   "start_url": "./",

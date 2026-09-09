@@ -1,5 +1,6 @@
 import {
   FUNDS,
+  VERSION,
   buildBands,
   parseWanAmount,
   snapshot
@@ -336,7 +337,7 @@ async function copyPlan() {
 
 function buildCopyText(plan) {
   const lines = [
-    "债基再平衡方案 v2.1.0",
+    `债基再平衡方案 v${VERSION}`,
     `当前总额：${formatCurrency(plan.currentTotal)}`,
     `资金变动：${formatCurrency(plan.flow, { signed: true })}`,
     ""
