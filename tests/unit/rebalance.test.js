@@ -101,16 +101,16 @@ test("刚越过外层 1 CNY 时进入 80% 回调区间并保持最小换手", ()
   assert.equal(sum(plan.trades), 0);
 });
 
-test("触发后所有资产进入 80% 回调区间，并以最小内部换手配平", () => {
+test("同样最小换手的可行解按剩余目标缺口比例配平", () => {
   const plan = createRebalancePlan({
-    holdings: [653_665, 353_380, 37_559, 155_396],
+    holdings: [650_000, 350_000, 40_000, 160_000],
     flow: 0
   });
 
   assert.deepEqual(plan.breaches, [false, false, true, true]);
-  assert.deepEqual(plan.trades, [-5_665, 0, 101_013, -95_348]);
-  assert.equal(plan.tradeCount, 3);
-  assert.equal(plan.internalTurnover, 101_013);
+  assert.deepEqual(plan.trades, [-2_000, 14_263, 87_689, -99_952]);
+  assert.deepEqual(plan.final, [648_000, 364_263, 127_689, 60_048]);
+  assert.equal(plan.internalTurnover, 101_952);
   assert.equal(plan.internalTurnover, minimumRequiredTurnover(plan));
   plan.final.forEach((amount, index) => {
     assert.ok(amount >= plan.bands[index].reentryLow);

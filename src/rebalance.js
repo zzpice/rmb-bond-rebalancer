@@ -157,28 +157,18 @@ function rebalanceToReentry(values, bands) {
     else if (amount > bands[index].reentryHigh) final[index] = bands[index].reentryHigh;
   });
 
-  let gap = sum(values) - sum(final);
+  const gap = sum(values) - sum(final);
   const direction = Math.sign(gap);
   if (!direction) return final;
 
-  const order = values.map((_, index) => index).sort((a, b) => {
-    const adjustedA = Number(final[a] !== values[a]);
-    const adjustedB = Number(final[b] !== values[b]);
-    if (adjustedA !== adjustedB) return adjustedB - adjustedA;
-    const capacityA = Math.max(0, direction * (bands[a].target - final[a]));
-    const capacityB = Math.max(0, direction * (bands[b].target - final[b]));
-    return capacityB - capacityA || a - b;
+  const capacities = final.map((amount, index) => (
+    Math.max(0, direction * (bands[index].target - amount))
+  ));
+  const allocation = allocateProportionally(capacities, Math.abs(gap));
+  allocation.forEach((amount, index) => {
+    final[index] += direction * amount;
   });
 
-  for (const index of order) {
-    const capacity = Math.max(0, direction * (bands[index].target - final[index]));
-    const amount = Math.min(Math.abs(gap), capacity);
-    final[index] += direction * amount;
-    gap -= direction * amount;
-    if (gap === 0) break;
-  }
-
-  if (gap !== 0) throw new Error("内部再平衡资金未配平。");
   return final;
 }
 
