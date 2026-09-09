@@ -22,16 +22,27 @@ test("最大余数法在任意整数总额下保持目标金额守恒", () => {
   }
 });
 
-test("5 / 25 规则为大仓设置 5 个百分点、小仓设置 25% 相对带宽", () => {
+test("5 / 25 外层触发与 80% 回调区间使用统一公式", () => {
   const bands = buildBands(1_000_000);
   assert.equal(bands[0].lowWeight, 0.45);
   assert.equal(bands[0].highWeight, 0.55);
+  assert.ok(Math.abs(bands[0].reentryLowWeight - 0.46) < 1e-12);
+  assert.ok(Math.abs(bands[0].reentryHighWeight - 0.54) < 1e-12);
+
   assert.equal(bands[1].lowWeight, 0.2833);
   assert.equal(bands[1].highWeight, 0.3833);
+  assert.ok(Math.abs(bands[1].reentryLowWeight - 0.2933) < 1e-12);
+  assert.ok(Math.abs(bands[1].reentryHighWeight - 0.3733) < 1e-12);
+
   assert.equal(bands[2].lowWeight, 0.09375);
   assert.equal(bands[2].highWeight, 0.15625);
+  assert.ok(Math.abs(bands[2].reentryLowWeight - 0.1) < 1e-12);
+  assert.ok(Math.abs(bands[2].reentryHighWeight - 0.15) < 1e-12);
+
   assert.ok(Math.abs(bands[3].lowWeight - 0.031275) < 1e-12);
   assert.ok(Math.abs(bands[3].highWeight - 0.052125) < 1e-12);
+  assert.ok(Math.abs(bands[3].reentryLowWeight - 0.03336) < 1e-12);
+  assert.ok(Math.abs(bands[3].reentryHighWeight - 0.05004) < 1e-12);
 });
 
 test("边界属于安全区间，越过 1 CNY 才触发", () => {

@@ -13,8 +13,8 @@ test("发布版本在页面、包、manifest 与 Service Worker 中一致", asyn
   ]);
   const packageJson = JSON.parse(packageText);
   const manifest = JSON.parse(manifestText);
-  assert.equal(packageJson.version, "2.0.1");
-  assert.equal(manifest.version, "2.0.1");
-  assert.match(html, /v2\.0\.1/);
-  assert.match(worker, /const VERSION = "2\.0\.1"/);
+  assert.equal(packageJson.version, "2.1.0");
+  assert.equal(manifest.version, "2.1.0");
+  assert.match(html, /v2\.1\.0/);
+  assert.match(worker, /const VERSION = "2\.1\.0"/);
 });

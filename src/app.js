@@ -55,11 +55,11 @@ function renderBands() {
     return `
       <div class="band-row">
         <div class="band-name"><strong>${fund.name}</strong><span>${fund.code}</span></div>
-        <div class="band-track" aria-label="${fund.name}触发区间">
+        <div class="band-track" aria-label="${fund.name}触发区间与 80% 回调区间">
           <span class="band-safe" style="left:${band.lowWeight * 100}%;width:${band.tolerance * 200}%"></span>
           <i style="left:${band.targetWeight * 100}%"></i>
         </div>
-        <div class="band-values"><b>${formatPercent(band.targetWeight)}</b><span>${formatPercent(band.lowWeight)} – ${formatPercent(band.highWeight)}</span></div>
+        <div class="band-values"><b>${formatPercent(band.targetWeight)}</b><span>触发 ${formatPercent(band.lowWeight)} – ${formatPercent(band.highWeight)} · 回调 ${formatPercent(band.reentryLowWeight)} – ${formatPercent(band.reentryHighWeight)}</span></div>
       </div>
     `;
   }).join("");
@@ -248,7 +248,7 @@ function renderPlan(plan) {
   $("#calculationList").innerHTML = `
     <div><dt>当前总额</dt><dd>${formatCurrency(plan.currentTotal)}</dd></div>
     <div><dt>外部资金流</dt><dd>${formatCurrency(plan.flow, { signed: true })}</dd></div>
-    <div><dt>资金流后越界</dt><dd>${breachNames.length ? breachNames.join("、") : "无"}</dd></div>
+    <div><dt>资金流后触发</dt><dd>${breachNames.length ? breachNames.join("、") : "无"}</dd></div>
     <div><dt>基金间转换</dt><dd>${formatCurrency(plan.internalTurnover)}</dd></div>
     <div><dt>最终总额</dt><dd>${formatCurrency(plan.finalTotal)}</dd></div>
     <div><dt>金额守恒</dt><dd>买入 − 卖出 = ${formatCurrency(plan.flow, { signed: true })}</dd></div>
@@ -260,14 +260,14 @@ function decisionCopy(plan) {
     const codes = plan.breaches.map((value, index) => value ? FUNDS[index].code : null).filter(Boolean);
     return {
       title: "执行资金变动，并完成一次内部转换",
-      text: `${codes.join("、")} 在资金流分配后仍越过触发区间。方案只修正超出触发区间的部分，剩余金额优先在越界项之间向目标方向配平；仅在必要时才调整其他基金。`,
+      text: `${codes.join("、")} 在资金流分配后严格越过 5 / 25 外层触发区间。方案将全部基金带回 80% 回调区间，并在金额守恒下保持最小内部换手。`,
       badge: "需要转换"
     };
   }
   if (plan.mode === "flow") {
     return plan.flow > 0 ? {
       title: "只需分配本次新增资金",
-      text: "新增资金按各基金相对目标的缺口比例分配；若资金流后仍有越界，再按单层 5 / 25 规则做必要的最小内部转换。",
+      text: "新增资金按各基金相对目标的缺口比例分配；资金流后未越过 5 / 25 外层，因此不安排基金间转换。",
       badge: "仅资金流"
     } : {
       title: "只需按方案取出资金",
@@ -277,7 +277,7 @@ function decisionCopy(plan) {
   }
   return {
     title: "当前无需调整",
-    text: "4 只基金均处于各自触发区间内。本次没有外部资金变动，也不产生基金间转换。",
+    text: "4 只基金均未越过各自 5 / 25 外层触发区间。80% 回调区间只在触发后使用，本次不产生基金间转换。",
     badge: "保持"
   };
 }
@@ -285,8 +285,8 @@ function decisionCopy(plan) {
 function tradeReason(plan, index) {
   const flowPart = plan.flowTrades[index];
   const internalPart = plan.internalTrades[index];
-  if (flowPart && internalPart) return "资金流纠偏 + 区间修正";
-  if (internalPart) return plan.breaches[index] ? "修正越界部分" : "必要配平";
+  if (flowPart && internalPart) return "资金流纠偏 + 回调区间调整";
+  if (internalPart) return plan.breaches[index] ? "进入 80% 回调区间" : "回调区间配平";
   if (flowPart) return plan.flow > 0 ? "按目标缺口分配新增资金" : "按取现顺序分配";
   return "无需操作";
 }
@@ -336,7 +336,7 @@ async function copyPlan() {
 
 function buildCopyText(plan) {
   const lines = [
-    "债基再平衡方案 v2.0.1",
+    "债基再平衡方案 v2.1.0",
     `当前总额：${formatCurrency(plan.currentTotal)}`,
     `资金变动：${formatCurrency(plan.flow, { signed: true })}`,
     ""

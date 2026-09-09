@@ -22,7 +22,7 @@
           <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
           <span class="brand-copy">
             <strong>债基再平衡</strong>
-            <small>Version 2.0.1</small>
+            <small>Version 2.1.0</small>
           </span>
         </div>
 
@@ -44,7 +44,7 @@
             <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
           </button>
         </div>
-        <div class="side-meta">本地计算 · 不保存持仓<br />v2.0.1</div>
+        <div class="side-meta">本地计算 · 不保存持仓<br />v2.1.0</div>
       </aside>
 
       <main class="dashboard-main">
@@ -52,7 +52,7 @@
           <div class="mobile-bar-main">
             <div class="brand">
               <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
-              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.0.1</small></span>
+              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.1.0</small></span>
             </div>
             <div class="mobile-actions">
               <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
@@ -82,7 +82,7 @@
                 <h1>人民币债券基金再平衡</h1>
                 <p>输入当前持仓与本次资金变动，系统按资金变动类型生成方案，只安排必要的内部转换。</p>
               </div>
-              <span class="rule-chip">5 / 25 触发规则</span>
+              <span class="rule-chip">5 / 25 外层 · 80% 回调</span>
             </div>
 
             <div class="status-banner" id="statusBanner" role="status" aria-live="polite" hidden></div>
@@ -139,7 +139,7 @@
                   <ol>
                     <li><b>新增资金</b><span>优先按目标缺口补低配</span></li>
                     <li><b>取出资金</b><span>先纠正已有高配，再按短债 → 纯债 → 固收增强</span></li>
-                    <li><b>少转换</b><span>取现不追加内部转换；其他场景只修正必要的越界部分</span></li>
+                    <li><b>少转换</b><span>取现不追加内部转换；其他场景只有越过外层才进入 80% 回调区间</span></li>
                   </ol>
                 </div>
                 <button class="button button-primary button-large" id="generateButton" type="button">生成再平衡方案</button>
@@ -198,14 +198,14 @@
             <div class="section-heading"><div><p class="eyebrow">POLICY</p><h2 id="rulesHeading">再平衡规则</h2><p>固定规则单独展示，不占用日常工作台。</p></div><span class="pill">固定规则</span></div>
             <div class="grid-12">
               <article class="dashboard-card span-7">
-                <header class="card-header"><div><h3>触发区间</h3><p>采用 5 / 25 规则，边界计入安全区间。</p></div></header>
+                <header class="card-header"><div><h3>触发与回调区间</h3><p>5 / 25 外层负责触发；80% 回调区间只在触发后作为可行域，边界计入区间。</p></div></header>
                 <div class="bands-list" id="bandsList"></div>
               </article>
               <article class="dashboard-card span-5 rule-copy">
-                <header class="card-header"><div><h3>决策规则</h3><p>v2.0.1 按本次资金变动类型采用明确、无状态的执行规则。</p></div></header>
+                <header class="card-header"><div><h3>决策规则</h3><p>v2.1.0 保持统一公式、无状态与最小必要交易。</p></div></header>
                 <ol>
-                  <li><span>01</span><div><b>普通再平衡</b><p>无资金变动时按 5 / 25 区间判断；越界只修回边界，并做必要配平。</p></div></li>
-                  <li><span>02</span><div><b>新增资金</b><p>优先按目标缺口补低配；资金流后仍越界时才做必要的最小内部转换。</p></div></li>
+                  <li><span>01</span><div><b>普通再平衡</b><p>外层内不动；任一基金严格越过 5 / 25 外层后，全部基金进入 80% 回调区间，并选择金额守恒下的最小内部换手方案。</p></div></li>
+                  <li><span>02</span><div><b>新增资金</b><p>优先按目标缺口补低配；只有资金流后仍越过外层时，才进入同一 80% 回调区间。</p></div></li>
                   <li><span>03</span><div><b>取出资金</b><p>先利用提款纠正提款前已有高配，再按短债、纯债、固收增强顺序取出；本次不追加内部转换。</p></div></li>
                 </ol>
               </article>
