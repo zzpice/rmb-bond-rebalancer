@@ -22,7 +22,7 @@
           <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
           <span class="brand-copy">
             <strong>债基再平衡</strong>
-            <small>Version 2.0</small>
+            <small>Version 2.0.1</small>
           </span>
         </div>
 
@@ -44,7 +44,7 @@
             <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
           </button>
         </div>
-        <div class="side-meta">本地计算 · 不保存持仓<br />v2.0.0</div>
+        <div class="side-meta">本地计算 · 不保存持仓<br />v2.0.1</div>
       </aside>
 
       <main class="dashboard-main">
@@ -52,7 +52,7 @@
           <div class="mobile-bar-main">
             <div class="brand">
               <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
-              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.0</small></span>
+              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.0.1</small></span>
             </div>
             <div class="mobile-actions">
               <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
@@ -80,7 +80,7 @@
               <div>
                 <p class="eyebrow">CNY PORTFOLIO</p>
                 <h1>人民币债券基金再平衡</h1>
-                <p>输入当前持仓与本次资金变动，系统会先用资金流纠偏，必要时再安排基金间转换。</p>
+                <p>输入当前持仓与本次资金变动，系统按资金变动类型生成方案，只安排必要的内部转换。</p>
               </div>
               <span class="rule-chip">5 / 25 触发规则</span>
             </div>
@@ -137,9 +137,9 @@
                 <div class="strategy-summary">
                   <span class="section-label">执行逻辑</span>
                   <ol>
-                    <li><b>先纠偏</b><span>资金按目标缺口或超额比例分配</span></li>
-                    <li><b>再判断</b><span>全部回到触发区间则停止</span></li>
-                    <li><b>少转换</b><span>只修正越界部分，优先由越界项配平</span></li>
+                    <li><b>新增资金</b><span>优先按目标缺口补低配</span></li>
+                    <li><b>取出资金</b><span>先纠正已有高配，再按短债 → 纯债 → 固收增强</span></li>
+                    <li><b>少转换</b><span>取现不追加内部转换；其他场景只修正必要的越界部分</span></li>
                   </ol>
                 </div>
                 <button class="button button-primary button-large" id="generateButton" type="button">生成再平衡方案</button>
@@ -202,11 +202,11 @@
                 <div class="bands-list" id="bandsList"></div>
               </article>
               <article class="dashboard-card span-5 rule-copy">
-                <header class="card-header"><div><h3>统一决策路径</h3><p>v2 只保留一条可解释的执行策略。</p></div></header>
+                <header class="card-header"><div><h3>决策规则</h3><p>v2.0.1 按本次资金变动类型采用明确、无状态的执行规则。</p></div></header>
                 <ol>
-                  <li><span>01</span><div><b>计算目标与触发区间</b><p>阈值取“5 个百分点”与“目标比例的 25%”中较小者。</p></div></li>
-                  <li><span>02</span><div><b>优先使用外部资金</b><p>新增补目标缺口，取出来自目标超额；按缺口比例分配。</p></div></li>
-                  <li><span>03</span><div><b>仅在仍越界时转换</b><p>只修正超出触发区间的部分，剩余金额优先在越界项之间向目标方向配平；只有必要时才调整其他基金。</p></div></li>
+                  <li><span>01</span><div><b>普通再平衡</b><p>无资金变动时按 5 / 25 区间判断；越界只修回边界，并做必要配平。</p></div></li>
+                  <li><span>02</span><div><b>新增资金</b><p>优先按目标缺口补低配；资金流后仍越界时才做必要的最小内部转换。</p></div></li>
+                  <li><span>03</span><div><b>取出资金</b><p>先利用提款纠正提款前已有高配，再按短债、纯债、固收增强顺序取出；本次不追加内部转换。</p></div></li>
                 </ol>
               </article>
             </div>

@@ -148,7 +148,7 @@ function updateLiveState() {
     $("#deviationFund").textContent = `${FUNDS[largest.index].code} 相对目标`;
     $("#portfolioStatus").textContent = current.breached ? "存在越界" : "区间内";
     $("#portfolioStatus").className = `kpi-value kpi-status ${current.breached ? "negative" : "positive"}`;
-    $("#statusDetail").textContent = current.breached ? "资金变动后将重新判断" : "当前无需内部转换";
+    $("#statusDetail").textContent = current.breached ? "本次计算将按资金变动类型处理" : "当前无需内部转换";
 
     current.rows.forEach((row, index) => {
       $(`[data-weight="${index}"]`).textContent = formatPercent(row.weight);
@@ -265,9 +265,13 @@ function decisionCopy(plan) {
     };
   }
   if (plan.mode === "flow") {
-    return {
-      title: plan.flow > 0 ? "只需分配本次新增资金" : "只需按方案取出资金",
-      text: "资金按各基金相对目标的缺口比例分配后，组合已全部处于触发区间内，不安排额外基金间转换。",
+    return plan.flow > 0 ? {
+      title: "只需分配本次新增资金",
+      text: "新增资金按各基金相对目标的缺口比例分配；若资金流后仍有越界，再按单层 5 / 25 规则做必要的最小内部转换。",
+      badge: "仅资金流"
+    } : {
+      title: "只需按方案取出资金",
+      text: "先利用本次取现纠正提款前已有的高配越界；剩余金额依次从短债、纯债和固收增强中取出。本次取现不追加基金间转换。",
       badge: "仅资金流"
     };
   }
@@ -283,7 +287,7 @@ function tradeReason(plan, index) {
   const internalPart = plan.internalTrades[index];
   if (flowPart && internalPart) return "资金流纠偏 + 区间修正";
   if (internalPart) return plan.breaches[index] ? "修正越界部分" : "必要配平";
-  if (flowPart) return plan.flow > 0 ? "按目标缺口分配新增资金" : "按目标超额分配取出资金";
+  if (flowPart) return plan.flow > 0 ? "按目标缺口分配新增资金" : "按取现顺序分配";
   return "无需操作";
 }
 
@@ -332,7 +336,7 @@ async function copyPlan() {
 
 function buildCopyText(plan) {
   const lines = [
-    "债基再平衡方案 v2.0.0",
+    "债基再平衡方案 v2.0.1",
     `当前总额：${formatCurrency(plan.currentTotal)}`,
     `资金变动：${formatCurrency(plan.flow, { signed: true })}`,
     ""
