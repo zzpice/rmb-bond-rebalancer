@@ -22,10 +22,10 @@ test("PWA 外壳、模块与在线更新可用", async ({ page, request }) => {
     return { scope: ready.scope, active: Boolean(ready.active) };
   });
   expect(registration.active).toBe(true);
-  expect(await page.evaluate(() => caches.keys())).toContain("rmb-rebalancer-v2.0.0");
+  expect(await page.evaluate(() => caches.keys())).toContain("rmb-rebalancer-v2.0.1");
 
   await page.evaluate(async () => {
-    const cache = await caches.open("rmb-rebalancer-v2.0.0");
+    const cache = await caches.open("rmb-rebalancer-v2.0.1");
     const url = new URL("./src/app.js", location.href).href;
     await cache.put(url, new Response("throw new Error('stale app');", {
       headers: { "content-type": "application/javascript" }
@@ -35,7 +35,7 @@ test("PWA 外壳、模块与在线更新可用", async ({ page, request }) => {
   await page.reload();
   await expect(page.locator(".holding-input")).toHaveCount(4);
   const cachedApp = await page.evaluate(async () => {
-    const cache = await caches.open("rmb-rebalancer-v2.0.0");
+    const cache = await caches.open("rmb-rebalancer-v2.0.1");
     const response = await cache.match(new URL("./src/app.js", location.href).href);
     return response?.text();
   });

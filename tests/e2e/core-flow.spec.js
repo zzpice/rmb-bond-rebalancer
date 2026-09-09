@@ -6,18 +6,21 @@ async function fillHoldings(page, values) {
   }
 }
 
-test("填写输入后生成完整 Dashboard 执行方案并切到方案页", async ({ page }) => {
+test("填写输入后生成完整 Dashboard 取现方案并切到方案页", async ({ page }) => {
   await page.goto("/");
-  await fillHoldings(page, ["42", "26", "8", "20"]);
-  await page.locator("#cashFlowInput").fill("-10");
-  await expect(page.locator("#currentTotal")).toHaveText("96 万");
-  await expect(page.locator("#afterTotal")).toHaveText("86 万");
+  await fillHoldings(page, ["60", "39.996", "15", "5.004"]);
+  await page.locator("#cashFlowInput").fill("-8");
+  await expect(page.locator("#currentTotal")).toHaveText("120 万");
+  await expect(page.locator("#afterTotal")).toHaveText("112 万");
 
   await page.getByRole("button", { name: "生成再平衡方案" }).click();
   await expect(page.locator('[data-view-panel="plan"]')).toBeVisible();
   await expect(page.locator("#planContent")).toBeVisible();
-  await expect(page.locator("#decisionTitle")).toContainText("内部转换");
+  await expect(page.locator("#decisionTitle")).toHaveText("只需按方案取出资金");
+  await expect(page.locator("#decisionText")).toContainText("短债、纯债和固收增强");
   await expect(page.getByTestId("execution-row")).toHaveCount(4);
+  await expect(page.locator(".action-pill.negative")).toHaveCount(2);
+  await expect(page.locator("#internalTurnover")).toHaveText("CNY 0");
   await expect(page.locator("#calculationList")).toContainText("金额守恒");
   await expect(page.locator(".risk-note")).toContainText("未计入相关费用");
 });
