@@ -34,6 +34,9 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   const trades = final.map((amount, index) => amount - holdings[index]);
   const weights = final.map(amount => amount / finalTotal);
   const deviations = weights.map((weight, index) => weight - bands[index].targetWeight);
+  const finalBreaches = final.map((amount, index) => (
+    amount < bands[index].low || amount > bands[index].high
+  ));
   const buyTotal = sum(trades.filter(amount => amount > 0));
   const sellTotal = -sum(trades.filter(amount => amount < 0));
   const internalTurnover = sum(internalTrades.filter(amount => amount > 0));
@@ -55,6 +58,7 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
     final,
     weights,
     deviations,
+    finalBreaches,
     buyTotal,
     sellTotal,
     internalTurnover,

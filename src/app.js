@@ -356,10 +356,18 @@ function renderPlan(plan) {
   $("#decisionText").textContent = decision.text;
   $("#decisionBadge").textContent = decision.badge;
   $("#decisionCard").dataset.mode = plan.mode;
+  $("#decisionCard").dataset.state = decision.state;
   $("#buyTotal").textContent = formatCurrency(plan.buyTotal);
   $("#sellTotal").textContent = formatCurrency(plan.sellTotal);
   $("#internalTurnover").textContent = formatCurrency(plan.internalTurnover);
-  $("#finalDeviation").textContent = formatPercent(Math.abs(maxAbs(plan.deviations)));
+  const finalBreachCodes = plan.finalBreaches
+    .map((breached, index) => breached ? FUNDS[index].code : null)
+    .filter(Boolean);
+  $("#finalStatus").textContent = finalBreachCodes.length ? `${finalBreachCodes.length} 项越界` : "区间内";
+  $("#finalStatus").className = `kpi-value kpi-status ${finalBreachCodes.length ? "warning" : "positive"}`;
+  $("#finalStatusDetail").textContent = finalBreachCodes.length
+    ? finalBreachCodes.join("、")
+    : "4 只基金均在触发区间内";
   $("#tradeCount").textContent = `${plan.tradeCount} 笔操作`;
 
   const activeIndexes = plan.trades.map((trade, index) => trade ? index : null).filter(index => index !== null);
@@ -428,24 +436,43 @@ function decisionCopy(plan) {
     return {
       title: "执行资金变动，并完成一次内部转换",
       text: `${codes.join("、")} 在资金流分配后严格越过 5 / 25 外层触发区间。方案将全部基金带回 80% 回调区间，并在金额守恒下保持最小内部换手。`,
-      badge: "需要转换"
+      badge: "需要转换",
+      state: "safe"
     };
   }
   if (plan.mode === "flow") {
     return plan.flow > 0 ? {
       title: "只需分配本次新增资金",
       text: "新增资金按各基金相对目标的缺口比例分配；资金流后未越过 5 / 25 外层，因此不安排基金间转换。",
-      badge: "仅资金流"
-    } : {
-      title: "只需按方案取出资金",
-      text: "如提款前存在高配越界，优先利用本次取现纠偏；其余金额依次从短债、纯债和固收增强中取出。本次不追加基金间转换，取现后组合允许暂时偏离再平衡区间。",
-      badge: "仅资金流"
-    };
+      badge: "仅资金流",
+      state: "safe"
+    } : withdrawalDecisionCopy(plan);
   }
   return {
     title: "当前无需调整",
     text: "4 只基金均未越过各自 5 / 25 外层触发区间。80% 回调区间只在触发后使用，本次不产生基金间转换。",
-    badge: "保持"
+    badge: "保持",
+    state: "safe"
+  };
+}
+
+function withdrawalDecisionCopy(plan) {
+  const codes = plan.finalBreaches
+    .map((breached, index) => breached ? FUNDS[index].code : null)
+    .filter(Boolean);
+  if (codes.length) {
+    return {
+      title: "只需按方案取出资金",
+      text: `本次按取现政策分配卖出金额。执行后 ${codes.join("、")} 仍在 5 / 25 外层触发区间外；按照取现政策，本次不追加基金间转换。`,
+      badge: "取现后仍越界",
+      state: "warning"
+    };
+  }
+  return {
+    title: "只需按方案取出资金",
+    text: "本次按取现政策分配卖出金额。执行后 4 只基金均在 5 / 25 外层触发区间内，本次不需要基金间转换。",
+    badge: "仅资金流",
+    state: "safe"
   };
 }
 
@@ -454,7 +481,7 @@ function tradeReason(plan, index) {
   const internalPart = plan.internalTrades[index];
   if (flowPart && internalPart) return "资金流纠偏 + 回调区间调整";
   if (internalPart) return plan.breaches[index] ? "进入 80% 回调区间" : "回调区间配平";
-  if (flowPart) return plan.flow > 0 ? "按目标缺口分配新增资金" : "按取现顺序分配";
+  if (flowPart) return plan.flow > 0 ? "按目标缺口分配新增资金" : "按取现政策分配";
   return "无需操作";
 }
 
@@ -549,10 +576,6 @@ function flowLabel(flow) {
   if (flow > 0) return `新增 ${formatWan(flow)}`;
   if (flow < 0) return `取出 ${formatWan(-flow)}`;
   return "无外部资金变动";
-}
-
-function maxAbs(values) {
-  return values.reduce((largest, value) => Math.abs(value) > Math.abs(largest) ? value : largest, 0);
 }
 
 function applyInitialTheme() {

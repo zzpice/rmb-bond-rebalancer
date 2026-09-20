@@ -17,8 +17,11 @@ test("填写输入后生成完整 Dashboard 取现方案并切到方案页", asy
   await expect(page.locator('[data-view-panel="plan"]')).toBeVisible();
   await expect(page.locator("#planContent")).toBeVisible();
   await expect(page.locator("#decisionTitle")).toHaveText("只需按方案取出资金");
-  await expect(page.locator("#decisionText")).toContainText("如提款前存在高配越界");
-  await expect(page.locator("#decisionText")).toContainText("取现后组合允许暂时偏离再平衡区间");
+  await expect(page.locator("#decisionBadge")).toHaveText("取现后仍越界");
+  await expect(page.locator("#decisionCard")).toHaveAttribute("data-state", "warning");
+  await expect(page.locator("#decisionText")).toContainText("007194");
+  await expect(page.locator("#finalStatus")).toHaveText("1 项越界");
+  await expect(page.locator("#finalStatusDetail")).toHaveText("007194");
   await expect(page.getByTestId("execution-row")).toHaveCount(2);
   await expect(page.getByTestId("unchanged-item")).toHaveCount(2);
   await expect(page.locator(".action-pill.negative")).toHaveCount(2);

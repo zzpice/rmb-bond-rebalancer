@@ -1020,40 +1020,6 @@ textarea[aria-invalid="true"],
   font-size: 13px;
 }
 
-.strategy-summary {
-  margin: 18px 0;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-low);
-}
-
-.strategy-summary ol {
-  display: grid;
-  gap: 11px;
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.strategy-summary li {
-  display: grid;
-  grid-template-columns: 62px minmax(0, 1fr);
-  gap: 8px;
-  align-items: baseline;
-}
-
-.strategy-summary b {
-  color: var(--ink);
-  font-size: 13px;
-}
-
-.strategy-summary li span {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 18px;
-}
-
 .button {
   display: inline-flex;
   align-items: center;
@@ -1168,6 +1134,10 @@ html[data-theme="dark"] .button-primary {
   border-left-color: var(--accent);
 }
 
+.decision-card[data-state="warning"] {
+  border-left-color: var(--warning);
+}
+
 .decision-card h3 {
   margin: 4px 0 3px;
   font-size: 21px;
@@ -1195,12 +1165,19 @@ html[data-theme="dark"] .button-primary {
   background: var(--accent-soft);
 }
 
+.decision-card[data-state="warning"] .decision-badge {
+  border-color: color-mix(in srgb, var(--warning) 35%, var(--line));
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
 .result-kpis {
   margin-bottom: 14px;
 }
 
 .positive { color: var(--positive) !important; }
 .negative { color: var(--negative) !important; }
+.warning { color: var(--warning) !important; }
 
 .execution-card {
   margin-bottom: 16px;
