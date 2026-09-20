@@ -82,13 +82,13 @@ function renderBands() {
 }
 
 function bindEvents() {
-  $(".holding-input, #cashFlowInput").forEach(input => {
+  document.querySelectorAll(".holding-input, #cashFlowInput").forEach(input => {
     input.addEventListener("input", () => {
       handleInputChange(input);
     });
   });
 
-  $(".holding-input").forEach((input, index) => {
+  document.querySelectorAll(".holding-input").forEach((input, index) => {
     input.addEventListener("keydown", event => {
       if (event.key !== "Enter" || event.isComposing) return;
       event.preventDefault();
