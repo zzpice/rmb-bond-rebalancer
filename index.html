@@ -55,7 +55,6 @@
             <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
           </button>
         </div>
-        <div class="side-meta">本地计算 · 不保存持仓<br />v2.2.0</div>
       </aside>
 
       <main class="dashboard-main">
@@ -79,17 +78,13 @@
 
         <header class="app-bar">
           <strong id="appBarTitle">组合工作台</strong>
-          <div class="app-bar-actions">
-            <span class="local-badge"><i aria-hidden="true"></i>数据仅在本机处理</span>
-            <button class="icon-button" type="button" data-theme-toggle aria-label="切换到深色外观" aria-pressed="false">◐</button>
-          </div>
+          <button class="icon-button" type="button" data-theme-toggle aria-label="切换到深色外观" aria-pressed="false">◐</button>
         </header>
 
         <div class="dashboard-content">
           <section data-view-panel="workspace">
             <div class="page-heading">
               <div>
-                <p class="eyebrow">CNY PORTFOLIO</p>
                 <h1>人民币债券基金再平衡</h1>
                 <p>输入当前持仓与本次资金变动，系统按资金变动类型生成方案，只安排必要的内部转换。</p>
               </div>
@@ -101,7 +96,7 @@
             <section class="overview-grid" aria-label="组合概览">
               <article class="allocation-card">
                 <header class="allocation-header">
-                  <div><span class="section-label">ALLOCATION</span><h2>配置双环</h2></div>
+                  <h2>配置双环</h2>
                   <div class="ring-key" aria-label="图表图例"><span><i class="is-current"></i>当前</span><span><i class="is-target"></i>目标</span></div>
                 </header>
                 <div class="allocation-layout">
@@ -147,7 +142,6 @@
                 <header class="card-header">
                   <div><h2>当前持仓</h2><p>金额单位为万 CNY，最多保留 4 位小数。</p></div>
                   <div class="card-header-actions">
-                    <span class="pill">目标 100%</span>
                     <button class="button button-secondary button-compact" id="bulkToggle" type="button" aria-expanded="false" aria-controls="bulkPanel">批量填入</button>
                   </div>
                 </header>
@@ -169,8 +163,8 @@
 
               <article class="dashboard-card span-4 control-card">
                 <header class="card-header">
-                  <div><h2>本次资金变动</h2><p>新增填正数，取出填负数，无变动填 0。</p></div>
-                  <button class="button button-secondary" data-clear-inputs type="button">清空</button>
+                  <div><h2>本次资金变动</h2></div>
+                  <button class="button button-secondary" data-clear-inputs type="button">清空全部</button>
                 </header>
                 <label class="field" for="cashFlowInput">
                   <span>新增 / 取出（万 CNY）</span>
@@ -187,7 +181,7 @@
 
           <section data-view-panel="plan" aria-labelledby="planHeading" hidden>
             <div class="section-heading">
-              <div><p class="eyebrow">EXECUTION</p><h2 id="planHeading" tabindex="-1">执行方案</h2><p>只保留本次需要执行的动作与必要说明。</p></div>
+              <h2 id="planHeading" tabindex="-1">执行方案</h2>
               <button class="button button-secondary" id="copyButton" type="button" disabled>复制方案</button>
             </div>
             <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
@@ -237,7 +231,7 @@
           </section>
 
           <section data-view-panel="rules" aria-labelledby="rulesHeading" hidden>
-            <div class="section-heading"><div><p class="eyebrow">POLICY</p><h2 id="rulesHeading">再平衡规则</h2><p>固定规则单独展示，不占用日常工作台。</p></div><span class="pill">固定规则</span></div>
+            <div class="section-heading"><h2 id="rulesHeading">再平衡规则</h2></div>
             <div class="grid-12">
               <article class="dashboard-card span-7">
                 <header class="card-header"><div><h3>触发与回调区间</h3><p>5 / 25 外层负责触发；80% 回调区间只在触发后作为可行域，边界计入区间。</p></div></header>
