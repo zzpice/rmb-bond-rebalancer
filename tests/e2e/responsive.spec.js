@@ -30,6 +30,8 @@ for (const viewport of [
       await expectNoInternalHorizontalScroll(page.locator('[data-view-panel="workspace"] .table-scroll'));
       const inputFontSize = await page.locator("#holding-0").evaluate(element => parseFloat(getComputedStyle(element).fontSize));
       expect(inputFontSize).toBeGreaterThanOrEqual(16);
+      await expect(page.locator('[data-flow-value="0"]')).toHaveCSS("min-height", "44px");
+      await expect(page.locator(".mobile-bar .icon-button").first()).toHaveCSS("height", "44px");
     }
 
     await page.getByRole("button", { name: "生成再平衡方案" }).click();
@@ -47,9 +49,12 @@ for (const viewport of [
 }
 
 test("桌面显示固定侧栏，移动端显示顶部任务导航并支持纯黑深色主题", async ({ page }) => {
-  await page.emulateMedia({ colorScheme: "light" });
+  await page.emulateMedia({ colorScheme: "dark" });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("#themeColor")).toHaveAttribute("content", "#000000");
+  await expect(page.locator("[data-theme-toggle]").first()).toHaveAttribute("aria-label", "切换到浅色外观");
   await expect(page.locator(".side-nav")).toBeVisible();
   await expect(page.locator(".mobile-bar")).toBeHidden();
 
@@ -58,8 +63,10 @@ test("桌面显示固定侧栏，移动端显示顶部任务导航并支持纯�
   await expect(page.locator(".mobile-bar")).toBeVisible();
   await expect(page.getByRole("navigation", { name: "移动端导航" })).toBeVisible();
 
-  await page.locator(".mobile-bar [data-theme-toggle]").click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   const darkBackground = await page.locator("html").evaluate(element => getComputedStyle(element).getPropertyValue("--bg").trim());
   expect(darkBackground).toBe("#000000");
+
+  await page.locator(".mobile-bar [data-theme-toggle]").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator(".mobile-bar [data-theme-toggle]")).toHaveAttribute("aria-label", "切换到深色外观");
 });

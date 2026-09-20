@@ -10,6 +10,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="再平衡助手" />
     <title>债基再平衡助手</title>
+    <script>
+      (() => {
+        let theme;
+        try { theme = localStorage.getItem("rmb-rebalancer-theme"); } catch {}
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+        document.getElementById("themeColor").content = theme === "dark" ? "#000000" : "#f5f7fb";
+      })();
+    </script>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
@@ -56,7 +67,7 @@
             </div>
             <div class="mobile-actions">
               <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
-              <button class="icon-button" type="button" data-theme-toggle aria-label="深色外观" aria-pressed="false">◐</button>
+              <button class="icon-button" type="button" data-theme-toggle aria-label="切换到深色外观" aria-pressed="false">◐</button>
             </div>
           </div>
           <nav class="mobile-tabs" aria-label="移动端导航">
@@ -70,7 +81,7 @@
           <strong id="appBarTitle">组合工作台</strong>
           <div class="app-bar-actions">
             <span class="local-badge"><i aria-hidden="true"></i>数据仅在本机处理</span>
-            <button class="icon-button" type="button" data-theme-toggle aria-label="深色外观" aria-pressed="false">◐</button>
+            <button class="icon-button" type="button" data-theme-toggle aria-label="切换到深色外观" aria-pressed="false">◐</button>
           </div>
         </header>
 
@@ -183,7 +194,7 @@
 
           <section data-view-panel="plan" aria-labelledby="planHeading" hidden>
             <div class="section-heading">
-              <div><p class="eyebrow">EXECUTION</p><h2 id="planHeading">执行方案</h2><p>只保留本次需要执行的动作与必要说明。</p></div>
+              <div><p class="eyebrow">EXECUTION</p><h2 id="planHeading" tabindex="-1">执行方案</h2><p>只保留本次需要执行的动作与必要说明。</p></div>
               <button class="button button-secondary" id="copyButton" type="button" disabled>复制方案</button>
             </div>
             <textarea class="manual-copy" id="manualCopy" aria-label="可手动复制的执行方案" readonly hidden></textarea>
