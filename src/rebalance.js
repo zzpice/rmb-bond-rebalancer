@@ -1,4 +1,11 @@
-import { FUNDS, allocateTargets, assertPortfolio, buildBands, sum } from "./portfolio.js";
+import {
+  FUNDS,
+  WITHDRAWAL_POLICY,
+  allocateTargets,
+  assertPortfolio,
+  buildBands,
+  sum
+} from "./portfolio.js";
 
 export function createRebalancePlan({ holdings, flow = 0 }) {
   assertPortfolio(holdings);
@@ -94,7 +101,7 @@ function allocateWithdrawal(holdings, finalTargets, budget) {
     wasHigh[index] ? Math.max(0, amount - finalTargets[index]) : 0
   )));
 
-  for (const index of [3, 2]) {
+  for (const index of fundIndexes(WITHDRAWAL_POLICY.liquidityOrder)) {
     if (!remaining) break;
     const take = Math.min(remaining, holdings[index] - sells[index]);
     sells[index] += take;
@@ -102,16 +109,22 @@ function allocateWithdrawal(holdings, finalTargets, budget) {
   }
 
   if (remaining) {
-    takeProportionally([
-      holdings[0] - sells[0],
-      holdings[1] - sells[1],
-      0,
-      0
-    ]);
+    const residualIndexes = new Set(fundIndexes(WITHDRAWAL_POLICY.residualProRata));
+    takeProportionally(holdings.map((amount, index) => (
+      residualIndexes.has(index) ? amount - sells[index] : 0
+    )));
   }
 
   if (remaining) throw new Error("可取出金额不足。");
   return sells;
+}
+
+function fundIndexes(codes) {
+  return codes.map(code => {
+    const index = FUNDS.findIndex(fund => fund.code === code);
+    if (index < 0) throw new Error(`取现策略包含未知基金：${code}。`);
+    return index;
+  });
 }
 
 export function allocateProportionally(capacities, budget) {
