@@ -43,6 +43,11 @@ export const REBALANCE_RULE = Object.freeze({
   reentryRatio: 0.8
 });
 
+export const WITHDRAWAL_POLICY = Object.freeze({
+  liquidityOrder: Object.freeze(["007194", "270048"]),
+  residualProRata: Object.freeze(["002065", "110017"])
+});
+
 export class InputError extends Error {
   constructor(message, field = null) {
     super(message);
