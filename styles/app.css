@@ -1042,33 +1042,12 @@ html[data-theme="dark"] .button-primary {
 }
 
 .generate-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
-  align-items: center;
-  gap: 6px 20px;
+  padding: 14px;
   border-left: 4px solid var(--accent);
-}
-
-.generate-card h2 {
-  margin: 0;
-  font-size: 16px;
-  line-height: 22px;
-}
-
-.generate-card > div > p {
-  margin: 3px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 18px;
 }
 
 .generate-card .button-large {
   width: 100%;
-}
-
-.generate-card .privacy-note {
-  grid-column: 2;
-  margin: 0;
 }
 
 .privacy-note {
@@ -1717,15 +1696,6 @@ html[data-theme="dark"] .button-primary {
 
   .section-heading .button {
     justify-self: start;
-  }
-
-  .generate-card {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .generate-card .privacy-note {
-    grid-column: auto;
   }
 
   .band-row {
