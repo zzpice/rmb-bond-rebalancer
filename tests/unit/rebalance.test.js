@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { FUNDS, sum } from "../../src/portfolio.js";
+import { FUNDS, WITHDRAWAL_POLICY, sum } from "../../src/portfolio.js";
 import {
   allocateProportionally,
   createRebalancePlan
@@ -43,6 +43,11 @@ test("新增资金只用于补足目标缺口且不制造内部转换", () => {
   assert.equal(sum(plan.trades), 10_000);
   assert.equal(plan.internalTurnover, 0);
   assert.deepEqual(plan.final, plan.targets);
+});
+
+test("取现策略显式声明短债、纯债优先，固收增强承担剩余提款", () => {
+  assert.deepEqual(WITHDRAWAL_POLICY.liquidityOrder, ["007194", "270048"]);
+  assert.deepEqual(WITHDRAWAL_POLICY.residualProRata, ["002065", "110017"]);
 });
 
 test("取出资金按已有高配、短债、纯债、增强债顺序分配且不内部转换", () => {
