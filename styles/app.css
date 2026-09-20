@@ -222,13 +222,6 @@ html[data-theme="dark"] .nav-button.is-active {
   margin-top: 4px;
 }
 
-.side-meta {
-  margin: 14px 10px 0;
-  color: var(--faint);
-  font-size: 12px;
-  line-height: 18px;
-}
-
 .dashboard-main {
   min-height: 100vh;
   margin-left: var(--nav-width);
@@ -252,33 +245,6 @@ html[data-theme="dark"] .nav-button.is-active {
 .app-bar > strong {
   font-size: 19px;
   font-weight: 900;
-}
-
-.app-bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.local-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 30px;
-  padding: 4px 9px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  background: var(--surface-low);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.local-badge i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--positive);
 }
 
 .icon-button {
@@ -340,15 +306,14 @@ html[data-theme="dark"] .nav-button.is-active {
   font-size: clamp(23px, 2.5vw, 29px);
 }
 
-.page-heading p:not(.eyebrow),
-.section-heading p:not(.eyebrow) {
+.page-heading p,
+.section-heading p {
   max-width: 760px;
   margin: 0;
   color: var(--muted);
   font-size: 16px;
 }
 
-.eyebrow,
 .section-label {
   margin: 0;
   color: var(--accent);
@@ -1898,7 +1863,7 @@ html[data-theme="dark"] .button-primary {
     display: none;
   }
 
-  .page-heading p:not(.eyebrow) {
+  .page-heading p {
     font-size: 14px;
   }
 
