@@ -1072,10 +1072,6 @@ html[data-theme="dark"] .button-primary {
 }
 
 .privacy-note {
-  margin: 0;
-}
-
-.privacy-note {
   margin: 10px 2px 0;
   color: var(--faint);
   font-size: 12px;
