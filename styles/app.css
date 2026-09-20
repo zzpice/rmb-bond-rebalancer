@@ -697,6 +697,7 @@ html[data-theme="dark"] .nav-button.is-active {
   min-height: 30px;
   padding: 5px 9px;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .bulk-panel {
