@@ -175,14 +175,6 @@
                   <button type="button" data-flow-value="5" aria-label="新增 5 万 CNY" aria-pressed="false">+5</button>
                   <button type="button" data-flow-value="10" aria-label="新增 10 万 CNY" aria-pressed="false">+10</button>
                 </div>
-                <div class="strategy-summary">
-                  <span class="section-label">执行逻辑</span>
-                  <ol>
-                    <li><b>新增资金</b><span>优先按目标缺口补低配</span></li>
-                    <li><b>取出资金</b><span>先纠正已有高配，再按短债 → 纯债 → 固收增强</span></li>
-                    <li><b>少转换</b><span>取现不追加内部转换；其他场景只有越过外层才进入 80% 回调区间</span></li>
-                  </ol>
-                </div>
                 <button class="button button-primary button-large" id="generateButton" type="button">生成再平衡方案</button>
                 <p class="privacy-note">无需登录；持仓不会上传或保存在浏览器中。</p>
               </article>
@@ -211,7 +203,7 @@
                 <article class="kpi-card"><span class="kpi-label">买入合计</span><strong class="kpi-value positive" id="buyTotal">—</strong><small>所有正向操作</small></article>
                 <article class="kpi-card"><span class="kpi-label">卖出合计</span><strong class="kpi-value negative" id="sellTotal">—</strong><small>所有负向操作</small></article>
                 <article class="kpi-card"><span class="kpi-label">基金间转换</span><strong class="kpi-value" id="internalTurnover">—</strong><small>不含外部资金流</small></article>
-                <article class="kpi-card"><span class="kpi-label">调整后最大偏离</span><strong class="kpi-value" id="finalDeviation">—</strong><small>相对目标比例</small></article>
+                <article class="kpi-card"><span class="kpi-label">执行后状态</span><strong class="kpi-value kpi-status" id="finalStatus">—</strong><small id="finalStatusDetail">相对再平衡区间</small></article>
               </div>
 
               <article class="table-card execution-card">
