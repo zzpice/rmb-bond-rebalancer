@@ -674,7 +674,6 @@ html[data-theme="dark"] .nav-button.is-active {
 .span-5 { grid-column: span 5; }
 .span-7 { grid-column: span 7; }
 .span-8 { grid-column: span 8; }
-.span-12 { grid-column: span 12; }
 
 .input-grid {
   align-items: stretch;
@@ -1037,17 +1036,15 @@ html[data-theme="dark"] .button-primary {
   background: var(--surface-mid);
 }
 
-.button-large {
-  min-height: 48px;
-}
-
 .generate-card {
+  grid-column: 1 / -1;
   padding: 14px;
   border-left: 4px solid var(--accent);
 }
 
-.generate-card .button-large {
+.generate-card .button {
   width: 100%;
+  min-height: 48px;
 }
 
 .section-heading {
