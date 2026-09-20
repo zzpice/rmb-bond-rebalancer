@@ -99,9 +99,6 @@ function bindEvents() {
       closeBulkPanel();
     }
   });
-  $$("[data-flow-value]").forEach(button => {
-    button.addEventListener("click", () => setQuickFlow(button.dataset.flowValue));
-  });
   $$("[data-clear-inputs]").forEach(button => button.addEventListener("click", clearInputs));
   $("#copyButton").addEventListener("click", copyPlan);
   $$("[data-refresh-version]").forEach(button => button.addEventListener("click", () => refreshVersion(button)));
@@ -113,7 +110,6 @@ function handleInputChange(input) {
   input.removeAttribute("aria-invalid");
   hideBanner();
   invalidatePlan();
-  updateQuickFlowState();
   updateLiveState();
 }
 
@@ -162,24 +158,6 @@ function applyBulkHoldings() {
   updateLiveState();
   showBanner("success", "已按基金顺序填入 4 项持仓。");
   $("#cashFlowInput").focus();
-}
-
-function setQuickFlow(value) {
-  const input = $("#cashFlowInput");
-  input.value = value;
-  handleInputChange(input);
-}
-
-function updateQuickFlowState() {
-  const value = $("#cashFlowInput").value.trim();
-  let amount = null;
-  try {
-    amount = parseWanAmount(value, { allowNegative: true });
-  } catch {}
-  $$("[data-flow-value]").forEach(button => {
-    const quickAmount = Number(button.dataset.flowValue) * 10_000;
-    button.setAttribute("aria-pressed", String(amount === quickAmount));
-  });
 }
 
 function setView(view) {
@@ -497,7 +475,6 @@ function clearInputs() {
   invalidatePlan();
   closeBulkPanel({ returnFocus: false });
   $("#bulkHoldingsInput").value = "";
-  updateQuickFlowState();
   updateLiveState();
   $("#holding-0").focus();
 }

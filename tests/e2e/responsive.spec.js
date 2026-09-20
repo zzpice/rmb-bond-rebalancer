@@ -30,7 +30,7 @@ for (const viewport of [
       await expectNoInternalHorizontalScroll(page.locator('[data-view-panel="workspace"] .table-scroll'));
       const inputFontSize = await page.locator("#holding-0").evaluate(element => parseFloat(getComputedStyle(element).fontSize));
       expect(inputFontSize).toBeGreaterThanOrEqual(16);
-      await expect(page.locator('[data-flow-value="0"]')).toHaveCSS("min-height", "44px");
+      await expect(page.locator(".table-input").first()).toHaveCSS("min-height", "44px");
       await expect(page.locator(".mobile-bar .icon-button").first()).toHaveCSS("height", "44px");
     }
 

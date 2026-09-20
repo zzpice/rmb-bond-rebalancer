@@ -56,7 +56,7 @@ test("新增资金方案只有买入且不产生基金间转换", async ({ page 
   await expect(page.locator("#unchangedTrades")).toBeHidden();
 });
 
-test("双环配置图、批量填入与资金快捷按钮联动", async ({ page }) => {
+test("双环配置图与批量填入联动", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("#currentRing")).not.toHaveClass(/is-ready/);
   await expect(page.locator("#targetRing")).toHaveAttribute("style", /conic-gradient/);
@@ -72,13 +72,8 @@ test("双环配置图、批量填入与资金快捷按钮联动", async ({ page 
   await expect(page.locator('[data-allocation-current="0"]')).toHaveText("50.00%");
   await expect(page.locator("#statusBanner")).toContainText("已按基金顺序填入");
 
-  await page.locator('[data-flow-value="5"]').click();
-  await expect(page.locator("#cashFlowInput")).toHaveValue("5");
-  await expect(page.locator('[data-flow-value="5"]')).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#afterTotal")).toHaveText("105 万");
-
   await page.locator("#cashFlowInput").fill("+5.0000");
-  await expect(page.locator('[data-flow-value="5"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#afterTotal")).toHaveText("105 万");
 });
 
 test("缺失或非法输入给出就地错误且不展示过期方案", async ({ page }) => {

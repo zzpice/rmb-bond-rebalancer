@@ -958,34 +958,6 @@ textarea[aria-invalid="true"],
   line-height: 17px;
 }
 
-.quick-flow {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(34px, 1fr));
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.quick-flow button {
-  min-height: 32px;
-  padding: 4px 2px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  color: var(--muted);
-  background: var(--surface-low);
-  font-size: 11px;
-  line-height: 16px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-}
-
-.quick-flow button:hover,
-.quick-flow button[aria-pressed="true"] {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
 .input-shell {
   display: flex;
   align-items: center;
@@ -1651,7 +1623,6 @@ html[data-theme="dark"] .button-primary {
   }
 
   .button,
-  .quick-flow button,
   .table-input,
   .fund-name {
     min-height: 44px;
@@ -1970,10 +1941,6 @@ html[data-theme="dark"] .button-primary {
 
   .bulk-controls textarea {
     grid-column: 1 / -1;
-  }
-
-  .quick-flow {
-    grid-template-columns: repeat(4, 1fr);
   }
 
   .allocation-legend {
