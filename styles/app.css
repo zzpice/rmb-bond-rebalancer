@@ -674,6 +674,7 @@ html[data-theme="dark"] .nav-button.is-active {
 .span-5 { grid-column: span 5; }
 .span-7 { grid-column: span 7; }
 .span-8 { grid-column: span 8; }
+.span-12 { grid-column: span 12; }
 
 .input-grid {
   align-items: stretch;
@@ -1038,7 +1039,54 @@ html[data-theme="dark"] .button-primary {
 
 .button-large {
   min-height: 48px;
-  margin-top: auto;
+}
+
+.generate-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--line));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent-soft) 38%, transparent), transparent 42%),
+    var(--surface);
+}
+
+.generate-card-copy {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.generate-card-copy h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.generate-card-copy p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.generate-card-actions {
+  display: grid;
+  gap: 6px;
+  width: min(100%, 300px);
+  flex: 0 0 auto;
+}
+
+.generate-card .button-large {
+  width: 100%;
+}
+
+.generate-card .privacy-note {
+  margin: 0;
 }
 
 .privacy-note {
@@ -1689,6 +1737,20 @@ html[data-theme="dark"] .button-primary {
     justify-self: start;
   }
 
+  .generate-card {
+    display: grid;
+    gap: 14px;
+  }
+
+  .generate-card-copy {
+    display: grid;
+    gap: 5px;
+  }
+
+  .generate-card-actions {
+    width: 100%;
+  }
+
   .band-row {
     grid-template-columns: 1fr;
     gap: 7px;
@@ -1956,6 +2018,10 @@ html[data-theme="dark"] .button-primary {
   }
 
   .dashboard-card {
+    padding: 15px;
+  }
+
+  .generate-card {
     padding: 15px;
   }
 
