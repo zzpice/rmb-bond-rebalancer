@@ -8,10 +8,17 @@ test("PWA 外壳、模块与在线更新可用", async ({ page, request }) => {
     "/src/app.js",
     "/src/portfolio.js",
     "/src/rebalance.js",
-    "/src/format.js",
-    "/icons/icon.svg"
+    "/src/format.js"
   ];
   for (const asset of assets) {
+    const response = await request.get(asset);
+    expect(response.ok(), asset).toBe(true);
+  }
+
+  const manifestResponse = await request.get("/manifest.webmanifest");
+  const manifest = await manifestResponse.json();
+  for (const icon of manifest.icons) {
+    const asset = icon.src.replace(/^\.\//, "/");
     const response = await request.get(asset);
     expect(response.ok(), asset).toBe(true);
   }
