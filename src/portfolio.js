@@ -1,6 +1,6 @@
 export const VERSION = "2.2.0";
-export const YUAN_PER_WAN = 10_000;
-export const WEIGHT_SCALE = 10_000;
+const YUAN_PER_WAN = 10_000;
+const WEIGHT_SCALE = 10_000;
 
 export const FUNDS = Object.freeze([
   {
@@ -37,7 +37,7 @@ export const FUNDS = Object.freeze([
   }
 ]);
 
-export const REBALANCE_RULE = Object.freeze({
+const REBALANCE_RULE = Object.freeze({
   absoluteBand: 0.05,
   relativeBand: 0.25,
   reentryRatio: 0.8
@@ -48,7 +48,7 @@ export const WITHDRAWAL_POLICY = Object.freeze({
   residualProRata: Object.freeze(["002065", "110017"])
 });
 
-export class InputError extends Error {
+class InputError extends Error {
   constructor(message, field = null) {
     super(message);
     this.name = "InputError";
