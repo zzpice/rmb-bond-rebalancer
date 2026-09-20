@@ -32,6 +32,7 @@ for (const viewport of [
       expect(inputFontSize).toBeGreaterThanOrEqual(16);
       await expect(page.locator(".table-input").first()).toHaveCSS("min-height", "44px");
       await expect(page.locator(".mobile-bar .icon-button").first()).toHaveCSS("height", "44px");
+      await expect(page.locator("#bulkToggle")).toHaveCSS("white-space", "nowrap");
     }
 
     await page.getByRole("button", { name: "生成再平衡方案" }).click();
