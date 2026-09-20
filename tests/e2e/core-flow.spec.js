@@ -90,3 +90,26 @@ test("缺失或非法输入给出就地错误且不展示过期方案", async ({
   await page.getByRole("button", { name: "生成再平衡方案" }).click();
   await expect(page.locator("#statusBanner")).toContainText("必须大于 0");
 });
+
+test("Enter 按输入顺序前进并从资金变动直接生成方案", async ({ page }) => {
+  await page.goto("/");
+  const values = ["48", "31.9968", "12", "4.0032"];
+
+  await expect(page.locator("#holding-0")).toHaveAttribute("enterkeyhint", "next");
+  await expect(page.locator("#cashFlowInput")).toHaveAttribute("enterkeyhint", "go");
+
+  for (let index = 0; index < values.length; index += 1) {
+    const input = page.locator(`#holding-${index}`);
+    await input.fill(values[index]);
+    await input.press("Enter");
+    const next = index + 1 < values.length
+      ? page.locator(`#holding-${index + 1}`)
+      : page.locator("#cashFlowInput");
+    await expect(next).toBeFocused();
+  }
+
+  await page.locator("#cashFlowInput").fill("0");
+  await page.locator("#cashFlowInput").press("Enter");
+  await expect(page.locator("#planHeading")).toBeFocused();
+  await expect(page.locator("#planContent")).toBeVisible();
+});
