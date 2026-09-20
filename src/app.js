@@ -401,7 +401,7 @@ function renderTradeRow(plan, index) {
     <tr data-testid="execution-row" data-tone="${tone}">
       <td><span class="fund-name result-fund"><strong>${fund.name}</strong><span>${fund.code}</span></span></td>
       <td><span class="action-pill ${tone}"><i aria-hidden="true">${trade > 0 ? "↗" : "↘"}</i>${action}</span></td>
-      <td class="numeric mono ${tone}" data-testid="trade-amount">${formatCurrency(Math.abs(trade))}</td>
+      <td class="numeric mono ${tone}">${formatCurrency(Math.abs(trade))}</td>
       <td class="numeric mono">${formatCurrency(plan.final[index])}</td>
       <td class="numeric mono">${formatPercent(plan.weights[index])}</td>
       <td class="reason-cell">${tradeReason(plan, index)}</td>
