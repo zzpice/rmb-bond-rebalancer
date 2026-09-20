@@ -1050,14 +1050,6 @@ html[data-theme="dark"] .button-primary {
   width: 100%;
 }
 
-.privacy-note {
-  margin: 10px 2px 0;
-  color: var(--faint);
-  font-size: 12px;
-  line-height: 17px;
-  text-align: center;
-}
-
 .section-heading {
   align-items: center;
   margin-bottom: 14px;
