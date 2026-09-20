@@ -162,11 +162,11 @@
               <article class="dashboard-card span-4">
                 <header class="card-header">
                   <div><h2>本次资金变动</h2></div>
-                  <button class="button button-secondary" data-clear-inputs type="button">清空全部</button>
+                  <button class="button button-secondary" id="clearButton" type="button">清空全部</button>
                 </header>
                 <label class="field" for="cashFlowInput">
                   <span>新增 / 取出（万 CNY）</span>
-                  <div class="input-shell"><input id="cashFlowInput" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="cashFlowHelp" /><b>万</b></div>
+                  <div class="input-shell"><input id="cashFlowInput" type="text" inputmode="decimal" enterkeyhint="go" autocomplete="off" value="0" aria-describedby="cashFlowHelp" /><b>万</b></div>
                   <small id="cashFlowHelp">例如新增 5 万填 5，取出 5 万填 -5。</small>
                 </label>
               </article>
