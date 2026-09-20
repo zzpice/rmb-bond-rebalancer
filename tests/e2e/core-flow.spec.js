@@ -14,6 +14,7 @@ test("填写输入后生成完整 Dashboard 取现方案并切到方案页", asy
   await expect(page.locator("#afterTotal")).toHaveText("112 万");
 
   await page.getByRole("button", { name: "生成再平衡方案" }).click();
+  await expect(page.locator("#planHeading")).toBeFocused();
   await expect(page.locator('[data-view-panel="plan"]')).toBeVisible();
   await expect(page.locator("#planContent")).toBeVisible();
   await expect(page.locator("#decisionTitle")).toHaveText("只需按方案取出资金");

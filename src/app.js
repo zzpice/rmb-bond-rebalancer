@@ -27,7 +27,7 @@ renderFunds();
 renderAllocationBase();
 renderBands();
 bindEvents();
-applyInitialTheme();
+applyTheme(document.documentElement.dataset.theme);
 updateLiveState();
 registerServiceWorker();
 
@@ -336,6 +336,7 @@ function generatePlan() {
     hideBanner();
     viewScroll.plan = 0;
     setView("plan");
+    requestAnimationFrame(() => $("#planHeading").focus({ preventScroll: true }));
   } catch (error) {
     activePlan = null;
     showBanner("error", error.message || "无法生成方案，请检查输入。");
@@ -578,16 +579,6 @@ function flowLabel(flow) {
   return "无外部资金变动";
 }
 
-function applyInitialTheme() {
-  let theme = "light";
-  try {
-    const stored = localStorage.getItem(THEME_KEY);
-    if (stored === "dark" || stored === "light") theme = stored;
-    else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) theme = "dark";
-  } catch {}
-  applyTheme(theme);
-}
-
 function toggleTheme() {
   const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   applyTheme(theme);
@@ -600,6 +591,7 @@ function applyTheme(theme) {
   $$("[data-theme-toggle]").forEach(button => {
     const dark = theme === "dark";
     button.setAttribute("aria-pressed", String(dark));
+    button.setAttribute("aria-label", `切换到${dark ? "浅色" : "深色"}外观`);
   });
 }
 
