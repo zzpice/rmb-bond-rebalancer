@@ -306,8 +306,7 @@ html[data-theme="dark"] .nav-button.is-active {
   font-size: clamp(23px, 2.5vw, 29px);
 }
 
-.page-heading p,
-.section-heading p {
+.page-heading p {
   max-width: 760px;
   margin: 0;
   color: var(--muted);
@@ -694,12 +693,6 @@ html[data-theme="dark"] .nav-button.is-active {
   line-height: 18px;
 }
 
-.card-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .button-compact {
   min-height: 30px;
   padding: 5px 9px;
@@ -899,11 +892,6 @@ textarea[aria-invalid="true"],
 .state-pill.is-pending {
   color: var(--faint);
   background: var(--surface-low);
-}
-
-.control-card {
-  display: flex;
-  flex-direction: column;
 }
 
 .field {
@@ -1891,11 +1879,6 @@ html[data-theme="dark"] .button-primary {
 
   .card-header {
     align-items: flex-start;
-  }
-
-  .card-header-actions {
-    display: grid;
-    justify-items: end;
   }
 
   .bulk-controls {
