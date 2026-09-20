@@ -54,8 +54,10 @@ test("边界属于安全区间，越过 1 CNY 才触发", () => {
 
 test("万 CNY 输入精确到 1 CNY，并拒绝负持仓与过多小数", () => {
   assert.equal(parseWanAmount("12.3456"), 123_456);
+  assert.equal(parseWanAmount("900719925374.0993"), 9_007_199_253_740_993);
   assert.equal(parseWanAmount("-1.5", { allowNegative: true }), -15_000);
   assert.throws(() => parseWanAmount("-1"), /不能为负数/);
   assert.throws(() => parseWanAmount("1.00001"), /最多保留 4 位小数/);
+  assert.throws(() => parseWanAmount("900719925474.0992"), /超出可计算范围/);
   assert.throws(() => parseWanAmount(""), /请填写/);
 });
