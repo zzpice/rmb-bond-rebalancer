@@ -1,4 +1,4 @@
-export const VERSION = "2.1.1";
+export const VERSION = "2.2.0";
 export const YUAN_PER_WAN = 10_000;
 export const WEIGHT_SCALE = 10_000;
 
@@ -59,8 +59,16 @@ export function parseWanAmount(value, { label = "金额", allowNegative = false 
   if (!/^[+-]?(?:\d+(?:\.\d{0,4})?|\.\d{1,4})$/.test(text)) {
     throw new InputError(`${label}须为有效数字，最多保留 4 位小数。`);
   }
-  const amount = Math.round(Number(text) * YUAN_PER_WAN);
-  if (!Number.isSafeInteger(amount)) throw new InputError(`${label}超出可计算范围。`);
+  const negative = text.startsWith("-");
+  const unsigned = text.replace(/^[+-]/, "");
+  const [whole = "0", fraction = ""] = unsigned.split(".");
+  const exact = BigInt(whole || "0") * BigInt(YUAN_PER_WAN)
+    + BigInt(fraction.padEnd(4, "0") || "0");
+  const signed = negative ? -exact : exact;
+  if (signed > BigInt(Number.MAX_SAFE_INTEGER) || signed < BigInt(Number.MIN_SAFE_INTEGER)) {
+    throw new InputError(`${label}超出可计算范围。`);
+  }
+  const amount = Number(signed);
   if (!allowNegative && amount < 0) throw new InputError(`${label}不能为负数。`);
   return amount;
 }

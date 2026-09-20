@@ -13,12 +13,14 @@ test("桌面侧栏在工作台、方案和规则三个独立视图间切换", as
   await expect(plan).toBeHidden();
   await expect(rules).toBeHidden();
   await expect(page.locator("#appBarTitle")).toHaveText("组合工作台");
+  await expect(active).toHaveAttribute("aria-current", "page");
 
   await page.getByRole("button", { name: "执行方案", exact: true }).click();
   await expect(workspace).toBeHidden();
   await expect(plan).toBeVisible();
   await expect(rules).toBeHidden();
   await expect(active).toContainText("执行方案");
+  await expect(active).toHaveAttribute("aria-current", "page");
   await expect(page.locator("#appBarTitle")).toHaveText("执行方案");
 
   await page.getByRole("button", { name: "再平衡规则", exact: true }).click();
