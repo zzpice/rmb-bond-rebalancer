@@ -17,6 +17,7 @@ async function expectNoInternalHorizontalScroll(locator) {
 for (const viewport of [
   { name: "320px 手机", width: 320, height: 760 },
   { name: "768px 平板", width: 768, height: 900 },
+  { name: "1181px 紧凑桌面", width: 1181, height: 900 },
   { name: "1440px 桌面", width: 1440, height: 1000 }
 ]) {
   test(`${viewport.name} 无页面级横向溢出`, async ({ page }) => {
