@@ -42,7 +42,7 @@ function renderFunds() {
       <td class="numeric mono">${formatPercent(fund.targetBps / 10_000)}</td>
       <td class="numeric">
         <label class="sr-only" for="holding-${index}">${fund.name}当前持仓（万 CNY）</label>
-        <div class="table-input"><input id="holding-${index}" class="holding-input" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0000" /><span>万</span></div>
+        <div class="table-input"><input id="holding-${index}" class="holding-input" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="0.0000" /><span>万</span></div>
       </td>
       <td class="numeric mono" data-weight="${index}">—</td>
       <td><span class="state-pill is-pending" data-state="${index}">待输入</span></td>
@@ -82,10 +82,25 @@ function renderBands() {
 }
 
 function bindEvents() {
-  $$(".holding-input, #cashFlowInput").forEach(input => {
+  document.querySelectorAll(".holding-input, #cashFlowInput").forEach(input => {
     input.addEventListener("input", () => {
       handleInputChange(input);
     });
+  });
+
+  document.querySelectorAll(".holding-input").forEach((input, index) => {
+    input.addEventListener("keydown", event => {
+      if (event.key !== "Enter" || event.isComposing) return;
+      event.preventDefault();
+      const next = index + 1 < FUNDS.length ? $(`#holding-${index + 1}`) : $("#cashFlowInput");
+      next.focus();
+      next.select();
+    });
+  });
+  $("#cashFlowInput").addEventListener("keydown", event => {
+    if (event.key !== "Enter" || event.isComposing) return;
+    event.preventDefault();
+    generatePlan();
   });
 
   $("#generateButton").addEventListener("click", generatePlan);
@@ -99,7 +114,7 @@ function bindEvents() {
       closeBulkPanel();
     }
   });
-  $$("[data-clear-inputs]").forEach(button => button.addEventListener("click", clearInputs));
+  $("#clearButton").addEventListener("click", clearInputs);
   $("#copyButton").addEventListener("click", copyPlan);
   $$("[data-refresh-version]").forEach(button => button.addEventListener("click", () => refreshVersion(button)));
   $$("[data-theme-toggle]").forEach(button => button.addEventListener("click", toggleTheme));
@@ -401,7 +416,7 @@ function renderTradeRow(plan, index) {
     <tr data-testid="execution-row" data-tone="${tone}">
       <td><span class="fund-name result-fund"><strong>${fund.name}</strong><span>${fund.code}</span></span></td>
       <td><span class="action-pill ${tone}"><i aria-hidden="true">${trade > 0 ? "↗" : "↘"}</i>${action}</span></td>
-      <td class="numeric mono ${tone}" data-testid="trade-amount">${formatCurrency(Math.abs(trade))}</td>
+      <td class="numeric mono ${tone}">${formatCurrency(Math.abs(trade))}</td>
       <td class="numeric mono">${formatCurrency(plan.final[index])}</td>
       <td class="numeric mono">${formatPercent(plan.weights[index])}</td>
       <td class="reason-cell">${tradeReason(plan, index)}</td>
@@ -498,14 +513,9 @@ async function copyPlan() {
     const area = $("#manualCopy");
     area.value = text;
     area.hidden = false;
+    area.focus();
     area.select();
-    const copied = document.execCommand?.("copy");
-    if (copied) area.hidden = true;
-    else {
-      area.focus();
-      area.select();
-    }
-    showCopyFeedback(copied ? "已复制" : "请手动复制");
+    showCopyFeedback("请手动复制");
   }
 }
 

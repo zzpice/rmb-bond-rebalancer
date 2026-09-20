@@ -8,13 +8,22 @@ test("PWA 外壳、模块与在线更新可用", async ({ page, request }) => {
     "/src/app.js",
     "/src/portfolio.js",
     "/src/rebalance.js",
-    "/src/format.js",
-    "/icons/icon.svg"
+    "/src/format.js"
   ];
   for (const asset of assets) {
     const response = await request.get(asset);
     expect(response.ok(), asset).toBe(true);
   }
+
+  const manifestResponse = await request.get("/manifest.webmanifest");
+  const manifest = await manifestResponse.json();
+  for (const icon of manifest.icons) {
+    const asset = icon.src.replace(/^\.\//, "/");
+    const response = await request.get(asset);
+    expect(response.ok(), asset).toBe(true);
+  }
+
+  const cacheName = `rmb-rebalancer-v${manifest.version}`;
 
   await page.goto("/");
   const registration = await page.evaluate(async () => {
@@ -22,23 +31,23 @@ test("PWA 外壳、模块与在线更新可用", async ({ page, request }) => {
     return { scope: ready.scope, active: Boolean(ready.active) };
   });
   expect(registration.active).toBe(true);
-  expect(await page.evaluate(() => caches.keys())).toContain("rmb-rebalancer-v2.2.0");
+  expect(await page.evaluate(() => caches.keys())).toContain(cacheName);
 
-  await page.evaluate(async () => {
-    const cache = await caches.open("rmb-rebalancer-v2.2.0");
+  await page.evaluate(async cacheName => {
+    const cache = await caches.open(cacheName);
     const url = new URL("./src/app.js", location.href).href;
     await cache.put(url, new Response("throw new Error('stale app');", {
       headers: { "content-type": "application/javascript" }
     }));
-  });
+  }, cacheName);
 
   await page.reload();
   await expect(page.locator(".holding-input")).toHaveCount(4);
-  const cachedApp = await page.evaluate(async () => {
-    const cache = await caches.open("rmb-rebalancer-v2.2.0");
+  const cachedApp = await page.evaluate(async cacheName => {
+    const cache = await caches.open(cacheName);
     const response = await cache.match(new URL("./src/app.js", location.href).href);
     return response?.text();
-  });
+  }, cacheName);
   expect(cachedApp).toContain("from \"./portfolio.js\"");
 });
 
