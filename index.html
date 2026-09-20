@@ -22,12 +22,12 @@
           <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
           <span class="brand-copy">
             <strong>债基再平衡</strong>
-            <small>Version 2.1.1</small>
+            <small>Version 2.2.0</small>
           </span>
         </div>
 
         <nav class="nav-list">
-          <button class="nav-button is-active" type="button" data-view-nav="workspace">
+          <button class="nav-button is-active" type="button" data-view-nav="workspace" aria-current="page">
             <span class="nav-icon" aria-hidden="true">▦</span><span>组合工作台</span>
           </button>
           <button class="nav-button" type="button" data-view-nav="plan">
@@ -44,7 +44,7 @@
             <span class="nav-icon" aria-hidden="true">↻</span><span>刷新版本</span>
           </button>
         </div>
-        <div class="side-meta">本地计算 · 不保存持仓<br />v2.1.1</div>
+        <div class="side-meta">本地计算 · 不保存持仓<br />v2.2.0</div>
       </aside>
 
       <main class="dashboard-main">
@@ -52,15 +52,15 @@
           <div class="mobile-bar-main">
             <div class="brand">
               <img class="brand-mark" src="./icons/icon.svg" alt="" width="38" height="38" />
-              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.1.1</small></span>
+              <span class="brand-copy"><strong>债基再平衡</strong><small>Version 2.2.0</small></span>
             </div>
             <div class="mobile-actions">
               <button class="icon-button" type="button" data-refresh-version aria-label="刷新版本">↻</button>
-              <button class="icon-button" type="button" data-theme-toggle aria-label="切换深浅色外观">◐</button>
+              <button class="icon-button" type="button" data-theme-toggle aria-label="深色外观" aria-pressed="false">◐</button>
             </div>
           </div>
           <nav class="mobile-tabs" aria-label="移动端导航">
-            <button class="mobile-tab is-active" type="button" data-view-nav="workspace">工作台</button>
+            <button class="mobile-tab is-active" type="button" data-view-nav="workspace" aria-current="page">工作台</button>
             <button class="mobile-tab" type="button" data-view-nav="plan">方案</button>
             <button class="mobile-tab" type="button" data-view-nav="rules">规则</button>
           </nav>
@@ -70,7 +70,7 @@
           <strong id="appBarTitle">组合工作台</strong>
           <div class="app-bar-actions">
             <span class="local-badge"><i aria-hidden="true"></i>数据仅在本机处理</span>
-            <button class="icon-button" type="button" data-theme-toggle aria-label="切换深浅色外观">◐</button>
+            <button class="icon-button" type="button" data-theme-toggle aria-label="深色外观" aria-pressed="false">◐</button>
           </div>
         </header>
 
@@ -87,35 +87,67 @@
 
             <div class="status-banner" id="statusBanner" role="status" aria-live="polite" hidden></div>
 
-            <section class="kpi-grid" aria-label="组合概览">
-              <article class="kpi-card">
-                <span class="kpi-label">当前总资产</span>
-                <strong class="kpi-value" id="currentTotal">—</strong>
-                <small>4 只基金合计</small>
+            <section class="overview-grid" aria-label="组合概览">
+              <article class="allocation-card">
+                <header class="allocation-header">
+                  <div><span class="section-label">ALLOCATION</span><h2>配置双环</h2></div>
+                  <div class="ring-key" aria-label="图表图例"><span><i class="is-current"></i>当前</span><span><i class="is-target"></i>目标</span></div>
+                </header>
+                <div class="allocation-layout">
+                  <div class="allocation-chart" id="allocationChart" role="img" aria-label="等待输入当前持仓">
+                    <div class="allocation-ring allocation-ring-current" id="currentRing"></div>
+                    <div class="allocation-ring allocation-ring-target" id="targetRing"></div>
+                    <div class="allocation-center">
+                      <span>当前总额</span>
+                      <strong id="chartTotal">—</strong>
+                      <small id="chartState">等待输入</small>
+                    </div>
+                  </div>
+                  <div class="allocation-legend" id="allocationLegend"></div>
+                </div>
               </article>
-              <article class="kpi-card">
-                <span class="kpi-label">资金变动后</span>
-                <strong class="kpi-value" id="afterTotal">—</strong>
-                <small id="flowSummary">等待输入</small>
-              </article>
-              <article class="kpi-card">
-                <span class="kpi-label">当前最大偏离</span>
-                <strong class="kpi-value" id="maxDeviation">—</strong>
-                <small id="deviationFund">相对目标比例</small>
-              </article>
-              <article class="kpi-card is-featured">
-                <span class="kpi-label">组合状态</span>
-                <strong class="kpi-value kpi-status" id="portfolioStatus">等待输入</strong>
-                <small id="statusDetail">填写全部持仓后判断</small>
-              </article>
+
+              <section class="kpi-grid">
+                <article class="kpi-card">
+                  <span class="kpi-label">当前总资产</span>
+                  <strong class="kpi-value" id="currentTotal">—</strong>
+                  <small>4 只基金合计</small>
+                </article>
+                <article class="kpi-card">
+                  <span class="kpi-label">资金变动后</span>
+                  <strong class="kpi-value" id="afterTotal">—</strong>
+                  <small id="flowSummary">等待输入</small>
+                </article>
+                <article class="kpi-card">
+                  <span class="kpi-label">当前最大偏离</span>
+                  <strong class="kpi-value" id="maxDeviation">—</strong>
+                  <small id="deviationFund">相对目标比例</small>
+                </article>
+                <article class="kpi-card is-featured">
+                  <span class="kpi-label">组合状态</span>
+                  <strong class="kpi-value kpi-status" id="portfolioStatus">等待输入</strong>
+                  <small id="statusDetail">填写全部持仓后判断</small>
+                </article>
+              </section>
             </section>
 
             <section class="grid-12 input-grid" aria-label="再平衡输入">
               <article class="table-card span-8">
                 <header class="card-header">
                   <div><h2>当前持仓</h2><p>金额单位为万 CNY，最多保留 4 位小数。</p></div>
-                  <span class="pill">目标 100%</span>
+                  <div class="card-header-actions">
+                    <span class="pill">目标 100%</span>
+                    <button class="button button-secondary button-compact" id="bulkToggle" type="button" aria-expanded="false" aria-controls="bulkPanel">批量填入</button>
+                  </div>
                 </header>
+                <div class="bulk-panel" id="bulkPanel" hidden>
+                  <label for="bulkHoldingsInput"><span>按基金顺序输入 4 个金额</span><small>支持空格、逗号、斜杠或换行分隔，例如：60 40 15 5</small></label>
+                  <div class="bulk-controls">
+                    <textarea id="bulkHoldingsInput" rows="2" inputmode="decimal" autocomplete="off" placeholder="60 40 15 5"></textarea>
+                    <button class="button button-primary" id="bulkApply" type="button">应用</button>
+                    <button class="button button-secondary" id="bulkCancel" type="button">取消</button>
+                  </div>
+                </div>
                 <div class="table-scroll">
                   <table class="holdings-table">
                     <thead><tr><th>基金</th><th class="numeric">目标</th><th class="numeric">当前持仓（万）</th><th class="numeric">当前比例</th><th>状态</th></tr></thead>
@@ -134,6 +166,15 @@
                   <div class="input-shell"><input id="cashFlowInput" type="text" inputmode="decimal" autocomplete="off" value="0" aria-describedby="cashFlowHelp" /><b>万</b></div>
                   <small id="cashFlowHelp">例如新增 5 万填 5，取出 5 万填 -5。</small>
                 </label>
+                <div class="quick-flow" role="group" aria-label="资金变动快捷金额">
+                  <button type="button" data-flow-value="-10" aria-label="取出 10 万 CNY" aria-pressed="false">−10</button>
+                  <button type="button" data-flow-value="-5" aria-label="取出 5 万 CNY" aria-pressed="false">−5</button>
+                  <button type="button" data-flow-value="-1" aria-label="取出 1 万 CNY" aria-pressed="false">−1</button>
+                  <button type="button" data-flow-value="0" aria-label="无资金变动" aria-pressed="true">0</button>
+                  <button type="button" data-flow-value="1" aria-label="新增 1 万 CNY" aria-pressed="false">+1</button>
+                  <button type="button" data-flow-value="5" aria-label="新增 5 万 CNY" aria-pressed="false">+5</button>
+                  <button type="button" data-flow-value="10" aria-label="新增 10 万 CNY" aria-pressed="false">+10</button>
+                </div>
                 <div class="strategy-summary">
                   <span class="section-label">执行逻辑</span>
                   <ol>
@@ -175,9 +216,14 @@
 
               <article class="table-card execution-card">
                 <header class="table-header"><h3>执行清单</h3><span class="pill" id="tradeCount">0 笔操作</span></header>
-                <div class="table-scroll">
+                <div class="no-trades" id="noTrades" hidden><span aria-hidden="true">✓</span><div><strong>本次没有需要执行的买卖</strong><p>组合维持现状即可。</p></div></div>
+                <div class="table-scroll" id="activeTradesTable">
                   <table><thead><tr><th>基金</th><th>操作</th><th class="numeric">执行金额</th><th class="numeric">调整后持仓</th><th class="numeric">调整后比例</th><th>依据</th></tr></thead><tbody id="executionBody"></tbody></table>
                 </div>
+                <details class="unchanged-trades" id="unchangedTrades">
+                  <summary id="unchangedSummary">另外 0 只基金无需操作</summary>
+                  <div class="unchanged-list" id="unchangedList"></div>
+                </details>
                 <p class="risk-note">执行金额按 1 CNY 配平，仅供参考；未计入相关费用及确认期间的净值变化。</p>
               </article>
 
@@ -202,7 +248,7 @@
                 <div class="bands-list" id="bandsList"></div>
               </article>
               <article class="dashboard-card span-5 rule-copy">
-                <header class="card-header"><div><h3>决策规则</h3><p>v2.1.1 保持统一公式、无状态与最小必要交易。</p></div></header>
+                <header class="card-header"><div><h3>决策规则</h3><p>v2.2.0 保持统一公式、无状态与最小必要交易。</p></div></header>
                 <ol>
                   <li><span>01</span><div><b>普通再平衡</b><p>外层内不动；任一基金严格越过 5 / 25 外层后，全部基金进入 80% 回调区间。内部换手取最小值；若最小解不唯一，剩余配平按目标缺口比例分配。</p></div></li>
                   <li><span>02</span><div><b>新增资金</b><p>优先按目标缺口补低配；只有资金流后仍越过外层时，才进入同一 80% 回调区间。</p></div></li>
