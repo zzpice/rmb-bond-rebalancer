@@ -33,7 +33,6 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   const internalTrades = final.map((amount, index) => amount - postFlow[index]);
   const trades = final.map((amount, index) => amount - holdings[index]);
   const weights = final.map(amount => amount / finalTotal);
-  const deviations = weights.map((weight, index) => weight - bands[index].targetWeight);
   const finalBreaches = final.map((amount, index) => (
     amount < bands[index].low || amount > bands[index].high
   ));
@@ -43,7 +42,6 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   const tradeCount = trades.filter(Boolean).length;
 
   const plan = {
-    version: 2,
     holdings: holdings.slice(),
     flow,
     currentTotal,
@@ -57,7 +55,6 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
     trades,
     final,
     weights,
-    deviations,
     finalBreaches,
     buyTotal,
     sellTotal,
@@ -70,7 +67,7 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   return plan;
 }
 
-export function allocateExternalFlow(holdings, targets, flow) {
+function allocateExternalFlow(holdings, targets, flow) {
   if (flow === 0) return holdings.map(() => 0);
   if (flow < 0) {
     return allocateWithdrawal(holdings, targets, -flow).map(amount => -amount);

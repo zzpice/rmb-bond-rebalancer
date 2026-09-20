@@ -1,6 +1,6 @@
 export const VERSION = "2.2.0";
-export const YUAN_PER_WAN = 10_000;
-export const WEIGHT_SCALE = 10_000;
+const YUAN_PER_WAN = 10_000;
+const WEIGHT_SCALE = 10_000;
 
 export const FUNDS = Object.freeze([
   {
@@ -37,7 +37,7 @@ export const FUNDS = Object.freeze([
   }
 ]);
 
-export const REBALANCE_RULE = Object.freeze({
+const REBALANCE_RULE = Object.freeze({
   absoluteBand: 0.05,
   relativeBand: 0.25,
   reentryRatio: 0.8
@@ -48,7 +48,7 @@ export const WITHDRAWAL_POLICY = Object.freeze({
   residualProRata: Object.freeze(["002065", "110017"])
 });
 
-export class InputError extends Error {
+class InputError extends Error {
   constructor(message, field = null) {
     super(message);
     this.name = "InputError";
@@ -146,15 +146,14 @@ export function snapshot(amounts) {
   assertPortfolio(amounts);
   const total = sum(amounts);
   if (total <= 0) throw new InputError("当前持仓合计必须大于 0。");
-  const targets = allocateTargets(total);
-  const bands = buildBands(total, targets);
+  const bands = buildBands(total);
   const rows = amounts.map((amount, index) => {
     const weight = amount / total;
     const deviation = weight - bands[index].targetWeight;
     const breached = amount < bands[index].low || amount > bands[index].high;
-    return { amount, weight, deviation, breached, target: targets[index], band: bands[index] };
+    return { weight, deviation, breached };
   });
-  return { total, targets, bands, rows, breached: rows.some(row => row.breached) };
+  return { total, rows, breached: rows.some(row => row.breached) };
 }
 
 export function assertPortfolio(amounts) {

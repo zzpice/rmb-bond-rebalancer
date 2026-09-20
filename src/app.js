@@ -33,7 +33,7 @@ registerServiceWorker();
 
 function renderFunds() {
   $("#holdingsBody").innerHTML = FUNDS.map((fund, index) => `
-    <tr data-fund-row="${index}">
+    <tr>
       <td>
         <a class="fund-name" href="${fund.url}" target="_blank" rel="noopener noreferrer" title="${fund.fullName}">
           <strong>${fund.name}</strong><span>${fund.code} · ${fund.category}</span>
@@ -42,9 +42,9 @@ function renderFunds() {
       <td class="numeric mono">${formatPercent(fund.targetBps / 10_000)}</td>
       <td class="numeric">
         <label class="sr-only" for="holding-${index}">${fund.name}当前持仓（万 CNY）</label>
-        <div class="table-input"><input id="holding-${index}" class="holding-input" data-index="${index}" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0000" /><span>万</span></div>
+        <div class="table-input"><input id="holding-${index}" class="holding-input" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0000" /><span>万</span></div>
       </td>
-      <td class="numeric mono current-weight" data-weight="${index}">—</td>
+      <td class="numeric mono" data-weight="${index}">—</td>
       <td><span class="state-pill is-pending" data-state="${index}">待输入</span></td>
     </tr>
   `).join("");

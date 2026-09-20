@@ -1036,17 +1036,15 @@ html[data-theme="dark"] .button-primary {
   background: var(--surface-mid);
 }
 
-.button-large {
-  min-height: 48px;
-  margin-top: auto;
+.generate-card {
+  grid-column: 1 / -1;
+  padding: 14px;
+  border-left: 4px solid var(--accent);
 }
 
-.privacy-note {
-  margin: 10px 2px 0;
-  color: var(--faint);
-  font-size: 12px;
-  line-height: 17px;
-  text-align: center;
+.generate-card .button {
+  width: 100%;
+  min-height: 48px;
 }
 
 .section-heading {
