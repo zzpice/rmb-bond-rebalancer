@@ -67,7 +67,7 @@ export function createRebalancePlan({ holdings, flow = 0 }) {
   return plan;
 }
 
-export function allocateExternalFlow(holdings, targets, flow) {
+function allocateExternalFlow(holdings, targets, flow) {
   if (flow === 0) return holdings.map(() => 0);
   if (flow < 0) {
     return allocateWithdrawal(holdings, targets, -flow).map(amount => -amount);
