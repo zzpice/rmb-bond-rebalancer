@@ -48,21 +48,13 @@ export const WITHDRAWAL_POLICY = Object.freeze({
   residualProRata: Object.freeze(["002065", "110017"])
 });
 
-class InputError extends Error {
-  constructor(message, field = null) {
-    super(message);
-    this.name = "InputError";
-    this.field = field;
-  }
-}
-
 export const sum = values => values.reduce((total, value) => total + value, 0);
 
 export function parseWanAmount(value, { label = "金额", allowNegative = false } = {}) {
   const text = String(value ?? "").trim();
-  if (!text) throw new InputError(`请填写${label}。`);
+  if (!text) throw new Error(`请填写${label}。`);
   if (!/^[+-]?(?:\d+(?:\.\d{0,4})?|\.\d{1,4})$/.test(text)) {
-    throw new InputError(`${label}须为有效数字，最多保留 4 位小数。`);
+    throw new Error(`${label}须为有效数字，最多保留 4 位小数。`);
   }
   const negative = text.startsWith("-");
   const unsigned = text.replace(/^[+-]/, "");
@@ -71,16 +63,16 @@ export function parseWanAmount(value, { label = "金额", allowNegative = false 
     + BigInt(fraction.padEnd(4, "0") || "0");
   const signed = negative ? -exact : exact;
   if (signed > BigInt(Number.MAX_SAFE_INTEGER) || signed < BigInt(Number.MIN_SAFE_INTEGER)) {
-    throw new InputError(`${label}超出可计算范围。`);
+    throw new Error(`${label}超出可计算范围。`);
   }
   const amount = Number(signed);
-  if (!allowNegative && amount < 0) throw new InputError(`${label}不能为负数。`);
+  if (!allowNegative && amount < 0) throw new Error(`${label}不能为负数。`);
   return amount;
 }
 
 export function allocateTargets(total) {
   assertYuan(total, "组合总额");
-  if (total <= 0) throw new InputError("组合总额必须大于 0。");
+  if (total <= 0) throw new Error("组合总额必须大于 0。");
 
   const denominator = BigInt(WEIGHT_SCALE);
   const rows = FUNDS.map((fund, index) => {
@@ -145,7 +137,7 @@ export function buildBands(total, targets = allocateTargets(total)) {
 export function snapshot(amounts) {
   assertPortfolio(amounts);
   const total = sum(amounts);
-  if (total <= 0) throw new InputError("当前持仓合计必须大于 0。");
+  if (total <= 0) throw new Error("当前持仓合计必须大于 0。");
   const bands = buildBands(total);
   const rows = amounts.map((amount, index) => {
     const weight = amount / total;
@@ -158,14 +150,14 @@ export function snapshot(amounts) {
 
 export function assertPortfolio(amounts) {
   if (!Array.isArray(amounts) || amounts.length !== FUNDS.length) {
-    throw new InputError(`请填写全部 ${FUNDS.length} 只基金的当前持仓。`);
+    throw new Error(`请填写全部 ${FUNDS.length} 只基金的当前持仓。`);
   }
   amounts.forEach((amount, index) => {
     assertYuan(amount, FUNDS[index].code);
-    if (amount < 0) throw new InputError(`${FUNDS[index].code} 当前持仓不能为负数。`);
+    if (amount < 0) throw new Error(`${FUNDS[index].code} 当前持仓不能为负数。`);
   });
 }
 
 function assertYuan(value, label) {
-  if (!Number.isSafeInteger(value)) throw new InputError(`${label}须精确到 1 CNY。`);
+  if (!Number.isSafeInteger(value)) throw new Error(`${label}须精确到 1 CNY。`);
 }
